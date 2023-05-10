@@ -27,8 +27,30 @@ model Recipe {
   imageURL String @map("image_url")
   author User @relation(fields: [authorId], references: [id])
   authorId Int @map("author_id")
+  preparing RecipePreparationSteps[]
+  ingredients RecipeIngredients[]
 
   @@map("recipe")
+}
+
+model RecipePreparationSteps {
+  id Int @default(autoincrement()) @id
+  step String
+  order Int
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipeId Int @map("recipe_idcd")
+
+  @@map("recipe_preparation_steps")
+}
+
+model RecipeIngredients {
+  id Int @default(autoincrement()) @id
+  name String
+  amount String
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipeId Int @map("recipe_id")
+
+  @@map("recipe_ingredients")
 }
 
 enum Role {
