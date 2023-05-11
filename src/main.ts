@@ -6,7 +6,7 @@ import { UserService } from './user/user.service';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const userService: UserService = app.get<UserService>(UserService);
-  userService.generateAdnimAccount();
+  userService.generateAdminAccount();
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }

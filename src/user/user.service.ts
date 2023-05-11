@@ -36,7 +36,7 @@ export class UserService {
     });
   }
 
-  async generateAdnimAccount() {
+  async generateAdminAccount() {
     const adminName = process.env.ADMIN_NAME;
     const adminFromDb = await this.prisma.user.findUnique({
       where: { name: adminName },
@@ -48,14 +48,12 @@ export class UserService {
 
     const adminPassword = process.env.ADMIN_PASSWORD;
 
-    const adminForDb = await this.prisma.user.create({
+    return !!(await this.prisma.user.create({
       data: {
         name: adminName,
         password: adminPassword,
         roles: [Role.ADMIN],
       },
-    });
-
-    return !!adminForDb;
+    }));
   }
 }
