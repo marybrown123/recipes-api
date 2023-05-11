@@ -35,4 +35,25 @@ export class UserService {
       },
     });
   }
+
+  async generateAdminAccount() {
+    const adminName = process.env.ADMIN_NAME;
+    const adminFromDb = await this.prisma.user.findUnique({
+      where: { name: adminName },
+    });
+
+    if (adminFromDb) {
+      return true;
+    }
+
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    return !!(await this.prisma.user.create({
+      data: {
+        name: adminName,
+        password: adminPassword,
+        roles: [Role.ADMIN],
+      },
+    }));
+  }
 }
