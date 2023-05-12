@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDTO } from './DTOs/create-user.DTO';
 import { Role } from '@prisma/client';
 import { UserResponse } from './responses/user.response';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -17,10 +18,12 @@ export class UserService {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
+    const hashedPassword = await this.hashPassword(user.password);
+
     const userForDb = await this.prisma.user.create({
       data: {
         name: user.name,
-        password: user.password,
+        password: hashedPassword,
         roles: [Role.USER],
       },
     });
@@ -36,6 +39,11 @@ export class UserService {
     });
   }
 
+  async hashPassword(password: string) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return hashedPassword;
+  }
+
   async generateAdminAccount() {
     const adminName = process.env.ADMIN_NAME;
     const adminFromDb = await this.prisma.user.findUnique({
@@ -46,12 +54,14 @@ export class UserService {
       return true;
     }
 
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const hashedAdminPassword = await this.hashPassword(
+      process.env.ADMIN_PASSWORD,
+    );
 
     return !!(await this.prisma.user.create({
       data: {
         name: adminName,
-        password: adminPassword,
+        password: hashedAdminPassword,
         roles: [Role.ADMIN],
       },
     }));
