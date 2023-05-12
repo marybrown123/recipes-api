@@ -13,16 +13,20 @@ export class AuthService {
   ) {}
   async validateUser(name: string, password: string) {
     const user = await this.userService.findOne(name);
+
     if (!user) {
       throw new HttpException(
         'There is no user with such a name',
         HttpStatus.NOT_FOUND,
       );
     }
+
     const passwordValid = await bcrypt.compare(password, user.password);
+
     if (!passwordValid) {
       throw new HttpException('Wrong password', HttpStatus.NOT_FOUND);
     }
+
     return user;
   }
 
