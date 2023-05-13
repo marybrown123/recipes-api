@@ -1,14 +1,20 @@
-import { IsString } from 'class-validator';
+import { IsString, ValidateNested } from 'class-validator';
 import { CreateIngredientDTO } from './create-ingredient.dto';
 import { CreatePreparingDTO } from './create-preparation.dto';
 
 export class UpdateRecipeDTO {
   @IsString()
   name?: string;
+
   @IsString()
   description?: string;
+
   @IsString()
   imageURL?: string;
+
+  @ValidateNested()
   preparing?: CreatePreparingDTO[];
+
+  @ValidateNested()
   ingredients?: CreateIngredientDTO[];
 }
