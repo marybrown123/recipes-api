@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
@@ -13,6 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
 import { IsUserAuthorGuard } from 'src/user/guards/is-user-author.guard';
+import { IsAdminGuard } from 'src/user/guards/is-admin.guard';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -36,5 +38,14 @@ export class RecipeController {
   @Get('/:id')
   async getOneRecipe(@Param('id') recipeId: number) {
     return this.recipeService.findOneRecipe(Number(recipeId));
+  }
+
+  @Get()
+  @UseGuards(AuthGuard('jwt'), IsAdminGuard)
+  async getAllRecipes(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    return await this.recipeService.findAllRecipes(Number(limit), Number(page));
   }
 }
