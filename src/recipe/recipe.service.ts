@@ -89,6 +89,13 @@ export class RecipeService {
       },
     });
 
+    if (!recipeFromDb) {
+      throw new HttpException(
+        'There is no recipe with this id',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     return new RecipeResponse(recipeFromDb);
   }
 
@@ -101,6 +108,21 @@ export class RecipeService {
         ingredients: true,
       },
     });
+    return recipesFromDb.map((recipe) => {
+      return new RecipeResponse(recipe);
+    });
+  }
+
+  async findRecipeByName(query: string) {
+    const recipesFromDb = await this.prisma.recipe.findMany({
+      where: { name: { contains: query } },
+      include: { preparing: true, ingredients: true },
+    });
+
+    if (recipesFromDb.length === 0) {
+      throw new HttpException('Recipes not found', HttpStatus.NOT_FOUND);
+    }
+
     return recipesFromDb.map((recipe) => {
       return new RecipeResponse(recipe);
     });
