@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Patch,
   Post,
@@ -30,5 +31,10 @@ export class RecipeController {
     @Param('id') recipeId: number,
   ) {
     return this.recipeService.updateRecipe(Number(recipeId), newRecipe);
+  }
+
+  @Get('/:id')
+  async getOneRecipe(@Param('id') recipeId: number) {
+    return this.recipeService.findOneRecipe(Number(recipeId));
   }
 }

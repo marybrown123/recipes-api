@@ -39,7 +39,7 @@ export class RecipeService {
 
     if (!recipeToUpdate) {
       throw new HttpException(
-        'There is no recipe with this is',
+        'There is no recipe with this id',
         HttpStatus.NOT_FOUND,
       );
     }
