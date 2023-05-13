@@ -91,4 +91,18 @@ export class RecipeService {
 
     return new RecipeResponse(recipeFromDb);
   }
+
+  async findAllRecipes(limit: number, page: number) {
+    const recipesFromDb = await this.prisma.recipe.findMany({
+      take: limit,
+      skip: (page - 1) * limit,
+      include: {
+        preparing: true,
+        ingredients: true,
+      },
+    });
+    return recipesFromDb.map((recipe) => {
+      return new RecipeResponse(recipe);
+    });
+  }
 }
