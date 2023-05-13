@@ -7,6 +7,7 @@ import { PreparationResponse } from './preparation.response';
 import { CreatePreparingDTO } from '../DTOs/create-preparation.dto';
 import { CreateIngredientDTO } from '../DTOs/create-ingredient.dto';
 import { IngredientResponse } from './ingredient.response';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RecipeResponse {
   constructor(
@@ -26,11 +27,18 @@ export class RecipeResponse {
       return new IngredientResponse(ingredient);
     });
   }
+  @ApiProperty({ example: 1 })
   id: number;
+  @ApiProperty({ example: 'Dumplings' })
   name: string;
+  @ApiProperty({ example: 'Easy dumplings recipe' })
   description: string;
+  @ApiProperty({ example: 'imageURL' })
   imageURL: string;
+  @ApiProperty({ example: 1 })
   authorId: number;
+  @ApiProperty({ type: [CreatePreparingDTO] })
   preparing: CreatePreparingDTO[];
+  @ApiProperty({ type: [CreateIngredientDTO] })
   ingredients: CreateIngredientDTO[];
 }
