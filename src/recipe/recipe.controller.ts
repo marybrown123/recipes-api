@@ -51,15 +51,15 @@ export class RecipeController {
     @Body() newRecipe: UpdateRecipeDTO,
     @Param('id') recipeId: number,
   ) {
-    return this.recipeService.updateRecipe(Number(recipeId), newRecipe);
+    return await this.recipeService.updateRecipe(Number(recipeId), newRecipe);
   }
 
-  @Get('/:id')
-  @ApiOperation({ summary: 'Get one recipe' })
+  @Get('/byId/:id')
+  @ApiOperation({ summary: 'Get one recipe by id' })
   @ApiResponse({ type: RecipeResponse })
   @ApiParam({ name: 'id', required: true })
   async getOneRecipe(@Param('id') recipeId: number) {
-    return this.recipeService.findOneRecipe(Number(recipeId));
+    return await this.recipeService.findOneRecipe(Number(recipeId));
   }
 
   @Get()
@@ -75,5 +75,14 @@ export class RecipeController {
     @Query('limit') limit: number,
   ) {
     return await this.recipeService.findAllRecipes(Number(limit), Number(page));
+  }
+
+  @Get('/byName')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: 'Get a recipe by name' })
+  @ApiResponse({ type: [RecipeResponse] })
+  @ApiUnauthorizedResponse({ description: 'Not logged in' })
+  async getRecipeByName(@Query('query') query: string) {
+    return await this.recipeService.findRecipeByName(query);
   }
 }
