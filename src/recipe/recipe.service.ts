@@ -119,10 +119,6 @@ export class RecipeService {
       include: { preparing: true, ingredients: true },
     });
 
-    if (recipesFromDb.length === 0) {
-      throw new HttpException('Recipes not found', HttpStatus.NOT_FOUND);
-    }
-
     return recipesFromDb.map((recipe) => {
       return new RecipeResponse(recipe);
     });

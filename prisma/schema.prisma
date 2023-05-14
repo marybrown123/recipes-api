@@ -38,7 +38,7 @@ model RecipePreparationSteps {
   step String
   order Int
   recipe Recipe @relation(fields: [recipeId], references: [id])
-  recipeId Int @map("recipe_idcd")
+  recipeId Int @map("recipe_id")
 
   @@map("recipe_preparation_steps")
 }
