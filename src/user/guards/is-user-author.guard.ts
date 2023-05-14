@@ -14,7 +14,7 @@ export class IsUserAuthorGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const recipeFromDb = await this.recipeService.findOneRecipe(
+    const recipeFromDb = await this.recipeService.findRecipeById(
       Number(request.params.id),
     );
 
