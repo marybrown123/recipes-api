@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
 import { RecipeResponse } from './responses/recipe.response';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
@@ -78,7 +78,7 @@ export class RecipeService {
     return new RecipeResponse(updatedRecipe);
   }
 
-  async findOneRecipe(recipeId: number) {
+  async findRecipeById(recipeId: number) {
     const recipeFromDb = await this.prisma.recipe.findUnique({
       where: {
         id: recipeId,

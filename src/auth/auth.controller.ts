@@ -3,9 +3,9 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import {
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 @Controller('/auth')
@@ -15,7 +15,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @ApiOperation({ summary: 'Log in' })
   @ApiOkResponse({ description: 'Token' })
-  @ApiNotFoundResponse({ description: 'Wrong credentials' })
+  @ApiUnauthorizedResponse({ description: 'Wrong credentials' })
   @Post('/login')
   async login(@CurrentUser() user) {
     return this.authService.login(user);
