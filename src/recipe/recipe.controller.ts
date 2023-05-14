@@ -54,15 +54,15 @@ export class RecipeController {
     return await this.recipeService.updateRecipe(Number(recipeId), newRecipe);
   }
 
-  @Get('/byId/:id')
+  @Get('/id/:id')
   @ApiOperation({ summary: 'Get one recipe by id' })
   @ApiResponse({ type: RecipeResponse })
   @ApiParam({ name: 'id', required: true })
   async getOneRecipe(@Param('id') recipeId: number) {
-    return await this.recipeService.findOneRecipe(Number(recipeId));
+    return await this.recipeService.findRecipeById(Number(recipeId));
   }
 
-  @Get()
+  @Get('/list')
   @UseGuards(AuthGuard('jwt'), IsAdminGuard)
   @ApiOperation({ summary: 'Get all recipes' })
   @ApiResponse({ type: [RecipeResponse] })
@@ -77,7 +77,7 @@ export class RecipeController {
     return await this.recipeService.findAllRecipes(Number(limit), Number(page));
   }
 
-  @Get('/byName')
+  @Get('/name')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Get a recipe by name' })
   @ApiResponse({ type: [RecipeResponse] })
