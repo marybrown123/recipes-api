@@ -24,6 +24,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { RecipeResponse } from './responses/recipe.response';
+import { User } from '@prisma/client';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -36,7 +37,7 @@ export class RecipeController {
   @ApiUnauthorizedResponse({ description: 'Not logged in' })
   async createRecipe(
     @Body() recipe: CreateRecipeDTO,
-    @CurrentUser() user,
+    @CurrentUser() user: User,
   ): Promise<RecipeResponse> {
     return await this.recipeService.createRecipe(recipe, user.id);
   }
