@@ -9,7 +9,7 @@ import { CreateIngredientDTO } from '../DTOs/create-ingredient.dto';
 import { IngredientResponse } from './ingredient.response';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class RecipeResponse {
+export class RecipeResponse implements Recipe {
   constructor(
     recipe: Recipe & { preparing: RecipePreparationSteps[] } & {
       ingredients: RecipeIngredients[];
@@ -37,8 +37,8 @@ export class RecipeResponse {
   imageURL: string;
   @ApiProperty({ example: 1 })
   authorId: number;
-  @ApiProperty({ type: [CreatePreparingDTO] })
+  @ApiProperty({ type: [CreatePreparingDTO], isArray: true })
   preparing: CreatePreparingDTO[];
-  @ApiProperty({ type: [CreateIngredientDTO] })
+  @ApiProperty({ type: [CreateIngredientDTO], isArray: true })
   ingredients: CreateIngredientDTO[];
 }

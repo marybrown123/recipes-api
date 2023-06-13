@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RecipeIngredients } from '@prisma/client';
 
-export class IngredientResponse {
+export class IngredientResponse implements RecipeIngredients {
   constructor(ingredient: RecipeIngredients) {
     this.name = ingredient.name;
     this.amount = ingredient.amount;
@@ -13,4 +13,6 @@ export class IngredientResponse {
   name: string;
   @ApiProperty({ example: 'three spoons' })
   amount: string;
+  @ApiProperty({ example: 1 })
+  recipeId: number;
 }

@@ -10,7 +10,7 @@ export class UserController {
   @Post('/signup')
   @ApiOperation({ summary: 'Create new user' })
   @ApiCreatedResponse({ type: UserResponse })
-  async createUser(@Body() user: CreateUserDTO) {
+  async createUser(@Body() user: CreateUserDTO): Promise<UserResponse> {
     return await this.usersService.createUser(user);
   }
 }

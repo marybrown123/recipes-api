@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 
-export class UserResponse {
+export class UserResponse implements Omit<User, 'password'> {
   constructor(user: User) {
     this.name = user.name;
     this.id = user.id;
@@ -10,4 +10,6 @@ export class UserResponse {
   name: string;
   @ApiProperty()
   id: number;
+  @ApiProperty()
+  roles: Role[];
 }

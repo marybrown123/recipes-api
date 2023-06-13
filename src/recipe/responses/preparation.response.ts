@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RecipePreparationSteps } from '@prisma/client';
 
-export class PreparationResponse {
+export class PreparationResponse implements RecipePreparationSteps {
   constructor(preparation: RecipePreparationSteps) {
     this.id = preparation.id;
     this.step = preparation.step;
@@ -13,4 +13,6 @@ export class PreparationResponse {
   step: string;
   @ApiProperty({ example: 1 })
   order: number;
+  @ApiProperty({ example: 1 })
+  recipeId: number;
 }
