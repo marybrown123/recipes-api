@@ -8,7 +8,10 @@ import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
 export class RecipeService {
   constructor(private prisma: PrismaService) {}
 
-  async createRecipe(recipe: CreateRecipeDTO, authorId: number) {
+  async createRecipe(
+    recipe: CreateRecipeDTO,
+    authorId: number,
+  ): Promise<RecipeResponse> {
     const newRecipe = await this.prisma.recipe.create({
       data: {
         name: recipe.name,
@@ -30,7 +33,10 @@ export class RecipeService {
     return new RecipeResponse(newRecipe);
   }
 
-  async updateRecipe(recipeId: number, newRecipe: UpdateRecipeDTO) {
+  async updateRecipe(
+    recipeId: number,
+    newRecipe: UpdateRecipeDTO,
+  ): Promise<RecipeResponse> {
     const recipeToUpdate = await this.prisma.recipe.findUnique({
       where: {
         id: recipeId,
@@ -78,7 +84,7 @@ export class RecipeService {
     return new RecipeResponse(updatedRecipe);
   }
 
-  async findRecipeById(recipeId: number) {
+  async findRecipeById(recipeId: number): Promise<RecipeResponse> {
     const recipeFromDb = await this.prisma.recipe.findUnique({
       where: {
         id: recipeId,
@@ -99,7 +105,7 @@ export class RecipeService {
     return new RecipeResponse(recipeFromDb);
   }
 
-  async findAllRecipes(limit: number, page: number) {
+  async findAllRecipes(limit: number, page: number): Promise<RecipeResponse[]> {
     const recipesFromDb = await this.prisma.recipe.findMany({
       take: limit,
       skip: (page - 1) * limit,
@@ -113,7 +119,7 @@ export class RecipeService {
     });
   }
 
-  async findRecipeByName(query: string) {
+  async findRecipeByName(query: string): Promise<RecipeResponse[]> {
     const recipesFromDb = await this.prisma.recipe.findMany({
       where: { name: { contains: query } },
       include: { preparing: true, ingredients: true },

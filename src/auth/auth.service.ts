@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
 import { User } from '@prisma/client';
+import { AccessToken } from 'src/common/interfaces/access-token.interface';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +12,7 @@ export class AuthService {
     private readonly userService: UserService,
     private jwtService: JwtService,
   ) {}
-  async validateUser(name: string, password: string) {
+  async validateUser(name: string, password: string): Promise<User> {
     const user = await this.userService.findOne(name);
 
     if (!user) {
@@ -30,7 +31,7 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User) {
+  async login(user: User): Promise<AccessToken> {
     const payload = { name: user.name, sub: user.id };
     return {
       accessToken: this.jwtService.sign(payload),

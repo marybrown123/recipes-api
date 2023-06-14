@@ -1,0 +1,11 @@
+{
+    "eslint.format.enable": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+    "workbench.editor.enablePreview": false,
+    "editor.snippetSuggestions": "none",
+    "editor.suggest.snippetsPreventQuickSuggestions": true,
+}

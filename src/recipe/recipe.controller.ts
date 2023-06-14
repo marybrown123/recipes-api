@@ -24,6 +24,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { RecipeResponse } from './responses/recipe.response';
+import { User } from '@prisma/client';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -34,7 +35,10 @@ export class RecipeController {
   @ApiOperation({ summary: 'Create a new recipe' })
   @ApiCreatedResponse({ type: RecipeResponse })
   @ApiUnauthorizedResponse({ description: 'Not logged in' })
-  async createRecipe(@Body() recipe: CreateRecipeDTO, @CurrentUser() user) {
+  async createRecipe(
+    @Body() recipe: CreateRecipeDTO,
+    @CurrentUser() user: User,
+  ): Promise<RecipeResponse> {
     return await this.recipeService.createRecipe(recipe, user.id);
   }
 
@@ -50,7 +54,7 @@ export class RecipeController {
   async updateRecipe(
     @Body() newRecipe: UpdateRecipeDTO,
     @Param('id') recipeId: number,
-  ) {
+  ): Promise<RecipeResponse> {
     return await this.recipeService.updateRecipe(Number(recipeId), newRecipe);
   }
 
@@ -58,7 +62,7 @@ export class RecipeController {
   @ApiOperation({ summary: 'Get one recipe by id' })
   @ApiResponse({ type: RecipeResponse })
   @ApiParam({ name: 'id', required: true })
-  async getOneRecipe(@Param('id') recipeId: number) {
+  async getOneRecipe(@Param('id') recipeId: number): Promise<RecipeResponse> {
     return await this.recipeService.findRecipeById(Number(recipeId));
   }
 
@@ -71,9 +75,9 @@ export class RecipeController {
     description: 'User is not an admin',
   })
   async getAllRecipes(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-  ) {
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ): Promise<RecipeResponse[]> {
     return await this.recipeService.findAllRecipes(Number(limit), Number(page));
   }
 
@@ -82,7 +86,9 @@ export class RecipeController {
   @ApiOperation({ summary: 'Get a recipe by name' })
   @ApiResponse({ type: [RecipeResponse] })
   @ApiUnauthorizedResponse({ description: 'Not logged in' })
-  async getRecipeByName(@Query('query') query: string) {
+  async getRecipeByName(
+    @Query('query') query: string,
+  ): Promise<RecipeResponse[]> {
     return await this.recipeService.findRecipeByName(query);
   }
 }

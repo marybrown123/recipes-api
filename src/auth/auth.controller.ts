@@ -7,6 +7,8 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { AccessToken } from 'src/common/interfaces/access-token.interface';
+import { User } from '@prisma/client';
 
 @Controller('/auth')
 export class AuthController {
@@ -17,7 +19,7 @@ export class AuthController {
   @ApiOkResponse({ description: 'Token' })
   @ApiUnauthorizedResponse({ description: 'Wrong credentials' })
   @Post('/login')
-  async login(@CurrentUser() user) {
+  async login(@CurrentUser() user: User): Promise<AccessToken> {
     return this.authService.login(user);
   }
 }

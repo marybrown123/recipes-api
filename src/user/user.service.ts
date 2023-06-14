@@ -4,12 +4,13 @@ import { CreateUserDTO } from './DTOs/create-user.DTO';
 import { Role } from '@prisma/client';
 import { UserResponse } from './responses/user.response';
 import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(user: CreateUserDTO) {
+  async createUser(user: CreateUserDTO): Promise<UserResponse> {
     const userFromDb = await this.prisma.user.findUnique({
       where: { name: user.name },
     });
@@ -31,7 +32,7 @@ export class UserService {
     return new UserResponse(userForDb);
   }
 
-  async findOne(name: string) {
+  async findOne(name: string): Promise<User> {
     return await this.prisma.user.findUnique({
       where: {
         name,
@@ -39,12 +40,12 @@ export class UserService {
     });
   }
 
-  async hashPassword(password: string) {
+  async hashPassword(password: string): Promise<string> {
     const hashedPassword = await bcrypt.hash(password, 10);
     return hashedPassword;
   }
 
-  async generateAdminAccount() {
+  async generateAdminAccount(): Promise<boolean> {
     const adminName = process.env.ADMIN_NAME;
     const adminFromDb = await this.prisma.user.findUnique({
       where: { name: adminName },
