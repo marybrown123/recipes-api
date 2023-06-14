@@ -8,6 +8,6 @@ export class CreateUserDTO {
 
   @IsString()
   @MinLength(8)
-  @ApiProperty({ type: 'string' })
+  @ApiProperty({ type: 'string', minLength: 8, format: 'password' })
   password: string;
 }
