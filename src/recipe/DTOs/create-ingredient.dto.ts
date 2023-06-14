@@ -3,10 +3,10 @@ import { IsString } from 'class-validator';
 
 export class CreateIngredientDTO {
   @IsString()
-  @ApiProperty({ example: 'flour' })
+  @ApiProperty({ example: 'flour', type: 'string' })
   name: string;
 
   @IsString()
-  @ApiProperty({ example: 'three spoons' })
+  @ApiProperty({ example: 'three spoons', type: 'string' })
   amount: string;
 }

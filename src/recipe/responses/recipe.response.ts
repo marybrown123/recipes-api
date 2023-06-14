@@ -27,15 +27,15 @@ export class RecipeResponse implements Recipe {
       return new IngredientResponse(ingredient);
     });
   }
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ example: 1, type: 'string' })
   id: number;
-  @ApiProperty({ example: 'Dumplings' })
+  @ApiProperty({ example: 'Dumplings', type: 'string' })
   name: string;
-  @ApiProperty({ example: 'Easy dumplings recipe' })
+  @ApiProperty({ example: 'Easy dumplings recipe', type: 'string' })
   description: string;
-  @ApiProperty({ example: 'imageURL' })
+  @ApiProperty({ example: 'imageURL', type: 'string' })
   imageURL: string;
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ example: 1, type: 'number' })
   authorId: number;
   @ApiProperty({ type: [CreatePreparingDTO], isArray: true })
   preparing: CreatePreparingDTO[];

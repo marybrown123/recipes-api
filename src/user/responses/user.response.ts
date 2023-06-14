@@ -6,10 +6,10 @@ export class UserResponse implements Omit<User, 'password'> {
     this.name = user.name;
     this.id = user.id;
   }
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   name: string;
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   id: number;
-  @ApiProperty()
+  @ApiProperty({ enum: Role, isArray: true })
   roles: Role[];
 }
