@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -24,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
-import { QueryParameters } from 'src/common/query-parameters';
+import { FindAllRecipesQuery } from 'src/common/find-all-recipes-query';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -39,7 +40,7 @@ export class RecipeController {
     @Body() recipe: CreateRecipeDTO,
     @CurrentUser() user: User,
   ): Promise<RecipeResponse> {
-    return await this.recipeService.createRecipe(recipe, user.id);
+    return this.recipeService.createRecipe(recipe, user.id);
   }
 
   @Patch('/:id')
@@ -55,7 +56,7 @@ export class RecipeController {
     @Body() newRecipe: UpdateRecipeDTO,
     @Param('id') recipeId: number,
   ): Promise<RecipeResponse> {
-    return await this.recipeService.updateRecipe(Number(recipeId), newRecipe);
+    return this.recipeService.updateRecipe(Number(recipeId), newRecipe);
   }
 
   @Get()
@@ -67,9 +68,9 @@ export class RecipeController {
     description: 'User is not an admin',
   })
   async getAllRecipes(
-    @Query() query: QueryParameters,
+    @Query() query: FindAllRecipesQuery,
   ): Promise<RecipeResponse[]> {
-    return await this.recipeService.findAllRecipes(
+    return this.recipeService.findAllRecipes(
       query.limit,
       query.page,
       query.name,
@@ -80,7 +81,9 @@ export class RecipeController {
   @ApiOperation({ summary: 'Get one recipe by id' })
   @ApiResponse({ type: RecipeResponse })
   @ApiParam({ name: 'id', required: true })
-  async getOneRecipe(@Param('id') recipeId: number): Promise<RecipeResponse> {
-    return await this.recipeService.findRecipeById(Number(recipeId));
+  async getOneRecipe(
+    @Param('id', ParseIntPipe) recipeId: number,
+  ): Promise<RecipeResponse> {
+    return this.recipeService.findRecipeById(recipeId);
   }
 }
