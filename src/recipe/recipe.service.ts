@@ -108,42 +108,21 @@ export class RecipeService {
   async findAllRecipes(
     limit: number,
     page: number,
-    name: string,
+    name?: string,
   ): Promise<RecipeResponse[]> {
-    if (!limit) {
-      limit = 3;
-    }
-
-    if (!page) {
-      page = 1;
-    }
-
-    if (name) {
-      const recipesFromDb = await this.prisma.recipe.findMany({
-        where: { name: { contains: name } },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          preparing: true,
-          ingredients: true,
-        },
-      });
-      return recipesFromDb.map((recipe) => {
-        return new RecipeResponse(recipe);
-      });
-    } else {
-      const recipesFromDb = await this.prisma.recipe.findMany({
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          preparing: true,
-          ingredients: true,
-        },
-      });
-      return recipesFromDb.map((recipe) => {
-        return new RecipeResponse(recipe);
-      });
-    }
+    const whereCodition = name ? { name: { contains: name } } : {};
+    const recipesFromDb = await this.prisma.recipe.findMany({
+      where: whereCodition,
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        preparing: true,
+        ingredients: true,
+      },
+    });
+    return recipesFromDb.map((recipe) => {
+      return new RecipeResponse(recipe);
+    });
   }
 
   async findRecipeByName(query: string): Promise<RecipeResponse[]> {

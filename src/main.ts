@@ -10,7 +10,7 @@ async function bootstrap() {
   const userService: UserService = app.get<UserService>(UserService);
   userService.generateAdminAccount();
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   const config = new DocumentBuilder()
     .setTitle('Recipes API')

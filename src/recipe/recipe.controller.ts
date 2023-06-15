@@ -24,7 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
-import { ListRecipesQuery } from 'src/common/interfaces/list-recipes-query.interface';
+import { QueryParameters } from 'src/common/query-parameters';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -67,11 +67,11 @@ export class RecipeController {
     description: 'User is not an admin',
   })
   async getAllRecipes(
-    @Query() query: ListRecipesQuery,
+    @Query() query: QueryParameters,
   ): Promise<RecipeResponse[]> {
     return await this.recipeService.findAllRecipes(
-      Number(query.limit),
-      Number(query.page),
+      query.limit,
+      query.page,
       query.name,
     );
   }
