@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -16,19 +16,13 @@ export class AuthService {
     const user = await this.userService.findOne(name);
 
     if (!user) {
-      throw new HttpException(
-        { status: HttpStatus.FORBIDDEN, error: 'Wrong credentials' },
-        HttpStatus.FORBIDDEN,
-      );
+      throw new UnauthorizedException();
     }
 
     const passwordValid = await bcrypt.compare(password, user.password);
 
     if (!passwordValid) {
-      throw new HttpException(
-        { status: HttpStatus.FORBIDDEN, error: 'Wrong credentials' },
-        HttpStatus.FORBIDDEN,
-      );
+      throw new UnauthorizedException();
     }
 
     return user;
