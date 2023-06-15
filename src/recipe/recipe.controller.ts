@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -14,7 +15,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
 import { IsUserAuthorGuard } from 'src/user/guards/is-user-author.guard';
-import { IsAdminGuard } from 'src/user/guards/is-admin.guard';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -25,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
+import { FindAllRecipesQuery } from 'src/common/find-all-recipes-query';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -39,7 +40,7 @@ export class RecipeController {
     @Body() recipe: CreateRecipeDTO,
     @CurrentUser() user: User,
   ): Promise<RecipeResponse> {
-    return await this.recipeService.createRecipe(recipe, user.id);
+    return this.recipeService.createRecipe(recipe, user.id);
   }
 
   @Patch('/:id')
@@ -55,19 +56,11 @@ export class RecipeController {
     @Body() newRecipe: UpdateRecipeDTO,
     @Param('id') recipeId: number,
   ): Promise<RecipeResponse> {
-    return await this.recipeService.updateRecipe(Number(recipeId), newRecipe);
+    return this.recipeService.updateRecipe(Number(recipeId), newRecipe);
   }
 
-  @Get('/id/:id')
-  @ApiOperation({ summary: 'Get one recipe by id' })
-  @ApiResponse({ type: RecipeResponse })
-  @ApiParam({ name: 'id', required: true })
-  async getOneRecipe(@Param('id') recipeId: number): Promise<RecipeResponse> {
-    return await this.recipeService.findRecipeById(Number(recipeId));
-  }
-
-  @Get('/list')
-  @UseGuards(AuthGuard('jwt'), IsAdminGuard)
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Get all recipes' })
   @ApiResponse({ type: [RecipeResponse] })
   @ApiUnauthorizedResponse({ description: 'Not logged in' })
@@ -75,20 +68,18 @@ export class RecipeController {
     description: 'User is not an admin',
   })
   async getAllRecipes(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
+    @Query() query: FindAllRecipesQuery,
   ): Promise<RecipeResponse[]> {
-    return await this.recipeService.findAllRecipes(Number(limit), Number(page));
+    return this.recipeService.findAllRecipes(query);
   }
 
-  @Get('/name')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: 'Get a recipe by name' })
-  @ApiResponse({ type: [RecipeResponse] })
-  @ApiUnauthorizedResponse({ description: 'Not logged in' })
-  async getRecipeByName(
-    @Query('query') query: string,
-  ): Promise<RecipeResponse[]> {
-    return await this.recipeService.findRecipeByName(query);
+  @Get('/:id')
+  @ApiOperation({ summary: 'Get one recipe by id' })
+  @ApiResponse({ type: RecipeResponse })
+  @ApiParam({ name: 'id', required: true })
+  async getOneRecipe(
+    @Param('id', ParseIntPipe) recipeId: number,
+  ): Promise<RecipeResponse> {
+    return this.recipeService.findRecipeById(recipeId);
   }
 }
