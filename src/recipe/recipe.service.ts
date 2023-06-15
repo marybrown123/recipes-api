@@ -105,16 +105,12 @@ export class RecipeService {
     return new RecipeResponse(recipeFromDb);
   }
 
-  async findAllRecipes(
-    limit: number,
-    page: number,
-    name?: string,
-  ): Promise<RecipeResponse[]> {
-    const whereCodition = name ? { name: { contains: name } } : {};
+  async findAllRecipes(query): Promise<RecipeResponse[]> {
+    const whereCodition = query.name ? { name: { contains: query.name } } : {};
     const recipesFromDb = await this.prisma.recipe.findMany({
       where: whereCodition,
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (query.page - 1) * query.limit,
+      take: query.limit,
       include: {
         preparing: true,
         ingredients: true,

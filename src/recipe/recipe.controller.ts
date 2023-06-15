@@ -70,11 +70,7 @@ export class RecipeController {
   async getAllRecipes(
     @Query() query: FindAllRecipesQuery,
   ): Promise<RecipeResponse[]> {
-    return this.recipeService.findAllRecipes(
-      query.limit,
-      query.page,
-      query.name,
-    );
+    return this.recipeService.findAllRecipes(query);
   }
 
   @Get('/:id')
