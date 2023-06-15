@@ -16,13 +16,19 @@ export class AuthService {
     const user = await this.userService.findOne(name);
 
     if (!user) {
-      throw new HttpException('Wrong credentials', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        { status: HttpStatus.FORBIDDEN, error: 'Wrong credentials' },
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     const passwordValid = await bcrypt.compare(password, user.password);
 
     if (!passwordValid) {
-      throw new HttpException('Wrong credentials', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        { status: HttpStatus.FORBIDDEN, error: 'Wrong credentials' },
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     return user;
