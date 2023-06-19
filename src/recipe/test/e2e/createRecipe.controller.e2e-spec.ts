@@ -1,4 +1,4 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
@@ -7,6 +7,7 @@ import { RecipeService } from '../../recipe.service';
 import { AuthModule } from '../../../auth/auth.module';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 
 describe('Recipe Controller - Create', () => {
   let app: INestApplication;
@@ -14,22 +15,12 @@ describe('Recipe Controller - Create', () => {
   let jwtService: JwtService;
   let accessToken: string;
 
-  const mockRecipeService = {
-    createRecipe: jest.fn().mockImplementation((dto, id) => {
-      return {
-        id: 1,
-        ...dto,
-        authorId: id,
-      };
-    }),
-  };
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [RecipeModule, AuthModule],
     })
       .overrideProvider(RecipeService)
-      .useValue(mockRecipeService)
+      .useClass(RecipeServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -73,8 +64,9 @@ describe('Recipe Controller - Create', () => {
       .post('/recipe')
       .send(payload)
       .set('Authorization', `bearer ${accessToken}`)
-      .expect(201)
+      .expect(HttpStatus.CREATED)
       .then((res) => {
+        console.log(res.body);
         expect(res.body.id).toBe(1);
         expect(res.body.name).toBe('testName');
         expect(res.body.description).toBe('testDescription');
@@ -107,33 +99,35 @@ describe('Recipe Controller - Create', () => {
     return request(app.getHttpServer())
       .post('/recipe')
       .send(payload)
-      .expect(401);
+      .expect(HttpStatus.UNAUTHORIZED);
   });
 
-  it('should throw validation error', async () => {
+  it('should throw validation error on property name', async () => {
     const payload = {
       name: 1,
-      description: 1,
-      imageURL: 1,
-      preparing: 1,
-      ingredients: 1,
+      description: 'testDescription',
+      imageURL: 'testImageURL',
+      preparing: [
+        {
+          step: 'testStep',
+          order: 1,
+        },
+      ],
+      ingredients: [
+        {
+          name: 'testName',
+          amount: 'testAmount',
+        },
+      ],
     };
 
     return request(app.getHttpServer())
       .post('/recipe')
       .send(payload)
       .set('Authorization', `bearer ${accessToken}`)
-      .expect(400)
+      .expect(HttpStatus.BAD_REQUEST)
       .then((res) => {
-        expect(res.body.message).toContain('name must be a string');
-        expect(res.body.message).toContain('description must be a string');
-        expect(res.body.message).toContain('imageURL must be a string');
-        expect(res.body.message).toContain(
-          'nested property preparing must be either object or array',
-        );
-        expect(res.body.message).toContain(
-          'nested property ingredients must be either object or array',
-        );
+        expect(res.body).toMatchSnapshot();
       });
   });
 });

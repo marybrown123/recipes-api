@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Recipe Controller - Create should throw validation error on property name 1`] = `
+Object {
+  "error": "Bad Request",
+  "message": Array [
+    "name must be a string",
+  ],
+  "statusCode": 400,
+}
+`;
