@@ -102,7 +102,7 @@ describe('Recipe Controller - Create', () => {
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
-  it('should throw validation error on property name', async () => {
+  it('should throw validation error when property name is number', async () => {
     const payload = {
       name: 1,
       description: 'testDescription',
@@ -111,6 +111,64 @@ describe('Recipe Controller - Create', () => {
         {
           step: 'testStep',
           order: 1,
+        },
+      ],
+      ingredients: [
+        {
+          name: 'testName',
+          amount: 'testAmount',
+        },
+      ],
+    };
+
+    return request(app.getHttpServer())
+      .post('/recipe')
+      .send(payload)
+      .set('Authorization', `bearer ${accessToken}`)
+      .expect(HttpStatus.BAD_REQUEST)
+      .then((res) => {
+        expect(res.body).toMatchSnapshot();
+      });
+  });
+
+  it('should throw validation error when property description is number', async () => {
+    const payload = {
+      name: 'testName',
+      description: 1,
+      imageURL: 'testImageURL',
+      preparing: [
+        {
+          step: 'testStep',
+          order: 1,
+        },
+      ],
+      ingredients: [
+        {
+          name: 'testName',
+          amount: 'testAmount',
+        },
+      ],
+    };
+
+    return request(app.getHttpServer())
+      .post('/recipe')
+      .send(payload)
+      .set('Authorization', `bearer ${accessToken}`)
+      .expect(HttpStatus.BAD_REQUEST)
+      .then((res) => {
+        expect(res.body).toMatchSnapshot();
+      });
+  });
+
+  it('should throw validation error when property order in preparing is string', async () => {
+    const payload = {
+      name: 'testName',
+      description: 'testDescription',
+      imageURL: 'testImageURL',
+      preparing: [
+        {
+          step: 'testStep',
+          order: 'testOrder',
         },
       ],
       ingredients: [
