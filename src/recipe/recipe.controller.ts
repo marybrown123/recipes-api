@@ -12,9 +12,9 @@ import {
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
 import { RecipeService } from './recipe.service';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/user.decorator';
+import { CurrentUser } from '../common/decorators/user.decorator';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
-import { IsUserAuthorGuard } from 'src/user/guards/is-user-author.guard';
+import { IsUserAuthorGuard } from '../user/guards/is-user-author.guard';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -25,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
-import { FindAllRecipesQuery } from 'src/common/find-all-recipes-query';
+import { FindAllRecipesQuery } from '../common/find-all-recipes-query';
 
 @Controller('/recipe')
 export class RecipeController {

@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { RecipeService } from 'src/recipe/recipe.service';
+import { RecipeService } from '../../recipe/recipe.service';
 
 @Injectable()
 export class IsUserAuthorGuard implements CanActivate {

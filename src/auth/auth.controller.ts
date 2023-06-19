@@ -1,13 +1,13 @@
 import { Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/user.decorator';
+import { CurrentUser } from '../common/decorators/user.decorator';
 import {
   ApiOkResponse,
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AccessToken } from 'src/common/interfaces/access-token.interface';
+import { AccessToken } from '../common/interfaces/access-token.interface';
 import { User } from '@prisma/client';
 
 @Controller('/auth')
