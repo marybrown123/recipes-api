@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Recipe Controller - Create should throw validation error when property description is number 1`] = `
+exports[`Recipe Controller - Create should throw validation error when property description is 1 1`] = `
 Object {
   "error": "Bad Request",
   "message": Array [
@@ -10,7 +10,7 @@ Object {
 }
 `;
 
-exports[`Recipe Controller - Create should throw validation error when property name is number 1`] = `
+exports[`Recipe Controller - Create should throw validation error when property name is 1 1`] = `
 Object {
   "error": "Bad Request",
   "message": Array [
@@ -20,11 +20,11 @@ Object {
 }
 `;
 
-exports[`Recipe Controller - Create should throw validation error when property order in preparing is string 1`] = `
+exports[`Recipe Controller - Create should throw validation error when property preparing is 1 1`] = `
 Object {
   "error": "Bad Request",
   "message": Array [
-    "preparing.0.order must be a number conforming to the specified constraints",
+    "nested property preparing must be either object or array",
   ],
   "statusCode": 400,
 }

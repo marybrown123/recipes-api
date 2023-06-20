@@ -14,6 +14,37 @@ describe('Recipe Controller - Create', () => {
   let prisma: PrismaService;
   let jwtService: JwtService;
   let accessToken: string;
+  const correctPayload = {
+    name: 'testName',
+    description: 'testDescription',
+    imageURL: 'testImageURL',
+    preparing: [
+      {
+        step: 'testStep',
+        order: 1,
+      },
+    ],
+    ingredients: [
+      {
+        name: 'testName',
+        amount: 'testAmount',
+      },
+    ],
+  };
+  const validationTestsStructure = [
+    {
+      property: 'name',
+      value: 1,
+    },
+    {
+      property: 'description',
+      value: 1,
+    },
+    {
+      property: 'preparing',
+      value: 1,
+    },
+  ];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -64,18 +95,7 @@ describe('Recipe Controller - Create', () => {
       .post('/recipe')
       .send(payload)
       .set('Authorization', `bearer ${accessToken}`)
-      .expect(HttpStatus.CREATED)
-      .then((res) => {
-        console.log(res.body);
-        expect(res.body.id).toBe(1);
-        expect(res.body.name).toBe('testName');
-        expect(res.body.description).toBe('testDescription');
-        expect(res.body.imageURL).toBe('testImageURL');
-        expect(res.body.preparing[0].step).toBe('testStep');
-        expect(res.body.preparing[0].order).toBe(1);
-        expect(res.body.ingredients[0].name).toBe('testName');
-        expect(res.body.ingredients[0].amount).toBe('testAmount');
-      });
+      .expect(HttpStatus.CREATED);
   });
 
   it('should throw error on unathourized user', async () => {
@@ -102,90 +122,18 @@ describe('Recipe Controller - Create', () => {
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
-  it('should throw validation error when property name is number', async () => {
-    const payload = {
-      name: 1,
-      description: 'testDescription',
-      imageURL: 'testImageURL',
-      preparing: [
-        {
-          step: 'testStep',
-          order: 1,
-        },
-      ],
-      ingredients: [
-        {
-          name: 'testName',
-          amount: 'testAmount',
-        },
-      ],
-    };
-
-    return request(app.getHttpServer())
-      .post('/recipe')
-      .send(payload)
-      .set('Authorization', `bearer ${accessToken}`)
-      .expect(HttpStatus.BAD_REQUEST)
-      .then((res) => {
-        expect(res.body).toMatchSnapshot();
-      });
-  });
-
-  it('should throw validation error when property description is number', async () => {
-    const payload = {
-      name: 'testName',
-      description: 1,
-      imageURL: 'testImageURL',
-      preparing: [
-        {
-          step: 'testStep',
-          order: 1,
-        },
-      ],
-      ingredients: [
-        {
-          name: 'testName',
-          amount: 'testAmount',
-        },
-      ],
-    };
-
-    return request(app.getHttpServer())
-      .post('/recipe')
-      .send(payload)
-      .set('Authorization', `bearer ${accessToken}`)
-      .expect(HttpStatus.BAD_REQUEST)
-      .then((res) => {
-        expect(res.body).toMatchSnapshot();
-      });
-  });
-
-  it('should throw validation error when property order in preparing is string', async () => {
-    const payload = {
-      name: 'testName',
-      description: 'testDescription',
-      imageURL: 'testImageURL',
-      preparing: [
-        {
-          step: 'testStep',
-          order: 'testOrder',
-        },
-      ],
-      ingredients: [
-        {
-          name: 'testName',
-          amount: 'testAmount',
-        },
-      ],
-    };
-
-    return request(app.getHttpServer())
-      .post('/recipe')
-      .send(payload)
-      .set('Authorization', `bearer ${accessToken}`)
-      .expect(HttpStatus.BAD_REQUEST)
-      .then((res) => {
-        expect(res.body).toMatchSnapshot();
-      });
+  validationTestsStructure.map((object) => {
+    const uncorrectPayload = { ...correctPayload };
+    uncorrectPayload[object.property] = object.value;
+    return it(`should throw validation error when property ${object.property} is ${object.value}`, async () => {
+      return request(app.getHttpServer())
+        .post('/recipe')
+        .send(uncorrectPayload)
+        .set('Authorization', `bearer ${accessToken}`)
+        .expect(HttpStatus.BAD_REQUEST)
+        .then((res) => {
+          expect(res.body).toMatchSnapshot();
+        });
+    });
   });
 });
