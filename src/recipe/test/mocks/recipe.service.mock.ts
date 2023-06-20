@@ -1,8 +1,8 @@
-import { RecipeResponse } from 'src/recipe/responses/recipe.response';
+import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { RecipeService } from '../../../recipe/recipe.service';
-import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
-import { UpdateRecipeDTO } from 'src/recipe/DTOs/update-recipe.dto';
-import { FindAllRecipesQuery } from 'src/common/find-all-recipes-query';
+import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
+import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
+import { FindAllRecipesQuery } from '../../../common/find-all-recipes-query';
 
 export class RecipeServiceMock implements Required<RecipeService> {
   async createRecipe(
@@ -142,7 +142,7 @@ export class RecipeServiceMock implements Required<RecipeService> {
       },
     ];
 
-    recipesToReturn.map((recipe) => {
+    return recipesToReturn.map((recipe) => {
       return new RecipeResponse(recipe);
     });
   }
