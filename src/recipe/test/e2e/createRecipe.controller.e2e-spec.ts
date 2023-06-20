@@ -74,51 +74,17 @@ describe('Recipe Controller - Create', () => {
   });
 
   it('should create a recipe', async () => {
-    const payload = {
-      name: 'testName',
-      description: 'testDescription',
-      imageURL: 'testImageURL',
-      preparing: [
-        {
-          step: 'testStep',
-          order: 1,
-        },
-      ],
-      ingredients: [
-        {
-          name: 'testName',
-          amount: 'testAmount',
-        },
-      ],
-    };
     return request(app.getHttpServer())
       .post('/recipe')
-      .send(payload)
+      .send(correctPayload)
       .set('Authorization', `bearer ${accessToken}`)
       .expect(HttpStatus.CREATED);
   });
 
   it('should throw error on unathourized user', async () => {
-    const payload = {
-      name: 'testName',
-      description: 'testDescription',
-      imageURL: 'testImageURL',
-      preparing: [
-        {
-          step: 'testStep',
-          order: 1,
-        },
-      ],
-      ingredients: [
-        {
-          name: 'testName',
-          amount: 'testAmount',
-        },
-      ],
-    };
     return request(app.getHttpServer())
       .post('/recipe')
-      .send(payload)
+      .send(correctPayload)
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
