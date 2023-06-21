@@ -8,13 +8,14 @@ import { AuthModule } from '../../../auth/auth.module';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
+import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
 
 describe('Recipe Controller - Create', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let jwtService: JwtService;
   let accessToken: string;
-  const correctPayload = {
+  const correctPayload: CreateRecipeDTO = {
     name: 'testName',
     description: 'testDescription',
     imageURL: 'testImageURL',

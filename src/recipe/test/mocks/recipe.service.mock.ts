@@ -3,10 +3,17 @@ import { RecipeService } from '../../../recipe/recipe.service';
 import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
 import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
 import { FindAllRecipesQuery } from '../../../common/find-all-recipes-query';
+import {
+  Recipe,
+  RecipeIngredients,
+  RecipePreparationSteps,
+} from '@prisma/client';
 
 export class RecipeServiceMock implements Required<RecipeService> {
-  private generateRecipeResponse() {
-    const recipeToReturn = {
+  private generateRecipeResponse(): RecipeResponse {
+    const recipeToReturn: Recipe & { preparing: RecipePreparationSteps[] } & {
+      ingredients: RecipeIngredients[];
+    } = {
       id: 1,
       authorId: 1,
       name: 'testName',
