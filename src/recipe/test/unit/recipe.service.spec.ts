@@ -145,8 +145,8 @@ describe('Recipe Service', () => {
       {
         id: 2,
         authorId: 1,
-        name: 'Pasta',
-        description: 'Easy pasta recipe',
+        name: 'Dumplings',
+        description: 'Easy dumplings recipe',
         imageURL: 'imageURL',
         preparing: [{ id: 1, step: 'add flour', order: 1 }],
         ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
@@ -157,7 +157,11 @@ describe('Recipe Service', () => {
       .spyOn(prismaService.recipe, 'findMany')
       .mockResolvedValue(mockResult);
 
-    const result = await recipeService.findAllRecipes(5, 1);
+    const result = await recipeService.findAllRecipes({
+      name: 'Dump',
+      page: 1,
+      limit: 2,
+    });
 
     expect(prismaFindMany).toBeCalledTimes(1);
     expect(result[0].id).toBe(1);
@@ -170,44 +174,13 @@ describe('Recipe Service', () => {
     expect(result[0].ingredients[0].amount).toBe('spoon');
     expect(result[0].authorId).toBe(1);
     expect(result[1].id).toBe(2);
-    expect(result[1].name).toBe('Pasta');
-    expect(result[1].description).toBe('Easy pasta recipe');
+    expect(result[1].name).toBe('Dumplings');
+    expect(result[1].description).toBe('Easy dumplings recipe');
     expect(result[1].imageURL).toBe('imageURL');
     expect(result[1].preparing[0].step).toBe('add flour');
     expect(result[1].preparing[0].order).toBe(1);
     expect(result[1].ingredients[0].name).toBe('flour');
     expect(result[1].ingredients[0].amount).toBe('spoon');
     expect(result[1].authorId).toBe(1);
-  });
-
-  it('should find one recipe by name', async () => {
-    const mockResult = [
-      {
-        id: 1,
-        authorId: 1,
-        name: 'Dumplings',
-        description: 'Easy dumplings recipe',
-        imageURL: 'imageURL',
-        preparing: [{ id: 1, step: 'add flour', order: 1 }],
-        ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
-      },
-    ] as any;
-
-    const prismaFindMany = jest
-      .spyOn(prismaService.recipe, 'findMany')
-      .mockResolvedValue(mockResult);
-
-    const result = await recipeService.findRecipeByName('pas');
-
-    expect(prismaFindMany).toBeCalledTimes(1);
-    expect(result[0].id).toBe(1);
-    expect(result[0].name).toBe('Dumplings');
-    expect(result[0].description).toBe('Easy dumplings recipe');
-    expect(result[0].imageURL).toBe('imageURL');
-    expect(result[0].preparing[0].step).toBe('add flour');
-    expect(result[0].preparing[0].order).toBe(1);
-    expect(result[0].ingredients[0].name).toBe('flour');
-    expect(result[0].ingredients[0].amount).toBe('spoon');
-    expect(result[0].authorId).toBe(1);
   });
 });

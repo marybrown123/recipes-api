@@ -120,15 +120,4 @@ export class RecipeService {
       return new RecipeResponse(recipe);
     });
   }
-
-  async findRecipeByName(query: string): Promise<RecipeResponse[]> {
-    const recipesFromDb = await this.prisma.recipe.findMany({
-      where: { name: { contains: query } },
-      include: { preparing: true, ingredients: true },
-    });
-
-    return recipesFromDb.map((recipe) => {
-      return new RecipeResponse(recipe);
-    });
-  }
 }
