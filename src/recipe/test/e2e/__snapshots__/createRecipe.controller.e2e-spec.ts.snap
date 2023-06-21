@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Recipe Controller - Create should throw validation error when property description is 1 1`] = `
+Object {
+  "error": "Bad Request",
+  "message": Array [
+    "description must be a string",
+  ],
+  "statusCode": 400,
+}
+`;
+
+exports[`Recipe Controller - Create should throw validation error when property name is 1 1`] = `
+Object {
+  "error": "Bad Request",
+  "message": Array [
+    "name must be a string",
+  ],
+  "statusCode": 400,
+}
+`;
+
+exports[`Recipe Controller - Create should throw validation error when property preparing is 1 1`] = `
+Object {
+  "error": "Bad Request",
+  "message": Array [
+    "nested property preparing must be either object or array",
+  ],
+  "statusCode": 400,
+}
+`;

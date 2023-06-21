@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
 import { RecipeResponse } from './responses/recipe.response';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
+import { FindAllRecipesQuery } from 'src/common/find-all-recipes-query';
 
 @Injectable()
 export class RecipeService {
@@ -105,7 +106,7 @@ export class RecipeService {
     return new RecipeResponse(recipeFromDb);
   }
 
-  async findAllRecipes(query): Promise<RecipeResponse[]> {
+  async findAllRecipes(query: FindAllRecipesQuery): Promise<RecipeResponse[]> {
     const whereCodition = query.name ? { name: { contains: query.name } } : {};
     const recipesFromDb = await this.prisma.recipe.findMany({
       where: whereCodition,

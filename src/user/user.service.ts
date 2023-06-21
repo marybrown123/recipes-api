@@ -45,25 +45,26 @@ export class UserService {
     return hashedPassword;
   }
 
-  async generateAdminAccount(): Promise<boolean> {
-    const adminName = process.env.ADMIN_NAME;
-    const adminFromDb = await this.prisma.user.findUnique({
-      where: { name: adminName },
+  async generateAccount(
+    name: string,
+    password: string,
+    role: Role,
+  ): Promise<boolean> {
+    const userFromDb = await this.prisma.user.findUnique({
+      where: { name },
     });
 
-    if (adminFromDb) {
+    if (userFromDb) {
       return true;
     }
 
-    const hashedAdminPassword = await this.hashPassword(
-      process.env.ADMIN_PASSWORD,
-    );
+    const hashedUserPassword = await this.hashPassword(password);
 
     return !!(await this.prisma.user.create({
       data: {
-        name: adminName,
-        password: hashedAdminPassword,
-        roles: [Role.ADMIN],
+        name,
+        password: hashedUserPassword,
+        roles: [role],
       },
     }));
   }
