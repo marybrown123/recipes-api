@@ -17,14 +17,17 @@ export class IsUserAuthorGuard implements CanActivate {
     const recipeFromDb = await this.recipeService.findRecipeById(
       Number(request.params.id),
     );
+    try {
+      if (request.user.id !== recipeFromDb.authorId) {
+        throw new HttpException(
+          'User does not own this recipe',
+          HttpStatus.FORBIDDEN,
+        );
+      }
 
-    if (request.user.id !== recipeFromDb.authorId) {
-      throw new HttpException(
-        'User do not own this recipe',
-        HttpStatus.FORBIDDEN,
-      );
+      return true;
+    } catch (error) {
+      return false;
     }
-
-    return true;
   }
 }
