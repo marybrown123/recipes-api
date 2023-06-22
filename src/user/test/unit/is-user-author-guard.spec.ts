@@ -8,7 +8,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 describe('IsUserAuthorGuard', () => {
   let isUserAuthorGuard: IsUserAuthorGuard;
   let recipeService: RecipeService;
-  const mockFinRecipeByIdResult = {
+  const mockFindRecipeByIdResult = {
     id: 1,
     authorId: 1,
     name: 'testName',
@@ -65,7 +65,7 @@ describe('IsUserAuthorGuard', () => {
   it('should allow acces when condition is met', async () => {
     const findRecipeById = jest
       .spyOn(recipeService, 'findRecipeById')
-      .mockResolvedValue(mockFinRecipeByIdResult);
+      .mockResolvedValue(mockFindRecipeByIdResult);
 
     const result = await isUserAuthorGuard.canActivate(mockExecutionContext);
     expect(result).toBe(true);
@@ -75,7 +75,7 @@ describe('IsUserAuthorGuard', () => {
   it('should deny access when condition is not met', async () => {
     const findRecipeById = jest
       .spyOn(recipeService, 'findRecipeById')
-      .mockResolvedValue(mockFinRecipeByIdResult);
+      .mockResolvedValue(mockFindRecipeByIdResult);
 
     mockRequest.user.id = 2;
 
