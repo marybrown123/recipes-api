@@ -1,10 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { RecipeService } from '../../recipe/recipe.service';
 
 @Injectable()
@@ -19,10 +13,7 @@ export class IsUserAuthorGuard implements CanActivate {
     );
 
     if (request.user.id !== recipeFromDb.authorId) {
-      throw new HttpException(
-        'User do not own this recipe',
-        HttpStatus.FORBIDDEN,
-      );
+      return false;
     }
 
     return true;
