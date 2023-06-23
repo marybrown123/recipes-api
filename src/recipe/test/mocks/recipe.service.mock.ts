@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
@@ -8,6 +9,7 @@ import {
   RecipeIngredients,
   RecipePreparationSteps,
 } from '@prisma/client';
+import { NotFoundException } from '@nestjs/common';
 
 export class RecipeServiceMock implements Required<RecipeService> {
   private generateRecipeResponse(): RecipeResponse {
@@ -41,28 +43,27 @@ export class RecipeServiceMock implements Required<RecipeService> {
   }
 
   async createRecipe(
-    recipe: CreateRecipeDTO,
-    authorId: number,
+    _recipe: CreateRecipeDTO,
+    _authorId: number,
   ): Promise<RecipeResponse> {
     return this.generateRecipeResponse();
   }
 
   async updateRecipe(
-    recipeId: number,
-    newRecipe: UpdateRecipeDTO,
+    _recipeId: number,
+    _newRecipe: UpdateRecipeDTO,
   ): Promise<RecipeResponse> {
     return this.generateRecipeResponse();
   }
 
-  async findAllRecipes(query: FindAllRecipesQuery): Promise<RecipeResponse[]> {
+  async findAllRecipes(_query: FindAllRecipesQuery): Promise<RecipeResponse[]> {
     return [this.generateRecipeResponse()];
   }
 
-  async findRecipeById(recipeId: number): Promise<RecipeResponse> {
-    return this.generateRecipeResponse();
-  }
-
-  async findRecipeByName(query: string): Promise<RecipeResponse[]> {
-    return [this.generateRecipeResponse()];
+  async findRecipeById(_recipeId: number): Promise<RecipeResponse> {
+    const recipeResponse = this.generateRecipeResponse();
+    if (_recipeId === recipeResponse.id) {
+      return recipeResponse;
+    } else throw new NotFoundException();
   }
 }
