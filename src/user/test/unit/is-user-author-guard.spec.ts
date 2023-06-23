@@ -4,33 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext } from '@nestjs/common';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 
 describe('IsUserAuthorGuard', () => {
   let isUserAuthorGuard: IsUserAuthorGuard;
-  let recipeService: RecipeService;
-  const mockFindRecipeByIdResult = {
-    id: 1,
-    authorId: 1,
-    name: 'testName',
-    description: 'testDescription',
-    imageURL: 'testImageURL',
-    preparing: [
-      {
-        id: 1,
-        recipeId: 1,
-        step: 'testStep',
-        order: 1,
-      },
-    ],
-    ingredients: [
-      {
-        id: 1,
-        recipeId: 1,
-        name: 'testName',
-        amount: 'testAmount',
-      },
-    ],
-  };
   const mockRequest = {
     params: {
       id: 1,
@@ -53,34 +30,25 @@ describe('IsUserAuthorGuard', () => {
     }),
   } as ExecutionContext;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RecipeService, PrismaService],
-    }).compile();
-
-    recipeService = module.get<RecipeService>(RecipeService);
-    isUserAuthorGuard = new IsUserAuthorGuard(recipeService);
+      providers: [RecipeService, PrismaService, IsUserAuthorGuard],
+    })
+      .overrideProvider(RecipeService)
+      .useClass(RecipeServiceMock)
+      .compile();
+    isUserAuthorGuard = module.get<IsUserAuthorGuard>(IsUserAuthorGuard);
   });
 
-  it('should allow acces when condition is met', async () => {
-    const findRecipeById = jest
-      .spyOn(recipeService, 'findRecipeById')
-      .mockResolvedValue(mockFindRecipeByIdResult);
-
+  it('should allow acces when user is an author', async () => {
     const result = await isUserAuthorGuard.canActivate(mockExecutionContext);
     expect(result).toBe(true);
-    expect(findRecipeById).toBeCalledTimes(1);
   });
 
-  it('should deny access when condition is not met', async () => {
-    const findRecipeById = jest
-      .spyOn(recipeService, 'findRecipeById')
-      .mockResolvedValue(mockFindRecipeByIdResult);
-
+  it('should deny access when user is not an author', async () => {
     mockRequest.user.id = 2;
 
     const result = await isUserAuthorGuard.canActivate(mockExecutionContext);
     expect(result).toBe(false);
-    expect(findRecipeById).toBeCalledTimes(1);
   });
 });
