@@ -1,21 +1,27 @@
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  CanActivate,
+  HttpStatus,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-
-import { RecipeModule } from '../../recipe.module';
-import { RecipeService } from '../../recipe.service';
-import { AuthModule } from '../../../auth/auth.module';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
+import { RecipeModule } from '../../../recipe/recipe.module';
+import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
-import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
+import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
+import { AuthModule } from '../../../auth/auth.module';
+import { IsUserAuthorGuard } from '../../../user/guards/is-user-author.guard';
 
-describe('Recipe Controller - Create', () => {
+describe('Recipe Controller - Update', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let jwtService: JwtService;
   let accessToken: string;
-  const correctPayload: CreateRecipeDTO = {
+  const fakeGuard: CanActivate = { canActivate: jest.fn(() => true) };
+  const correctPayload: UpdateRecipeDTO = {
     name: 'testName',
     description: 'testDescription',
     imageURL: 'testImageURL',
@@ -54,13 +60,14 @@ describe('Recipe Controller - Create', () => {
       value: 1,
     },
   ];
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [RecipeModule, AuthModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)
+      .overrideGuard(IsUserAuthorGuard)
+      .useValue(fakeGuard)
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -82,17 +89,17 @@ describe('Recipe Controller - Create', () => {
     });
   });
 
-  it('should create a recipe', async () => {
+  it('should update a recipe', async () => {
     return request(app.getHttpServer())
-      .post('/recipe')
+      .patch('/recipe/1')
       .send(correctPayload)
       .set('Authorization', `bearer ${accessToken}`)
-      .expect(HttpStatus.CREATED);
+      .expect(HttpStatus.OK);
   });
 
   it('should throw error on unathourized user', async () => {
     return request(app.getHttpServer())
-      .post('/recipe')
+      .patch('/recipe/1')
       .send(correctPayload)
       .expect(HttpStatus.UNAUTHORIZED);
   });
@@ -102,7 +109,7 @@ describe('Recipe Controller - Create', () => {
     uncorrectPayload[object.property] = object.value;
     return it(`should throw validation error when property ${object.property} is ${object.value}`, async () => {
       return request(app.getHttpServer())
-        .post('/recipe')
+        .patch('/recipe/1')
         .send(uncorrectPayload)
         .set('Authorization', `bearer ${accessToken}`)
         .expect(HttpStatus.BAD_REQUEST)

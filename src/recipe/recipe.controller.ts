@@ -74,6 +74,7 @@ export class RecipeController {
   }
 
   @Get('/:id')
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Get one recipe by id' })
   @ApiResponse({ type: RecipeResponse })
   @ApiParam({ name: 'id', required: true })
