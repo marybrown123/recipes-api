@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`User Controller - Create should throw validation error when property name is 1 1`] = `
+exports[`User Controller - Create should throw validation error when name is number 1`] = `
 Object {
   "error": "Bad Request",
   "message": Array [
@@ -10,7 +10,7 @@ Object {
 }
 `;
 
-exports[`User Controller - Create should throw validation error when property password is 1 1`] = `
+exports[`User Controller - Create should throw validation error when password is number 1`] = `
 Object {
   "error": "Bad Request",
   "message": Array [
@@ -21,7 +21,7 @@ Object {
 }
 `;
 
-exports[`User Controller - Create should throw validation error when property password is short 1`] = `
+exports[`User Controller - Create should throw validation error when password is shorter than 8 characters 1`] = `
 Object {
   "error": "Bad Request",
   "message": Array [

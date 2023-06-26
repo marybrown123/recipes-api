@@ -8,6 +8,7 @@ import { UserModule } from '../../../user/user.module';
 
 describe('User Controller - Create', () => {
   let app: INestApplication;
+  const path = '/user/signup';
 
   const correctPayload: CreateUserDTO = {
     name: 'testName',
@@ -18,14 +19,18 @@ describe('User Controller - Create', () => {
     {
       property: 'name',
       value: 1,
+      description: 'should throw validation error when name is number',
     },
     {
       property: 'password',
       value: 1,
+      description: 'should throw validation error when password is number',
     },
     {
       property: 'password',
       value: 'short',
+      description:
+        'should throw validation error when password is shorter than 8 characters',
     },
   ];
 
@@ -44,17 +49,21 @@ describe('User Controller - Create', () => {
 
   it('should create a user', async () => {
     return request(app.getHttpServer())
-      .post('/user/signup')
+      .post(path)
       .send(correctPayload)
-      .expect(HttpStatus.CREATED);
+      .expect(HttpStatus.CREATED)
+      .then((res) => {
+        expect(res.body.name).toBe('testName');
+        expect(res.body.password).toBe(undefined);
+      });
   });
 
   validationTestStructrue.map((object) => {
     const uncorrectPayload = { ...correctPayload };
     uncorrectPayload[object.property] = object.value;
-    return it(`should throw validation error when property ${object.property} is ${object.value}`, async () => {
+    return it(object.description, async () => {
       return request(app.getHttpServer())
-        .post('/user/signup')
+        .post(path)
         .send(uncorrectPayload)
         .expect(HttpStatus.BAD_REQUEST)
         .then((res) => {
