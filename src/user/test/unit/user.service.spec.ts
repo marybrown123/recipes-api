@@ -93,7 +93,11 @@ describe('UserService', () => {
       .spyOn(prismaService.user, 'create')
       .mockResolvedValue(mockPrismaCreateResult);
 
-    const result = await userService.generateAdminAccount();
+    const result = await userService.generateAccount(
+      'admin123',
+      'admin456',
+      Role.ADMIN,
+    );
 
     expect(prismaFindUnique).toBeCalledTimes(1);
     expect(prismaCreate).toBeCalledTimes(1);
