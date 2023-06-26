@@ -60,10 +60,7 @@ export class RecipeServiceMock implements Required<RecipeService> {
     return [this.generateRecipeResponse()];
   }
 
-  async findRecipeById(_recipeId: number): Promise<RecipeResponse> {
-    const recipeResponse = this.generateRecipeResponse();
-    if (_recipeId === recipeResponse.id) {
-      return recipeResponse;
-    } else throw new NotFoundException();
+  async findRecipeById(recipeId: number): Promise<RecipeResponse> {
+    return this.generateRecipeResponse();
   }
 }

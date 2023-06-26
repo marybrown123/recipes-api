@@ -1,4 +1,8 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import {
+  HttpStatus,
+  INestApplication,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -13,6 +17,7 @@ describe('Recipe Controller - Find By Id', () => {
   let prisma: PrismaService;
   let jwtService: JwtService;
   let accessToken: string;
+  let recipeService: RecipeService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -26,6 +31,7 @@ describe('Recipe Controller - Find By Id', () => {
     await app.init();
     prisma = moduleFixture.get<PrismaService>(PrismaService);
     jwtService = moduleFixture.get<JwtService>(JwtService);
+    recipeService = moduleFixture.get<RecipeService>(RecipeService);
   });
 
   beforeEach(async () => {
@@ -48,6 +54,9 @@ describe('Recipe Controller - Find By Id', () => {
   });
 
   it('should throw error when recipe is not found', async () => {
+    jest.spyOn(recipeService, 'findRecipeById').mockImplementation(() => {
+      throw new NotFoundException();
+    });
     return request(app.getHttpServer())
       .get('/recipe/2')
       .set('Authorization', `bearer ${accessToken}`)
