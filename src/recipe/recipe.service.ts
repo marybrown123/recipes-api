@@ -3,11 +3,13 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
 import { RecipeResponse } from './responses/recipe.response';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
-import { FindAllRecipesQuery } from 'src/common/find-all-recipes-query';
+import { FindAllRecipesQuery } from '../common/find-all-recipes-query';
+import { QueryBus } from '@nestjs/cqrs';
+import { FindRecipeByIdQuery } from '../recipe/queries/find-recipe-by-id.query';
 
 @Injectable()
 export class RecipeService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private queryBus: QueryBus) {}
 
   async createRecipe(
     recipe: CreateRecipeDTO,
@@ -86,24 +88,26 @@ export class RecipeService {
   }
 
   async findRecipeById(recipeId: number): Promise<RecipeResponse> {
-    const recipeFromDb = await this.prisma.recipe.findUnique({
-      where: {
-        id: recipeId,
-      },
-      include: {
-        preparing: true,
-        ingredients: true,
-      },
-    });
+    // const recipeFromDb = await this.prisma.recipe.findUnique({
+    //   where: {
+    //     id: recipeId,
+    //   },
+    //   include: {
+    //     preparing: true,
+    //     ingredients: true,
+    //   },
+    // });
 
-    if (!recipeFromDb) {
-      throw new HttpException(
-        'There is no recipe with this id',
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    // if (!recipeFromDb) {
+    //   throw new HttpException(
+    //     'There is no recipe with this id',
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
 
-    return new RecipeResponse(recipeFromDb);
+    // return new RecipeResponse(recipeFromDb);
+
+    return this.queryBus.execute(new FindRecipeByIdQuery(recipeId));
   }
 
   async findAllRecipes(query: FindAllRecipesQuery): Promise<RecipeResponse[]> {
