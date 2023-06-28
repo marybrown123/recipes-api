@@ -19,18 +19,17 @@ describe('User Controller - Create', () => {
     {
       property: 'name',
       value: 1,
-      description: 'should throw validation error when name is number',
+      description: 'is number',
     },
     {
       property: 'password',
       value: 1,
-      description: 'should throw validation error when password is number',
+      description: 'is number',
     },
     {
       property: 'password',
       value: 'short',
-      description:
-        'should throw validation error when password is shorter than 8 characters',
+      description: 'is shorter than 8 characters',
     },
   ];
 
@@ -53,15 +52,16 @@ describe('User Controller - Create', () => {
       .send(correctPayload)
       .expect(HttpStatus.CREATED)
       .then((res) => {
-        expect(res.body.name).toBe('testName');
-        expect(res.body.password).toBe(undefined);
+        console.log(res.body);
+        expect(res.body.name).toBe(correctPayload.name);
+        expect(res.body.password).not.toBeDefined();
       });
   });
 
   validationTestStructrue.map((object) => {
     const uncorrectPayload = { ...correctPayload };
     uncorrectPayload[object.property] = object.value;
-    return it(object.description, async () => {
+    return it(`should throw validation error when ${object.property} ${object.description}`, async () => {
       return request(app.getHttpServer())
         .post(path)
         .send(uncorrectPayload)
