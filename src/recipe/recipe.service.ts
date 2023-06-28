@@ -88,25 +88,6 @@ export class RecipeService {
   }
 
   async findRecipeById(recipeId: number): Promise<RecipeResponse> {
-    // const recipeFromDb = await this.prisma.recipe.findUnique({
-    //   where: {
-    //     id: recipeId,
-    //   },
-    //   include: {
-    //     preparing: true,
-    //     ingredients: true,
-    //   },
-    // });
-
-    // if (!recipeFromDb) {
-    //   throw new HttpException(
-    //     'There is no recipe with this id',
-    //     HttpStatus.NOT_FOUND,
-    //   );
-    // }
-
-    // return new RecipeResponse(recipeFromDb);
-
     return this.queryBus.execute(new FindRecipeByIdQuery(recipeId));
   }
 
