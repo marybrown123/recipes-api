@@ -25,7 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
-import { FindAllRecipesQuery } from '../common/find-all-recipes-query';
+import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -68,7 +68,7 @@ export class RecipeController {
     description: 'User is not an admin',
   })
   async getAllRecipes(
-    @Query() query: FindAllRecipesQuery,
+    @Query() query: FindAllRecipesDTO,
   ): Promise<RecipeResponse[]> {
     return this.recipeService.findAllRecipes(query);
   }
