@@ -5,7 +5,7 @@ import { RecipeResponse } from './responses/recipe.response';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
 import { FindAllRecipesQuery } from '../common/find-all-recipes-query';
 import { QueryBus } from '@nestjs/cqrs';
-import { FindRecipeByIdQuery } from '../recipe/queries/find-recipe-by-id.query';
+import { FindRecipeByIdQuery } from './queries/impl/findRecipeById.query';
 
 @Injectable()
 export class RecipeService {
