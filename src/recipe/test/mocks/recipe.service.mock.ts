@@ -3,7 +3,7 @@ import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
 import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
-import { FindAllRecipesQuery } from '../../../common/find-all-recipes-query';
+import { FindAllRecipesDTO } from '../../DTOs/find-all-recipes-query';
 import {
   Recipe,
   RecipeIngredients,
@@ -56,7 +56,7 @@ export class RecipeServiceMock implements Required<RecipeService> {
     return this.generateRecipeResponse();
   }
 
-  async findAllRecipes(_query: FindAllRecipesQuery): Promise<RecipeResponse[]> {
+  async findAllRecipes(_query: FindAllRecipesDTO): Promise<RecipeResponse[]> {
     return [this.generateRecipeResponse()];
   }
 
