@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RecipeResponse } from '../recipe/responses/recipe.response';
 import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
@@ -14,9 +14,7 @@ export class RecipeDAO {
   ): Promise<RecipeResponse> {
     const newRecipe = await this.prismaService.recipe.create({
       data: {
-        name: recipe.name,
-        description: recipe.description,
-        imageURL: recipe.imageURL,
+        ...recipe,
         author: {
           connect: {
             id: authorId,
@@ -55,9 +53,7 @@ export class RecipeDAO {
     const updatedRecipe = await this.prismaService.recipe.update({
       where: { id: recipeId },
       data: {
-        name: newRecipe.name,
-        description: newRecipe.description,
-        imageURL: newRecipe.imageURL,
+        ...newRecipe,
         preparing: { create: newRecipe.preparing },
         ingredients: { create: newRecipe.ingredients },
       },
@@ -80,10 +76,6 @@ export class RecipeDAO {
         ingredients: true,
       },
     });
-
-    if (!recipeFromDb) {
-      throw new NotFoundException();
-    }
 
     return new RecipeResponse(recipeFromDb);
   }

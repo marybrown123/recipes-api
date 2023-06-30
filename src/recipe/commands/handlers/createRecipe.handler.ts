@@ -9,6 +9,6 @@ export class CreateRecipeHandler
   constructor(private recipeDAO: RecipeDAO) {}
   async execute(command: CreateRecipeCommand) {
     const { recipe, authorId } = command;
-    return await this.recipeDAO.createRecipe(recipe, authorId);
+    return this.recipeDAO.createRecipe(recipe, authorId);
   }
 }

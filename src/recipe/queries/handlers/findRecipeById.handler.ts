@@ -10,6 +10,6 @@ export class FindRecipeByIdHandler
 
   async execute(query: FindRecipeByIdQuery) {
     const { recipeId } = query;
-    return await this.recipeDAO.findRecipeById(recipeId);
+    return this.recipeDAO.findRecipeById(recipeId);
   }
 }

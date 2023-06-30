@@ -10,6 +10,6 @@ export class FindAllRecipesHandler
 
   async execute(query: FindAllRecipesQuery) {
     const { queryData } = query;
-    return await this.recipeDAO.findAllRecipes(queryData);
+    return this.recipeDAO.findAllRecipes(queryData);
   }
 }
