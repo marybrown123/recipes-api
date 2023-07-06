@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { FindRecipeByIdQuery } from '../impl/findRecipeById.query';
-import { RecipeDAO } from 'src/recipe/recipe.dao';
+import { RecipeDAO } from '../../../recipe/recipe.dao';
 
 @QueryHandler(FindRecipeByIdQuery)
 export class FindRecipeByIdHandler

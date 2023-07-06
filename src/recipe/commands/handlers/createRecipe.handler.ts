@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CreateRecipeCommand } from 'src/recipe/commands/impl/createRecipe.command';
-import { RecipeDAO } from 'src/recipe/recipe.dao';
+import { CreateRecipeCommand } from '../../../recipe/commands/impl/createRecipe.command';
+import { RecipeDAO } from '../../../recipe/recipe.dao';
 
 @CommandHandler(CreateRecipeCommand)
 export class CreateRecipeHandler

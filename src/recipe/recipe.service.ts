@@ -5,9 +5,9 @@ import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
 import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { FindRecipeByIdQuery } from './queries/impl/findRecipeById.query';
-import { CreateRecipeCommand } from 'src/recipe/commands/impl/createRecipe.command';
-import { UpdateRecipeCommand } from 'src/recipe/commands/impl/updateRecipe.command';
-import { FindAllRecipesQuery } from 'src/recipe/queries/impl/findAllRecipes.query';
+import { CreateRecipeCommand } from '../recipe/commands/impl/createRecipe.command';
+import { UpdateRecipeCommand } from '../recipe/commands/impl/updateRecipe.command';
+import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query';
 
 @Injectable()
 export class RecipeService {
