@@ -1,7 +1,7 @@
-import { PrismaService } from '../../../prisma/prisma.service';
 import { RecipeService } from '../../recipe.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 const recipe = {
   name: 'Dumplings',
@@ -18,7 +18,8 @@ const newRecipe = {
 
 describe('Recipe Service', () => {
   let recipeService: RecipeService;
-  let prismaService: PrismaService;
+  let commandBus: CommandBus;
+  let queryBus: QueryBus;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,7 +27,8 @@ describe('Recipe Service', () => {
     }).compile();
 
     recipeService = module.get<RecipeService>(RecipeService);
-    prismaService = module.get<PrismaService>(PrismaService);
+    commandBus = module.get<CommandBus>(CommandBus);
+    queryBus = module.get<QueryBus>(QueryBus);
   });
 
   it('should create a recipe', async () => {
@@ -40,14 +42,13 @@ describe('Recipe Service', () => {
       ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
     } as any;
 
-    const prismaCreate = jest
-      .spyOn(prismaService.recipe, 'create')
+    const commandBusExecuteCreate = jest
+      .spyOn(commandBus, 'execute')
       .mockResolvedValue(mockResult);
 
     const result = await recipeService.createRecipe(recipe, 1);
 
-    expect(prismaCreate).toBeCalledTimes(1);
-
+    expect(commandBusExecuteCreate).toBeCalledTimes(1);
     expect(result.id).toBe(1);
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
@@ -57,10 +58,12 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(result.authorId).toBe(1);
+
+    commandBusExecuteCreate.mockClear();
   });
 
   it('should update a recipe', async () => {
-    const mockPrismaUpdateResult = {
+    const mockResult = {
       id: 1,
       authorId: 1,
       name: 'Pasta',
@@ -70,28 +73,13 @@ describe('Recipe Service', () => {
       ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
     } as any;
 
-    const mockPrismaFindUniqueResult = {
-      id: 1,
-      authorId: 1,
-      name: 'Dumplings',
-      description: 'Easy dumplings recipe',
-      imageURL: 'imageURL',
-      preparing: [{ id: 1, step: 'add flour', order: 1 }],
-      ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
-    } as any;
-
-    const prismaFindUnique = jest
-      .spyOn(prismaService.recipe, 'findUnique')
-      .mockResolvedValue(mockPrismaFindUniqueResult);
-
-    const prismaUpdate = jest
-      .spyOn(prismaService.recipe, 'update')
-      .mockResolvedValue(mockPrismaUpdateResult);
+    const commandBusExecuteUpdate = jest
+      .spyOn(commandBus, 'execute')
+      .mockResolvedValue(mockResult);
 
     const result = await recipeService.updateRecipe(1, newRecipe);
 
-    expect(prismaUpdate).toBeCalledTimes(1);
-    expect(prismaFindUnique).toBeCalledTimes(1);
+    expect(commandBusExecuteUpdate).toBeCalledTimes(1);
     expect(result.id).toBe(1);
     expect(result.name).toBe('Pasta');
     expect(result.description).toBe('Easy pasta recipe');
@@ -101,6 +89,8 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(result.authorId).toBe(1);
+
+    commandBusExecuteUpdate.mockClear();
   });
 
   it('should find one recipe by id', async () => {
@@ -114,13 +104,13 @@ describe('Recipe Service', () => {
       ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
     } as any;
 
-    const prismaFindUnique = jest
-      .spyOn(prismaService.recipe, 'findUnique')
+    const queryBusExecuteFindOne = jest
+      .spyOn(queryBus, 'execute')
       .mockResolvedValue(mockResult);
 
     const result = await recipeService.findRecipeById(1);
 
-    expect(prismaFindUnique).toBeCalledTimes(1);
+    expect(queryBusExecuteFindOne).toBeCalledTimes(1);
     expect(result.id).toBe(1);
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
@@ -130,6 +120,8 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(result.authorId).toBe(1);
+
+    queryBusExecuteFindOne.mockClear();
   });
 
   it('should list all recipes', async () => {
@@ -154,8 +146,8 @@ describe('Recipe Service', () => {
       } as any,
     ];
 
-    const prismaFindMany = jest
-      .spyOn(prismaService.recipe, 'findMany')
+    const queryBusExecuteFindMany = jest
+      .spyOn(queryBus, 'execute')
       .mockResolvedValue(mockResult);
 
     const result = await recipeService.findAllRecipes({
@@ -164,7 +156,7 @@ describe('Recipe Service', () => {
       limit: 2,
     });
 
-    expect(prismaFindMany).toBeCalledTimes(1);
+    expect(queryBusExecuteFindMany).toBeCalledTimes(1);
     expect(result[0].id).toBe(1);
     expect(result[0].name).toBe('Dumplings');
     expect(result[0].description).toBe('Easy dumplings recipe');
@@ -183,5 +175,7 @@ describe('Recipe Service', () => {
     expect(result[1].ingredients[0].name).toBe('flour');
     expect(result[1].ingredients[0].amount).toBe('spoon');
     expect(result[1].authorId).toBe(1);
+
+    queryBusExecuteFindMany.mockClear();
   });
 });
