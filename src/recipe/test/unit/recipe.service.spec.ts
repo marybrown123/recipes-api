@@ -31,6 +31,10 @@ describe('Recipe Service', () => {
     queryBus = module.get<QueryBus>(QueryBus);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should create a recipe', async () => {
     const mockResult = {
       id: 1,
@@ -58,8 +62,6 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(result.authorId).toBe(1);
-
-    commandBusExecuteCreate.mockClear();
   });
 
   it('should update a recipe', async () => {
@@ -89,8 +91,6 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(result.authorId).toBe(1);
-
-    commandBusExecuteUpdate.mockClear();
   });
 
   it('should find one recipe by id', async () => {
@@ -120,8 +120,6 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(result.authorId).toBe(1);
-
-    queryBusExecuteFindOne.mockClear();
   });
 
   it('should list all recipes', async () => {
@@ -175,7 +173,5 @@ describe('Recipe Service', () => {
     expect(result[1].ingredients[0].name).toBe('flour');
     expect(result[1].ingredients[0].amount).toBe('spoon');
     expect(result[1].authorId).toBe(1);
-
-    queryBusExecuteFindMany.mockClear();
   });
 });
