@@ -49,23 +49,23 @@ export class UserService {
     name: string,
     password: string,
     role: Role,
-  ): Promise<boolean> {
+  ): Promise<User> {
     const userFromDb = await this.prisma.user.findUnique({
       where: { name },
     });
 
     if (userFromDb) {
-      return true;
+      return userFromDb;
     }
 
     const hashedUserPassword = await this.hashPassword(password);
 
-    return !!(await this.prisma.user.create({
+    return await this.prisma.user.create({
       data: {
         name,
         password: hashedUserPassword,
         roles: [role],
       },
-    }));
+    });
   }
 }

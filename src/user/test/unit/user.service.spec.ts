@@ -102,6 +102,7 @@ describe('UserService', () => {
     expect(prismaFindUnique).toBeCalledTimes(1);
     expect(prismaCreate).toBeCalledTimes(1);
     expect(hashPassword).toBeCalledTimes(1);
-    expect(result).toBe(true);
+    expect(result.id).toBe(2);
+    expect(result.name).toBe('admin123');
   });
 });

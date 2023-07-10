@@ -34,7 +34,12 @@ export class UserServiceMock implements Required<UserService> {
     _name: string,
     _password: string,
     _role: Role,
-  ): Promise<boolean> {
-    return true;
+  ): Promise<User> {
+    return {
+      id: 1,
+      name: 'testName',
+      password: 'testPassword',
+      roles: [Role.USER],
+    };
   }
 }

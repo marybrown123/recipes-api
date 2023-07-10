@@ -1,14 +1,17 @@
 import { RecipeService } from '../../recipe.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
+import { UserService } from '../../../user/user.service';
+import { Role, User } from '@prisma/client';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 const recipe = {
   name: 'Dumplings',
   description: 'Easy dumplings recipe',
   imageURL: 'imageURL',
-  preparing: [{ id: 1, step: 'add flour', order: 1 }],
-  ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
+  preparing: [{ step: 'add flour', order: 1 }],
+  ingredients: [{ name: 'flour', amount: 'spoon' }],
 };
 
 const newRecipe = {
@@ -20,40 +23,44 @@ describe('Recipe Service', () => {
   let recipeService: RecipeService;
   let commandBus: CommandBus;
   let queryBus: QueryBus;
+  let userService: UserService;
+  let testUser: User;
+  let prismaService: PrismaService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, CqrsModule],
     }).compile();
 
+    await module.createNestApplication().init();
     recipeService = module.get<RecipeService>(RecipeService);
     commandBus = module.get<CommandBus>(CommandBus);
     queryBus = module.get<QueryBus>(QueryBus);
+    userService = module.get<UserService>(UserService);
+    prismaService = module.get<PrismaService>(PrismaService);
+
+    testUser = await userService.generateAccount(
+      process.env.TEST_NAME,
+      process.env.TEST_PASSWORD,
+      Role.USER,
+    );
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
+  afterAll(async () => {
+    await prismaService.recipe.deleteMany({});
+    await prismaService.user.deleteMany();
+  });
+
   it('should create a recipe', async () => {
-    const mockResult = {
-      id: 1,
-      authorId: 1,
-      name: 'Dumplings',
-      description: 'Easy dumplings recipe',
-      imageURL: 'imageURL',
-      preparing: [{ id: 1, step: 'add flour', order: 1 }],
-      ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
-    } as any;
+    const commandBusExecuteCreate = jest.spyOn(commandBus, 'execute');
 
-    const commandBusExecuteCreate = jest
-      .spyOn(commandBus, 'execute')
-      .mockResolvedValue(mockResult);
-
-    const result = await recipeService.createRecipe(recipe, 1);
+    const result = await recipeService.createRecipe(recipe, testUser.id);
 
     expect(commandBusExecuteCreate).toBeCalledTimes(1);
-    expect(result.id).toBe(1);
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
     expect(result.imageURL).toBe('imageURL');
