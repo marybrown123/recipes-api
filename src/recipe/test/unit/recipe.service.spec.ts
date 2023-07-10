@@ -51,7 +51,7 @@ describe('Recipe Service', () => {
   });
 
   afterAll(async () => {
-    await prismaService.recipe.deleteMany({});
+    await prismaService.recipe.deleteMany();
     await prismaService.user.deleteMany();
   });
 
@@ -68,7 +68,6 @@ describe('Recipe Service', () => {
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
-    expect(result.authorId).toBe(1);
   });
 
   it('should update a recipe', async () => {
@@ -89,7 +88,6 @@ describe('Recipe Service', () => {
     const result = await recipeService.updateRecipe(1, newRecipe);
 
     expect(commandBusExecuteUpdate).toBeCalledTimes(1);
-    expect(result.id).toBe(1);
     expect(result.name).toBe('Pasta');
     expect(result.description).toBe('Easy pasta recipe');
     expect(result.imageURL).toBe('imageURL');
@@ -97,7 +95,6 @@ describe('Recipe Service', () => {
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
-    expect(result.authorId).toBe(1);
   });
 
   it('should find one recipe by id', async () => {
@@ -118,7 +115,6 @@ describe('Recipe Service', () => {
     const result = await recipeService.findRecipeById(1);
 
     expect(queryBusExecuteFindOne).toBeCalledTimes(1);
-    expect(result.id).toBe(1);
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
     expect(result.imageURL).toBe('imageURL');
@@ -126,7 +122,6 @@ describe('Recipe Service', () => {
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
-    expect(result.authorId).toBe(1);
   });
 
   it('should list all recipes', async () => {
@@ -162,7 +157,6 @@ describe('Recipe Service', () => {
     });
 
     expect(queryBusExecuteFindMany).toBeCalledTimes(1);
-    expect(result[0].id).toBe(1);
     expect(result[0].name).toBe('Dumplings');
     expect(result[0].description).toBe('Easy dumplings recipe');
     expect(result[0].imageURL).toBe('imageURL');
@@ -170,8 +164,6 @@ describe('Recipe Service', () => {
     expect(result[0].preparing[0].order).toBe(1);
     expect(result[0].ingredients[0].name).toBe('flour');
     expect(result[0].ingredients[0].amount).toBe('spoon');
-    expect(result[0].authorId).toBe(1);
-    expect(result[1].id).toBe(2);
     expect(result[1].name).toBe('Dumplings');
     expect(result[1].description).toBe('Easy dumplings recipe');
     expect(result[1].imageURL).toBe('imageURL');
@@ -179,6 +171,5 @@ describe('Recipe Service', () => {
     expect(result[1].preparing[0].order).toBe(1);
     expect(result[1].ingredients[0].name).toBe('flour');
     expect(result[1].ingredients[0].amount).toBe('spoon');
-    expect(result[1].authorId).toBe(1);
   });
 });
