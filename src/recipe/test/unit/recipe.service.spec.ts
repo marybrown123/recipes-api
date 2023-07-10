@@ -5,6 +5,7 @@ import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 
 const recipe = {
   name: 'Dumplings',
@@ -26,6 +27,7 @@ describe('Recipe Service', () => {
   let userService: UserService;
   let testUser: User;
   let prismaService: PrismaService;
+  let recipeFromDb: RecipeResponse;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,41 +53,31 @@ describe('Recipe Service', () => {
   });
 
   afterAll(async () => {
-    await prismaService.recipe.deleteMany();
-    await prismaService.user.deleteMany();
+    await Promise.all([
+      prismaService.recipe.deleteMany(),
+      prismaService.user.deleteMany(),
+    ]);
   });
 
   it('should create a recipe', async () => {
     const commandBusExecuteCreate = jest.spyOn(commandBus, 'execute');
 
-    const result = await recipeService.createRecipe(recipe, testUser.id);
+    recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
 
     expect(commandBusExecuteCreate).toBeCalledTimes(1);
-    expect(result.name).toBe('Dumplings');
-    expect(result.description).toBe('Easy dumplings recipe');
-    expect(result.imageURL).toBe('imageURL');
-    expect(result.preparing[0].step).toBe('add flour');
-    expect(result.preparing[0].order).toBe(1);
-    expect(result.ingredients[0].name).toBe('flour');
-    expect(result.ingredients[0].amount).toBe('spoon');
+    expect(recipeFromDb.name).toBe('Dumplings');
+    expect(recipeFromDb.description).toBe('Easy dumplings recipe');
+    expect(recipeFromDb.imageURL).toBe('imageURL');
+    expect(recipeFromDb.preparing[0].step).toBe('add flour');
+    expect(recipeFromDb.preparing[0].order).toBe(1);
+    expect(recipeFromDb.ingredients[0].name).toBe('flour');
+    expect(recipeFromDb.ingredients[0].amount).toBe('spoon');
   });
 
   it('should update a recipe', async () => {
-    const mockResult = {
-      id: 1,
-      authorId: 1,
-      name: 'Pasta',
-      description: 'Easy pasta recipe',
-      imageURL: 'imageURL',
-      preparing: [{ id: 1, step: 'add flour', order: 1 }],
-      ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
-    } as any;
+    const commandBusExecuteUpdate = jest.spyOn(commandBus, 'execute');
 
-    const commandBusExecuteUpdate = jest
-      .spyOn(commandBus, 'execute')
-      .mockResolvedValue(mockResult);
-
-    const result = await recipeService.updateRecipe(1, newRecipe);
+    const result = await recipeService.updateRecipe(recipeFromDb.id, newRecipe);
 
     expect(commandBusExecuteUpdate).toBeCalledTimes(1);
     expect(result.name).toBe('Pasta');
@@ -98,25 +90,13 @@ describe('Recipe Service', () => {
   });
 
   it('should find one recipe by id', async () => {
-    const mockResult = {
-      id: 1,
-      authorId: 1,
-      name: 'Dumplings',
-      description: 'Easy dumplings recipe',
-      imageURL: 'imageURL',
-      preparing: [{ id: 1, step: 'add flour', order: 1 }],
-      ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
-    } as any;
+    const queryBusExecuteFindOne = jest.spyOn(queryBus, 'execute');
 
-    const queryBusExecuteFindOne = jest
-      .spyOn(queryBus, 'execute')
-      .mockResolvedValue(mockResult);
-
-    const result = await recipeService.findRecipeById(1);
+    const result = await recipeService.findRecipeById(recipeFromDb.id);
 
     expect(queryBusExecuteFindOne).toBeCalledTimes(1);
-    expect(result.name).toBe('Dumplings');
-    expect(result.description).toBe('Easy dumplings recipe');
+    expect(result.name).toBe('Pasta');
+    expect(result.description).toBe('Easy pasta recipe');
     expect(result.imageURL).toBe('imageURL');
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
@@ -125,51 +105,23 @@ describe('Recipe Service', () => {
   });
 
   it('should list all recipes', async () => {
-    const mockResult = [
-      {
-        id: 1,
-        authorId: 1,
-        name: 'Dumplings',
-        description: 'Easy dumplings recipe',
-        imageURL: 'imageURL',
-        preparing: [{ id: 1, step: 'add flour', order: 1 }],
-        ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
-      } as any,
-      {
-        id: 2,
-        authorId: 1,
-        name: 'Dumplings',
-        description: 'Easy dumplings recipe',
-        imageURL: 'imageURL',
-        preparing: [{ id: 1, step: 'add flour', order: 1 }],
-        ingredients: [{ id: 1, name: 'flour', amount: 'spoon' }],
-      } as any,
-    ];
-
-    const queryBusExecuteFindMany = jest
-      .spyOn(queryBus, 'execute')
-      .mockResolvedValue(mockResult);
+    const queryBusExecuteFindMany = jest.spyOn(queryBus, 'execute');
 
     const result = await recipeService.findAllRecipes({
-      name: 'Dump',
+      name: 'Pas',
       page: 1,
       limit: 2,
     });
 
+    console.log(result);
+
     expect(queryBusExecuteFindMany).toBeCalledTimes(1);
-    expect(result[0].name).toBe('Dumplings');
-    expect(result[0].description).toBe('Easy dumplings recipe');
+    expect(result[0].name).toBe('Pasta');
+    expect(result[0].description).toBe('Easy pasta recipe');
     expect(result[0].imageURL).toBe('imageURL');
     expect(result[0].preparing[0].step).toBe('add flour');
     expect(result[0].preparing[0].order).toBe(1);
     expect(result[0].ingredients[0].name).toBe('flour');
     expect(result[0].ingredients[0].amount).toBe('spoon');
-    expect(result[1].name).toBe('Dumplings');
-    expect(result[1].description).toBe('Easy dumplings recipe');
-    expect(result[1].imageURL).toBe('imageURL');
-    expect(result[1].preparing[0].step).toBe('add flour');
-    expect(result[1].preparing[0].order).toBe(1);
-    expect(result[1].ingredients[0].name).toBe('flour');
-    expect(result[1].ingredients[0].amount).toBe('spoon');
   });
 });
