@@ -1,4 +1,4 @@
-import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
+import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
 
 export class CreateRecipeCommand {
   constructor(

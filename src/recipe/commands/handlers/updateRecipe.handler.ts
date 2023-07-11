@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UpdateRecipeCommand } from 'src/recipe/commands/impl/updateRecipe.command';
-import { RecipeDAO } from 'src/recipe/recipe.dao';
+import { UpdateRecipeCommand } from '../../../recipe/commands/impl/updateRecipe.command';
+import { RecipeDAO } from '../../../recipe/recipe.dao';
 
 @CommandHandler(UpdateRecipeCommand)
 export class UpdateRecipeHandler

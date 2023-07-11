@@ -1,4 +1,4 @@
-import { UpdateRecipeDTO } from 'src/recipe/DTOs/update-recipe.dto';
+import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
 
 export class UpdateRecipeCommand {
   constructor(
