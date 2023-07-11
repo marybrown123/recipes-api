@@ -46,15 +46,13 @@ describe('Recipe Service', () => {
     );
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await prismaService.recipe.deleteMany();
   });
 
   afterAll(async () => {
-    await Promise.all([
-      prismaService.recipe.deleteMany(),
-      prismaService.user.deleteMany(),
-    ]);
+    await prismaService.user.deleteMany();
   });
 
   it('should create a recipe', async () => {
