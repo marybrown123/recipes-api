@@ -5,7 +5,6 @@ import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 
 const recipe = {
   name: 'Dumplings',
@@ -27,7 +26,6 @@ describe('Recipe Service', () => {
   let userService: UserService;
   let testUser: User;
   let prismaService: PrismaService;
-  let recipeFromDb: RecipeResponse;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -62,24 +60,25 @@ describe('Recipe Service', () => {
   it('should create a recipe', async () => {
     const commandBusExecuteCreate = jest.spyOn(commandBus, 'execute');
 
-    recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
+    const result = await recipeService.createRecipe(recipe, testUser.id);
 
     expect(commandBusExecuteCreate).toBeCalledTimes(1);
-    expect(recipeFromDb.name).toBe('Dumplings');
-    expect(recipeFromDb.description).toBe('Easy dumplings recipe');
-    expect(recipeFromDb.imageURL).toBe('imageURL');
-    expect(recipeFromDb.preparing[0].step).toBe('add flour');
-    expect(recipeFromDb.preparing[0].order).toBe(1);
-    expect(recipeFromDb.ingredients[0].name).toBe('flour');
-    expect(recipeFromDb.ingredients[0].amount).toBe('spoon');
+    expect(result.name).toBe('Dumplings');
+    expect(result.description).toBe('Easy dumplings recipe');
+    expect(result.imageURL).toBe('imageURL');
+    expect(result.preparing[0].step).toBe('add flour');
+    expect(result.preparing[0].order).toBe(1);
+    expect(result.ingredients[0].name).toBe('flour');
+    expect(result.ingredients[0].amount).toBe('spoon');
   });
 
   it('should update a recipe', async () => {
     const commandBusExecuteUpdate = jest.spyOn(commandBus, 'execute');
 
+    const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
     const result = await recipeService.updateRecipe(recipeFromDb.id, newRecipe);
 
-    expect(commandBusExecuteUpdate).toBeCalledTimes(1);
+    expect(commandBusExecuteUpdate).toBeCalledTimes(2);
     expect(result.name).toBe('Pasta');
     expect(result.description).toBe('Easy pasta recipe');
     expect(result.imageURL).toBe('imageURL');
@@ -92,11 +91,12 @@ describe('Recipe Service', () => {
   it('should find one recipe by id', async () => {
     const queryBusExecuteFindOne = jest.spyOn(queryBus, 'execute');
 
+    const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
     const result = await recipeService.findRecipeById(recipeFromDb.id);
 
     expect(queryBusExecuteFindOne).toBeCalledTimes(1);
-    expect(result.name).toBe('Pasta');
-    expect(result.description).toBe('Easy pasta recipe');
+    expect(result.name).toBe('Dumplings');
+    expect(result.description).toBe('Easy dumplings recipe');
     expect(result.imageURL).toBe('imageURL');
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
@@ -107,17 +107,16 @@ describe('Recipe Service', () => {
   it('should list all recipes', async () => {
     const queryBusExecuteFindMany = jest.spyOn(queryBus, 'execute');
 
+    await recipeService.createRecipe(recipe, testUser.id);
     const result = await recipeService.findAllRecipes({
-      name: 'Pas',
+      name: 'Dum',
       page: 1,
       limit: 2,
     });
 
-    console.log(result);
-
     expect(queryBusExecuteFindMany).toBeCalledTimes(1);
-    expect(result[0].name).toBe('Pasta');
-    expect(result[0].description).toBe('Easy pasta recipe');
+    expect(result[0].name).toBe('Dumplings');
+    expect(result[0].description).toBe('Easy dumplings recipe');
     expect(result[0].imageURL).toBe('imageURL');
     expect(result[0].preparing[0].step).toBe('add flour');
     expect(result[0].preparing[0].order).toBe(1);
