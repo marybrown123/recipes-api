@@ -81,7 +81,7 @@ describe('Recipe Controller - Update', () => {
     userService = moduleFixture.get<UserService>(UserService);
     prismaService = moduleFixture.get<PrismaService>(PrismaService);
 
-    const testUser = await userService.generateAccount(
+    testUser = await userService.generateAccount(
       process.env.TEST_NAME,
       process.env.TEST_PASSWORD,
       Role.USER,
@@ -90,6 +90,10 @@ describe('Recipe Controller - Update', () => {
       name: testUser.name,
       sub: testUser.id,
     });
+  });
+
+  afterAll(async () => {
+    prismaService.user.delete({ where: { id: testUser.id } });
   });
 
   it('should update a recipe', async () => {
