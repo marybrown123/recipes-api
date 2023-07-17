@@ -35,7 +35,7 @@ jobs:
           command: npx prisma migrate dev
       - run:
           name: Run Unit Tests
-          command: npm run test
+          command: npm run test:ci
       - run:
           name: Run e2e Tests
           command: npm run test:e2e
