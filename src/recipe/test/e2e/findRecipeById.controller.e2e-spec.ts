@@ -33,9 +33,7 @@ describe('Recipe Controller - Find By Id', () => {
     jwtService = moduleFixture.get<JwtService>(JwtService);
     recipeService = moduleFixture.get<RecipeService>(RecipeService);
     userService = moduleFixture.get<UserService>(UserService);
-  });
 
-  beforeEach(async () => {
     const testUser = await userService.generateAccount(
       process.env.TEST_NAME,
       process.env.TEST_PASSWORD,

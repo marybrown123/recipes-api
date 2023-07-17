@@ -69,9 +69,7 @@ describe('Recipe Controller - Create', () => {
     await app.init();
     jwtService = moduleFixture.get<JwtService>(JwtService);
     userService = moduleFixture.get<UserService>(UserService);
-  });
 
-  beforeEach(async () => {
     const testUser = await userService.generateAccount(
       process.env.TEST_NAME,
       process.env.TEST_PASSWORD,
