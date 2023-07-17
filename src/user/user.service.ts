@@ -59,16 +59,12 @@ export class UserService {
 
     const hashedUserPassword = await this.hashPassword(password);
 
-    const userToReturn = await this.prisma.$transaction([
-      this.prisma.user.create({
-        data: {
-          name,
-          password: hashedUserPassword,
-          roles: [role],
-        },
-      }),
-    ]);
-
-    return userToReturn[0];
+    return await this.prisma.user.create({
+      data: {
+        name,
+        password: hashedUserPassword,
+        roles: [role],
+      },
+    });
   }
 }
