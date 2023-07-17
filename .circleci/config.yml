@@ -7,7 +7,7 @@ jobs:
           NODE_ENV: test
           PGHOST: 127.0.0.1
           PGUSER: root
-      - image: cimg/postgres
+      - image: cimg/postgres:14.1
         environment:
           POSTGRES_USER: testUser
           POSTGRES_DB: test
