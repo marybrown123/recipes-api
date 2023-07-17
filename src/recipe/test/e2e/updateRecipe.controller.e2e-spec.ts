@@ -13,7 +13,7 @@ import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.moc
 import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
 import { AuthModule } from '../../../auth/auth.module';
 import { IsUserAuthorGuard } from '../../../user/guards/is-user-author.guard';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../../../user/user.service';
 import { Role } from '@prisma/client';
 
 describe('Recipe Controller - Update', () => {

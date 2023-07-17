@@ -7,9 +7,9 @@ import { RecipeService } from '../../recipe.service';
 import { AuthModule } from '../../../auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
-import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
+import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
 import { Role } from '@prisma/client';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../../../user/user.service';
 
 describe('Recipe Controller - Create', () => {
   let app: INestApplication;

@@ -10,7 +10,7 @@ import { AuthModule } from '../../../auth/auth.module';
 import { RecipeModule } from '../../../recipe/recipe.module';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../../../user/user.service';
 import { Role } from '@prisma/client';
 
 describe('Recipe Controller - Find By Id', () => {
