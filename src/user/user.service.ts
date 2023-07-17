@@ -53,19 +53,22 @@ export class UserService {
     const userFromDb = await this.prisma.user.findUnique({
       where: { name },
     });
-    console.log(userFromDb);
     if (userFromDb) {
       return userFromDb;
     }
 
     const hashedUserPassword = await this.hashPassword(password);
 
-    return this.prisma.user.create({
-      data: {
-        name,
-        password: hashedUserPassword,
-        roles: [role],
-      },
-    });
+    const userToReturn = await this.prisma.$transaction([
+      this.prisma.user.create({
+        data: {
+          name,
+          password: hashedUserPassword,
+          roles: [role],
+        },
+      }),
+    ]);
+
+    return userToReturn[0];
   }
 }

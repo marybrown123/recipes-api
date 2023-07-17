@@ -35,7 +35,6 @@ describe('Recipe Controller - Find All Recipes', () => {
       process.env.TEST_PASSWORD,
       Role.USER,
     );
-    console.log(testUser);
     accessToken = jwtService.sign({
       name: testUser.name,
       sub: testUser.id,
