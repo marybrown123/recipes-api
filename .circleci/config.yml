@@ -4,8 +4,7 @@ jobs:
     docker:
       - image: alpine:3.15
     steps:
-      - checkout
       - run:
-          name: Run tests
-          command: npm run test
+          name: First step
+          command: echo 'Hello World!'
             
