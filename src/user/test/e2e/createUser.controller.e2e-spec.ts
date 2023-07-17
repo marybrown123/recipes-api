@@ -52,7 +52,6 @@ describe('User Controller - Create', () => {
       .send(correctPayload)
       .expect(HttpStatus.CREATED)
       .then((res) => {
-        console.log(res.body);
         expect(res.body.name).toBe(correctPayload.name);
         expect(res.body.password).not.toBeDefined();
       });
