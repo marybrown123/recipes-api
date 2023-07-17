@@ -92,10 +92,6 @@ describe('Recipe Controller - Update', () => {
     });
   });
 
-  afterAll(async () => {
-    await prismaService.user.delete({ where: { id: testUser.id } });
-  });
-
   it('should update a recipe', async () => {
     return request(app.getHttpServer())
       .patch('/recipe/1')
