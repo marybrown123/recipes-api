@@ -10,18 +10,9 @@ jobs:
     executor: node-executor
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
       - run:
           name: Install Dependencies
           command: npm install
-
-      - save_cache:
-          key: v1-dependencies-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
       - run:
           name: Run Unit Tests
           command: npm run test
@@ -33,17 +24,9 @@ jobs:
     executor: node-executor
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
       - run:
           name: Install Dependencies
           command: npm install
-      - save_cache:
-          key: v1-dependencies-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
       - run:
           name: Build App
           command: npm run build
