@@ -1,10 +1,44 @@
 version: 2.1
+orbs:
+  node: circleci/node@5.0.2
+  heroku: circleci/heroku@1.2.6
+
 jobs:
-  build:
-    docker:
-      - image: alpine:3.15
+  build_and_test:
+    executor: node/default
     steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
       - run:
-          name: First step
-          command: echo 'Hello World!'
-            
+          command: npm run test
+          name: Run unit tests
+      - run:
+          command: npm run test:e2e
+          name: Run e2e tests
+      - run:
+          command: npm run build
+          name: Build app
+      - persist_to_workspace:
+          root: ~/recipes-api
+          paths:
+            - .
+
+  deploy: Deploy
+    executor: heroku/default
+    steps:
+      - attach_workspace:
+          at: ~/recipes-api
+      - heroku/deploy-via-git:
+          force: true
+
+workflows:
+  test_my_app:
+    jobs:
+      - build_and_test
+      - deploy:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              only: main
