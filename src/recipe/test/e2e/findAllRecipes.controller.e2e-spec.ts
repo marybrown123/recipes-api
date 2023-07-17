@@ -3,16 +3,17 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AuthModule } from '../../../auth/auth.module';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { RecipeModule } from '../../../recipe/recipe.module';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
+import { UserService } from 'src/user/user.service';
+import { Role } from '@prisma/client';
 
 describe('Recipe Controller - Find All Recipes', () => {
   let app: INestApplication;
-  let prisma: PrismaService;
   let jwtService: JwtService;
   let accessToken: string;
+  let userService: UserService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -24,16 +25,16 @@ describe('Recipe Controller - Find All Recipes', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    prisma = moduleFixture.get<PrismaService>(PrismaService);
     jwtService = moduleFixture.get<JwtService>(JwtService);
+    userService = moduleFixture.get<UserService>(UserService);
   });
 
   beforeEach(async () => {
-    const testUser = await prisma.user.findFirst({
-      where: {
-        name: process.env.TEST_NAME,
-      },
-    });
+    const testUser = await userService.generateAccount(
+      process.env.TEST_NAME,
+      process.env.TEST_PASSWORD,
+      Role.USER,
+    );
     accessToken = jwtService.sign({
       name: testUser.name,
       sub: testUser.id,
