@@ -8,7 +8,7 @@ jobs:
           PGHOST: 127.0.0.1
           PGUSER: root
       - image: cimg/postgres
-        enviroment:
+        environment:
           POSTGRES_USER: testUser
           POSTGRES_DB: test
           POSTGRES_PASSWORD: testPassword
