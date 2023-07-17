@@ -8,14 +8,17 @@ import { AuthModule } from '../../../auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
-import { Role } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import { UserService } from '../../../user/user.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('Recipe Controller - Create', () => {
   let app: INestApplication;
   let userService: UserService;
+  let prismaService: PrismaService;
   let jwtService: JwtService;
   let accessToken: string;
+  let testUser: User;
   const correctPayload: CreateRecipeDTO = {
     name: 'testName',
     description: 'testDescription',
@@ -69,8 +72,9 @@ describe('Recipe Controller - Create', () => {
     await app.init();
     jwtService = moduleFixture.get<JwtService>(JwtService);
     userService = moduleFixture.get<UserService>(UserService);
+    prismaService = moduleFixture.get<PrismaService>(PrismaService);
 
-    const testUser = await userService.generateAccount(
+    testUser = await userService.generateAccount(
       process.env.TEST_NAME,
       process.env.TEST_PASSWORD,
       Role.USER,
@@ -79,6 +83,10 @@ describe('Recipe Controller - Create', () => {
       name: testUser.name,
       sub: testUser.id,
     });
+  });
+
+  afterAll(async () => {
+    await prismaService.user.delete({ where: { id: testUser.id } });
   });
 
   it('should create a recipe', async () => {

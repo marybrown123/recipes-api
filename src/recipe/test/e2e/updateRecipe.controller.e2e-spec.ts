@@ -14,13 +14,16 @@ import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
 import { AuthModule } from '../../../auth/auth.module';
 import { IsUserAuthorGuard } from '../../../user/guards/is-user-author.guard';
 import { UserService } from '../../../user/user.service';
-import { Role } from '@prisma/client';
+import { Role, User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('Recipe Controller - Update', () => {
   let app: INestApplication;
   let jwtService: JwtService;
   let userService: UserService;
   let accessToken: string;
+  let prismaService: PrismaService;
+  let testUser: User;
   const fakeGuard: CanActivate = { canActivate: jest.fn(() => true) };
   const correctPayload: UpdateRecipeDTO = {
     name: 'testName',
@@ -76,6 +79,7 @@ describe('Recipe Controller - Update', () => {
     await app.init();
     jwtService = moduleFixture.get<JwtService>(JwtService);
     userService = moduleFixture.get<UserService>(UserService);
+    prismaService = moduleFixture.get<PrismaService>(PrismaService);
 
     const testUser = await userService.generateAccount(
       process.env.TEST_NAME,
@@ -86,6 +90,10 @@ describe('Recipe Controller - Update', () => {
       name: testUser.name,
       sub: testUser.id,
     });
+  });
+
+  afterAll(async () => {
+    prismaService.user.delete({ where: { id: testUser.id } });
   });
 
   it('should update a recipe', async () => {
