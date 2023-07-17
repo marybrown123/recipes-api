@@ -53,7 +53,7 @@ export class UserService {
     const userFromDb = await this.prisma.user.findUnique({
       where: { name },
     });
-
+    console.log(userFromDb);
     if (userFromDb) {
       return userFromDb;
     }
