@@ -85,13 +85,6 @@ describe('Recipe Controller - Create', () => {
     });
   });
 
-  console.log(testUser);
-
-  afterAll(async () => {
-    console.log(testUser);
-    await prismaService.user.delete({ where: { id: testUser.id } });
-  });
-
   it('should create a recipe', async () => {
     return request(app.getHttpServer())
       .post('/recipe')
