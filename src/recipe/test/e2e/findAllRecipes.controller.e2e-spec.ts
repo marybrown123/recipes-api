@@ -8,7 +8,7 @@ import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('Recipe Controller - Find All Recipes', () => {
   let app: INestApplication;

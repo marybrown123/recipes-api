@@ -10,7 +10,7 @@ import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.moc
 import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
 import { Role, User } from '@prisma/client';
 import { UserService } from '../../../user/user.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('Recipe Controller - Create', () => {
   let app: INestApplication;

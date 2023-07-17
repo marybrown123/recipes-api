@@ -15,7 +15,7 @@ import { AuthModule } from '../../../auth/auth.module';
 import { IsUserAuthorGuard } from '../../../user/guards/is-user-author.guard';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('Recipe Controller - Update', () => {
   let app: INestApplication;
