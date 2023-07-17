@@ -12,6 +12,8 @@ jobs:
           POSTGRES_USER: testUser
           POSTGRES_DB: test
           POSTGRES_PASSWORD: testPassword
+          POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
     steps:
       - checkout
       - restore_cache:
