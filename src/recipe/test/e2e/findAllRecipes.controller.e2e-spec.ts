@@ -44,7 +44,7 @@ describe('Recipe Controller - Find All Recipes', () => {
   });
 
   afterAll(async () => {
-    prismaService.user.delete({ where: { id: testUser.id } });
+    await prismaService.user.delete({ where: { id: testUser.id } });
   });
 
   it('should find all recipes which names match query', async () => {
