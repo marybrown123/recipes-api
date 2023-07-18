@@ -23,7 +23,6 @@ commands:
       - run: npx prisma migrate dev
   run-tests:
     steps:
-      - run: npm install junit
       - run: mkdir -p test-results
       - run: npm run test:ci -- --ci --reporters=default --reporters=jest-junit
       - run: npm run test:e2e -- --ci --reporters=default --reporters=jest-junit
