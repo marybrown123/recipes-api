@@ -22,12 +22,9 @@ commands:
     steps:
       - run: npx prisma migrate dev
   run-tests:
-    steps:
-      - run: mkdir -p test-results
+    steps:    
       - run: npm run test:ci
       - run: npm run test:e2e
-      - store_test_results:
-          path: test-results
   greetings-from-branch:
     steps:
       - when: 
