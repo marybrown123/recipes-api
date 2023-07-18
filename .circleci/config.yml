@@ -23,6 +23,7 @@ commands:
       - run: npx prisma migrate dev
   run-tests:
     steps:
+      - run: mkdir -p test-results
       - run: npm run test:ci
       - run: npm run test:e2e
       - store_test_results:
