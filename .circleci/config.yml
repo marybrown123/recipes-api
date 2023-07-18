@@ -23,24 +23,15 @@ commands:
       - run: npx prisma migrate dev
   run-tests:
     steps:
-      - run: mkdir -p test-results
-      - run: npm run test:ci -- --ci --reporters=default --reporters=jest-junit
-      - run: npm run test:e2e -- --ci --reporters=default --reporters=jest-junit
-      - store_test_results:
-          path: test-results
+      - run: npm run test:ci 
+      - run: npm run test:e2e 
   greetings-from-branch:
     steps:
-      - when: 
-          condition: $? -eq 0 
-          steps:
-            - run: echo "No siema z brancha <<pipeline.git.branch>>"
-      - when:
-          condition: $? -ne 0 
-          steps:
-            run: echo "Tests failed"
+      - run: echo "No siema z brancha <<pipeline.git.branch>>"
+
 
 jobs:
-  build-and-test:
+  install-dependencies:
     docker: 
       - image: cimg/node:18.16.0
         environment:
@@ -59,13 +50,39 @@ jobs:
       - restore-cache
       - install-dependencies
       - save-cache
+  prisma:
+    machine: true
+    steps:
+      - checkout
+      - restore-cache
       - generate-prisma-client
       - generate-prisma-migrations
+  run-tests:
+    machine: true
+    steps:
+      - checkout
+      - restore-cache
       - run-tests
+  greetings-from-branch:
+    machine: true
+    steps:
+      - checkout
+      - restore-cache
       - greetings-from-branch
+  
 workflows:
   version: 2.1
   build-and-test:
     jobs:
-      - build-and-test
+      - install-dependencies
+      - prisma:
+          requires: 
+            - install-dependencies
+      - run-tests:
+          requires: 
+            - prisma
+      - greetings-from-branch:
+          requires: 
+            - run-tests
+
 
