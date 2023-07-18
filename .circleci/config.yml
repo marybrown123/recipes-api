@@ -31,11 +31,11 @@ commands:
   greetings-from-branch:
     steps:
       - when: 
-          condition: << pipeline.parameters.CIRCLE_TEST_RESULT >> != ''
+          condition: $? -eq 0 
           steps:
             - run: echo "No siema z brancha $ACTIVE_BRANCH"
       - when:
-          condition: << pipeline.parameters.CIRCLE_TEST_RESULT >> == '' 
+          condition: $? -ne 0 
           steps:
             run: echo "Tests failed"
 
