@@ -68,3 +68,7 @@ workflows:
   build-and-test:
     jobs:
       - build-and-test
+          persist-to-workspace:
+            root: .
+            paths:
+              - ./node_modules 
