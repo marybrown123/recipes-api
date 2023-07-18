@@ -69,6 +69,7 @@ jobs:
       - restore-cache
       - generate-prisma-client
       - generate-prisma-migrations
+      - save-cache
   run-tests:
     docker: 
       - image: cimg/node:18.16.0
@@ -87,6 +88,7 @@ jobs:
       - checkout
       - restore-cache
       - run-tests
+      - save-cache
   greetings-from-branch:
     docker: 
       - image: cimg/node:18.16.0
