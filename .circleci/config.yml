@@ -51,20 +51,56 @@ jobs:
       - install-dependencies
       - save-cache
   prisma:
-    machine: true
+    docker: 
+      - image: cimg/node:18.16.0
+        environment:
+          NODE_ENV: test
+          PGHOST: 127.0.0.1
+          PGUSER: root
+      - image: cimg/postgres:14.1
+        environment:
+          POSTGRES_USER: testUser
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: testPassword
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
     steps:
       - checkout
       - restore-cache
       - generate-prisma-client
       - generate-prisma-migrations
   run-tests:
-    machine: true
+    docker: 
+      - image: cimg/node:18.16.0
+        environment:
+          NODE_ENV: test
+          PGHOST: 127.0.0.1
+          PGUSER: root
+      - image: cimg/postgres:14.1
+        environment:
+          POSTGRES_USER: testUser
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: testPassword
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
     steps:
       - checkout
       - restore-cache
       - run-tests
   greetings-from-branch:
-    machine: true
+    docker: 
+      - image: cimg/node:18.16.0
+        environment:
+          NODE_ENV: test
+          PGHOST: 127.0.0.1
+          PGUSER: root
+      - image: cimg/postgres:14.1
+        environment:
+          POSTGRES_USER: testUser
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: testPassword
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
     steps:
       - checkout
       - restore-cache
