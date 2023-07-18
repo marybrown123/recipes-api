@@ -56,7 +56,7 @@ jobs:
           POSTGRES_PORT: 5432
     steps:
       - checkout
-      - restore_cache
+      - restore-cache
       - install-dependencies
       - save-cache
       - generate-prisma-client
