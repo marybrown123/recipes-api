@@ -60,7 +60,7 @@ jobs:
       - install-dependencies
       - save_cache
       - generate-prisma-client
-      - generate prisma migrations
+      - generate-prisma-migrations
       - run-tests
       - greetings-from-branch
 workflows:
