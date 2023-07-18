@@ -2,13 +2,19 @@ version: 2.1
 commands:
   restore-cache:
     steps:
-      - restore-cache:
+      - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
             - v1-dependencies-
   install-dependencies:
     steps: 
       - run: npm install
+  save-cache:
+    steps:
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
   generate-prisma-client:
     steps:
       - run: npx prisma generate
@@ -52,10 +58,7 @@ jobs:
       - checkout
       - restore_cache
       - install-dependencies
-      - save-cache:
-          key: v1-dependencies-{{ checksum "package-lock.json" }}
-          paths:
-            - ./node_modules
+      - save-cache
       - generate-prisma-client
       - generate-prisma-migrations
       - run-tests
@@ -65,3 +68,4 @@ workflows:
   build-and-test:
     jobs:
       - build-and-test
+
