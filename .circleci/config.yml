@@ -1,6 +1,46 @@
 version: 2.1
+commands:
+  restore-cache:
+    steps:
+      - restore-cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+  install-dependencies:
+    steps: 
+      - run: npm install
+  save-cache:
+    steps:
+      - save-cache:
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+  generate-prisma-client:
+    steps:
+      - run: npx prisma generate
+  generate-prisma-migrations:
+    steps:
+      - run: npx prisma migrate dev
+  run-tests:
+    steps:
+      - run: npm run test:ci
+      - run: npm run test:e2e
+      - store-test-results:
+        - path: test-reports
+      - run: echo "export ACTIVE_BRANCH=$CIRCLE_BRANCH" >> $BASH_ENV
+  greetings-from-branch:
+    steps:
+      - when: 
+          condition: "$CIRCLE_TEST_RESULT" !== ""
+          steps:
+            - run: echo "No siema z brancha $ACTIVE_BRANCH"
+      - when:
+          condition: "$CIRCLE_TEST_RESULT" === "" 
+          steps:
+            run: echo "Tests failed"
+
 jobs:
-  build_and_deploy:
+  build-and-test:
     docker: 
       - image: cimg/node:18.16.0
         environment:
@@ -16,31 +56,15 @@ jobs:
           POSTGRES_PORT: 5432
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - save_cache:
-          key: v1-dependencies-{{ checksum "package-lock.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: Generate Prisma Client
-          command: npx prisma generate
-      - run: 
-          name: Generate Prisma Migrations
-          command: npx prisma migrate dev
-      - run:
-          name: Run Unit Tests
-          command: npm run test:ci
-      - run:
-          name: Run e2e Tests
-          command: npm run test:e2e
+      - restore_cache
+      - install-dependencies
+      - save_cache
+      - generate-prisma-client
+      - generate prisma migrations
+      - run-tests
+      - greetings-from-branch
 workflows:
   version: 2.1
-  build_and_deploy:
+  build-and-test:
     jobs:
-      - build_and_deploy
+      - build-and-test
