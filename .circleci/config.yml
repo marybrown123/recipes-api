@@ -25,17 +25,17 @@ commands:
     steps:
       - run: npm run test:ci
       - run: npm run test:e2e
-      - store-test-results:
-        - path: test-reports
+      - store_test_results:
+        - path: test-results
       - run: echo "export ACTIVE_BRANCH=$CIRCLE_BRANCH" >> $BASH_ENV
   greetings-from-branch:
     steps:
       - when: 
-          condition: "$CIRCLE_TEST_RESULT" !== ""
+          condition: "$CIRCLE_TEST_RESULT" != ""
           steps:
             - run: echo "No siema z brancha $ACTIVE_BRANCH"
       - when:
-          condition: "$CIRCLE_TEST_RESULT" === "" 
+          condition: "$CIRCLE_TEST_RESULT" == "" 
           steps:
             run: echo "Tests failed"
 
