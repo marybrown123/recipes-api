@@ -43,6 +43,7 @@ executors:
           POSTGRES_PASSWORD: testPassword
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
+    working_directory: /tmp
 jobs:
   install-dependencies:
     executor: executor
@@ -59,16 +60,16 @@ jobs:
       - generate-prisma-client
       - generate-prisma-migrations
       - persist_to_workspace:
-          root: prisma/migrations
+          root: workspace
           paths:
-            - migrations
+            - prisma
       - save-cache
   run-tests:
     executor: executor
     steps:
       - checkout
       - attach_workspace:
-          at: .
+          at: /tmp/workspace
       - restore-cache
       - run-tests
       - save-cache
