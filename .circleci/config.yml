@@ -43,7 +43,6 @@ executors:
           POSTGRES_PASSWORD: testPassword
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
-    working_directory: /recipes-api
 jobs:
   install-dependencies:
     executor: executor
@@ -60,7 +59,7 @@ jobs:
       - generate-prisma-client
       - generate-prisma-migrations
       - persist_to_workspace:
-          root: workspace
+          root: .
           paths:
             - prisma
       - save-cache
@@ -69,7 +68,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /recipes-api/workspace
+          at: .
       - restore-cache
       - run-tests
       - save-cache
