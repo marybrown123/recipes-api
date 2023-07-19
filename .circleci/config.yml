@@ -43,7 +43,7 @@ executors:
           POSTGRES_PASSWORD: testPassword
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
-    working_directory: /witam
+    working_directory: /recipes-api
 jobs:
   install-dependencies:
     executor: executor
@@ -69,7 +69,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /witam/workspace
+          at: /recipes-api/workspace
       - restore-cache
       - run-tests
       - save-cache
