@@ -1,6 +1,39 @@
 version: 2.1
-jobs:
-  build_and_deploy:
+commands:
+  restore-cache:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+  install-dependencies:
+    steps: 
+      - run: npm install
+  save-cache:
+    steps:
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+  generate-prisma-client:
+    steps:
+      - run: npx prisma generate
+  generate-prisma-migrations:
+    steps:
+      - run: npx prisma migrate dev
+  deploy-prisma-migrations:
+    steps:
+      - run: npx prisma migrate deploy --preview-feature
+  run-tests:
+    steps:
+      - run: npm run test:ci 
+      - run: npm run test:e2e 
+  greetings-from-branch:
+    steps:
+      - run: echo "No siema z brancha <<pipeline.git.branch>>"
+executors:
+  executor:
+    resource_class: small
     docker: 
       - image: cimg/node:18.16.0
         environment:
@@ -14,33 +47,53 @@ jobs:
           POSTGRES_PASSWORD: testPassword
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
+jobs:
+  install-dependencies:
+    executor: executor
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - save_cache:
-          key: v1-dependencies-{{ checksum "package-lock.json" }}
+      - restore-cache
+      - install-dependencies
+      - save-cache
+  prisma:
+    executor: executor
+    steps:
+      - checkout
+      - restore-cache
+      - generate-prisma-client
+      - generate-prisma-migrations
+      - persist_to_workspace:
+          root: .
           paths:
-            - ./node_modules
-      - run:
-          name: Generate Prisma Client
-          command: npx prisma generate
-      - run: 
-          name: Generate Prisma Migrations
-          command: npx prisma migrate dev
-      - run:
-          name: Run Unit Tests
-          command: npm run test:ci
-      - run:
-          name: Run e2e Tests
-          command: npm run test:e2e
+            - prisma
+  run-tests:
+    executor: executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - deploy-prisma-migrations
+      - restore-cache
+      - run-tests
+  greetings-from-branch:
+    executor: executor
+    steps:
+      - checkout
+      - greetings-from-branch
+  
 workflows:
   version: 2.1
-  build_and_deploy:
+  build-and-test:
     jobs:
-      - build_and_deploy
+      - install-dependencies
+      - prisma:
+          requires: 
+            - install-dependencies
+      - run-tests:
+          requires: 
+            - prisma
+      - greetings-from-branch:
+          requires: 
+            - run-tests
+
+
