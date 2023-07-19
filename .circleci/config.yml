@@ -65,7 +65,6 @@ jobs:
           root: .
           paths:
             - prisma
-      - save-cache
   run-tests:
     executor: executor
     steps:
@@ -75,12 +74,10 @@ jobs:
       - deploy-prisma-migrations
       - restore-cache
       - run-tests
-      - save-cache
   greetings-from-branch:
     executor: executor
     steps:
       - checkout
-      - restore-cache
       - greetings-from-branch
   
 workflows:
