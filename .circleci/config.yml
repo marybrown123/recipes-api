@@ -21,6 +21,9 @@ commands:
   generate-prisma-migrations:
     steps:
       - run: npx prisma migrate dev
+  deploy-prisma-migrations:
+    steps:
+      - run: npx prisma migrate deploy --preview-feature
   run-tests:
     steps:
       - run: npm run test:ci 
@@ -69,6 +72,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - deploy-prisma-migrations
       - restore-cache
       - run-tests
       - save-cache
