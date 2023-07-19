@@ -5,16 +5,20 @@ import * as request from 'supertest';
 import { RecipeModule } from '../../recipe.module';
 import { RecipeService } from '../../recipe.service';
 import { AuthModule } from '../../../auth/auth.module';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
-import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
+import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
+import { Role, User } from '@prisma/client';
+import { UserService } from '../../../user/user.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('Recipe Controller - Create', () => {
   let app: INestApplication;
-  let prisma: PrismaService;
+  let userService: UserService;
+  let prismaService: PrismaService;
   let jwtService: JwtService;
   let accessToken: string;
+  let testUser: User;
   const correctPayload: CreateRecipeDTO = {
     name: 'testName',
     description: 'testDescription',
@@ -66,20 +70,23 @@ describe('Recipe Controller - Create', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     await app.init();
-    prisma = moduleFixture.get<PrismaService>(PrismaService);
     jwtService = moduleFixture.get<JwtService>(JwtService);
-  });
+    userService = moduleFixture.get<UserService>(UserService);
+    prismaService = moduleFixture.get<PrismaService>(PrismaService);
 
-  beforeEach(async () => {
-    const testUser = await prisma.user.findFirst({
-      where: {
-        name: process.env.TEST_NAME,
-      },
-    });
+    testUser = await userService.generateAccount(
+      process.env.TEST_NAME,
+      process.env.TEST_PASSWORD,
+      Role.USER,
+    );
     accessToken = jwtService.sign({
       name: testUser.name,
       sub: testUser.id,
     });
+  });
+
+  afterAll(async () => {
+    await prismaService.user.delete({ where: { id: testUser.id } });
   });
 
   it('should create a recipe', async () => {

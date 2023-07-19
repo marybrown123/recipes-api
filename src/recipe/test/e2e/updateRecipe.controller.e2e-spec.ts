@@ -7,19 +7,23 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { RecipeModule } from '../../../recipe/recipe.module';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
 import { AuthModule } from '../../../auth/auth.module';
 import { IsUserAuthorGuard } from '../../../user/guards/is-user-author.guard';
+import { UserService } from '../../../user/user.service';
+import { Role, User } from '@prisma/client';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('Recipe Controller - Update', () => {
   let app: INestApplication;
-  let prisma: PrismaService;
   let jwtService: JwtService;
+  let userService: UserService;
   let accessToken: string;
+  let prismaService: PrismaService;
+  let testUser: User;
   const fakeGuard: CanActivate = { canActivate: jest.fn(() => true) };
   const correctPayload: UpdateRecipeDTO = {
     name: 'testName',
@@ -73,20 +77,23 @@ describe('Recipe Controller - Update', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     await app.init();
-    prisma = moduleFixture.get<PrismaService>(PrismaService);
     jwtService = moduleFixture.get<JwtService>(JwtService);
-  });
+    userService = moduleFixture.get<UserService>(UserService);
+    prismaService = moduleFixture.get<PrismaService>(PrismaService);
 
-  beforeEach(async () => {
-    const testUser = await prisma.user.findFirst({
-      where: {
-        name: process.env.TEST_NAME,
-      },
-    });
+    testUser = await userService.generateAccount(
+      process.env.TEST_NAME,
+      process.env.TEST_PASSWORD,
+      Role.USER,
+    );
     accessToken = jwtService.sign({
       name: testUser.name,
       sub: testUser.id,
     });
+  });
+
+  afterAll(async () => {
+    prismaService.user.delete({ where: { id: testUser.id } });
   });
 
   it('should update a recipe', async () => {

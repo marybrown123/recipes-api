@@ -7,17 +7,21 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AuthModule } from '../../../auth/auth.module';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { RecipeModule } from '../../../recipe/recipe.module';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
+import { UserService } from '../../../user/user.service';
+import { Role, User } from '@prisma/client';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('Recipe Controller - Find By Id', () => {
   let app: INestApplication;
-  let prisma: PrismaService;
   let jwtService: JwtService;
   let accessToken: string;
   let recipeService: RecipeService;
+  let userService: UserService;
+  let prismaService: PrismaService;
+  let testUser: User;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,21 +33,24 @@ describe('Recipe Controller - Find By Id', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    prisma = moduleFixture.get<PrismaService>(PrismaService);
     jwtService = moduleFixture.get<JwtService>(JwtService);
     recipeService = moduleFixture.get<RecipeService>(RecipeService);
-  });
+    userService = moduleFixture.get<UserService>(UserService);
+    prismaService = moduleFixture.get<PrismaService>(PrismaService);
 
-  beforeEach(async () => {
-    const testUser = await prisma.user.findFirst({
-      where: {
-        name: process.env.TEST_NAME,
-      },
-    });
+    testUser = await userService.generateAccount(
+      process.env.TEST_NAME,
+      process.env.TEST_PASSWORD,
+      Role.USER,
+    );
     accessToken = jwtService.sign({
       name: testUser.name,
       sub: testUser.id,
     });
+  });
+
+  afterAll(async () => {
+    await prismaService.user.delete({ where: { id: testUser.id } });
   });
 
   it('should find one recipe by id', async () => {

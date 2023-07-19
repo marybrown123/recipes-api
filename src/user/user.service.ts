@@ -53,14 +53,13 @@ export class UserService {
     const userFromDb = await this.prisma.user.findUnique({
       where: { name },
     });
-
     if (userFromDb) {
       return userFromDb;
     }
 
     const hashedUserPassword = await this.hashPassword(password);
 
-    return this.prisma.user.create({
+    return await this.prisma.user.create({
       data: {
         name,
         password: hashedUserPassword,

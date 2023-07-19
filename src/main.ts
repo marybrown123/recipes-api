@@ -14,11 +14,6 @@ async function bootstrap() {
     process.env.ADMIN_PASSWORD,
     Role.ADMIN,
   );
-  userService.generateAccount(
-    process.env.TEST_NAME,
-    process.env.TEST_PASSWORD,
-    Role.USER,
-  );
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 

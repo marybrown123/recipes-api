@@ -13,10 +13,11 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "dotenv -e test.env -- jest -i",
+    "test:ci": "jest -i",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest -i --config ./test/jest-e2e.json",
     "migrate:postgres": "dotenv -e test.env -- npx prisma migrate deploy"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "bcrypt": "5.1.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
+    "dotenv": "16.3.1",
     "passport": "0.6.0",
     "passport-jwt": "4.0.1",
     "passport-local": "1.0.0",
