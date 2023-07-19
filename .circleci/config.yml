@@ -28,10 +28,8 @@ commands:
   greetings-from-branch:
     steps:
       - run: echo "No siema z brancha <<pipeline.git.branch>>"
-
-
-jobs:
-  install-dependencies:
+executors:
+  executor:
     docker: 
       - image: cimg/node:18.16.0
         environment:
@@ -45,64 +43,37 @@ jobs:
           POSTGRES_PASSWORD: testPassword
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
+jobs:
+  install-dependencies:
+    executor: executor
     steps:
       - checkout
       - restore-cache
       - install-dependencies
       - save-cache
   prisma:
-    docker: 
-      - image: cimg/node:18.16.0
-        environment:
-          NODE_ENV: test
-          PGHOST: 127.0.0.1
-          PGUSER: root
-      - image: cimg/postgres:14.1
-        environment:
-          POSTGRES_USER: testUser
-          POSTGRES_DB: test
-          POSTGRES_PASSWORD: testPassword
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
+    executor: executor
     steps:
       - checkout
       - restore-cache
       - generate-prisma-client
       - generate-prisma-migrations
+      - persist_to_workspace:
+          root: prisma/migrations
+          paths:
+            - migrations
       - save-cache
   run-tests:
-    docker: 
-      - image: cimg/node:18.16.0
-        environment:
-          NODE_ENV: test
-          PGHOST: 127.0.0.1
-          PGUSER: root
-      - image: cimg/postgres:14.1
-        environment:
-          POSTGRES_USER: testUser
-          POSTGRES_DB: test
-          POSTGRES_PASSWORD: testPassword
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
+    executor: executor
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - restore-cache
       - run-tests
       - save-cache
   greetings-from-branch:
-    docker: 
-      - image: cimg/node:18.16.0
-        environment:
-          NODE_ENV: test
-          PGHOST: 127.0.0.1
-          PGUSER: root
-      - image: cimg/postgres:14.1
-        environment:
-          POSTGRES_USER: testUser
-          POSTGRES_DB: test
-          POSTGRES_PASSWORD: testPassword
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
+    executor: executor
     steps:
       - checkout
       - restore-cache
