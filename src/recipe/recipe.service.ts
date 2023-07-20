@@ -8,7 +8,7 @@ import { FindRecipeByIdQuery } from './queries/impl/findRecipeById.query';
 import { CreateRecipeCommand } from '../recipe/commands/impl/createRecipe.command';
 import { UpdateRecipeCommand } from '../recipe/commands/impl/updateRecipe.command';
 import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query';
-import { NotificationsGateway } from 'src/gateways/notification.gateway';
+import { NotificationsGateway } from '../gateways/notification.gateway';
 
 @Injectable()
 export class RecipeService {
