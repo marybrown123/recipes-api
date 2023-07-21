@@ -3,7 +3,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { RecipeModule } from './recipe/recipe.module';
 import { ConfigModule } from '@nestjs/config';
-import { GatewayModule } from 'src/gateways/gateway.module';
+import { GatewayModule } from './gateways/gateway.module';
 
 @Module({
   imports: [
