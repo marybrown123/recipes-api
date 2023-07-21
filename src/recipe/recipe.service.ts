@@ -32,7 +32,7 @@ export class RecipeService {
       notificationPayload = 'Recipe created succesfully';
     }
 
-    this.notificationsGateway.server.emit('notification', notificationPayload);
+    this.notificationsGateway.createRecipeNotification(notificationPayload);
 
     return new RecipeResponse(recipeFromDb);
   }

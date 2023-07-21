@@ -5,4 +5,8 @@ import { Server } from 'socket.io';
 export class NotificationsGateway {
   @WebSocketServer()
   server: Server;
+
+  createRecipeNotification(payload: string) {
+    this.server.emit('notification', payload);
+  }
 }
