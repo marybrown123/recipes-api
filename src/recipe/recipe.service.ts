@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
 import { RecipeResponse } from './responses/recipe.response';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
@@ -8,10 +8,16 @@ import { FindRecipeByIdQuery } from './queries/impl/findRecipeById.query';
 import { CreateRecipeCommand } from '../recipe/commands/impl/createRecipe.command';
 import { UpdateRecipeCommand } from '../recipe/commands/impl/updateRecipe.command';
 import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class RecipeService {
-  constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
+  constructor(
+    private queryBus: QueryBus,
+    private commandBus: CommandBus,
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
+  ) {}
 
   async createRecipe(
     recipe: CreateRecipeDTO,
@@ -30,7 +36,18 @@ export class RecipeService {
   }
 
   async findRecipeById(recipeId: number): Promise<RecipeResponse> {
-    return this.queryBus.execute(new FindRecipeByIdQuery(recipeId));
+    const cachedData = await this.cacheService.get<RecipeResponse>(
+      recipeId.toString(),
+    );
+    if (cachedData) {
+      return cachedData;
+    } else {
+      const recipeFromDb = await this.queryBus.execute(
+        new FindRecipeByIdQuery(recipeId),
+      );
+      await this.cacheService.set(recipeId.toString(), recipeFromDb);
+      return new RecipeResponse(recipeFromDb);
+    }
   }
 
   async findAllRecipes(query: FindAllRecipesDTO): Promise<RecipeResponse[]> {
