@@ -37,7 +37,7 @@ export class RecipeService {
 
   async findRecipeById(recipeId: number): Promise<RecipeResponse> {
     const cachedData = await this.cacheService.get<RecipeResponse>(
-      recipeId.toString(),
+      `/recipe/${recipeId}`,
     );
     if (cachedData) {
       return cachedData;
@@ -45,7 +45,10 @@ export class RecipeService {
       const recipeFromDb = await this.queryBus.execute(
         new FindRecipeByIdQuery(recipeId),
       );
-      await this.cacheService.set(recipeId.toString(), recipeFromDb);
+      await this.cacheService.set(
+        `/recipe/${recipeId}`,
+        new RecipeResponse(recipeFromDb),
+      );
       return new RecipeResponse(recipeFromDb);
     }
   }

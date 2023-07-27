@@ -28,7 +28,7 @@ import {
 import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
 import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
-import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -78,7 +78,6 @@ export class RecipeController {
 
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
-  @CacheKey('recipe-by-id')
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Get one recipe by id' })

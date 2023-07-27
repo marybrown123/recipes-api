@@ -14,11 +14,9 @@ import * as redisStore from 'cache-manager-redis-store';
     ConfigModule.forRoot(),
     CacheModule.register({
       isGlobal: true,
-      useFactory: async () => ({
-        store: redisStore,
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT,
-      }),
+      store: redisStore,
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
     }),
   ],
 })
