@@ -56,6 +56,7 @@ describe('Recipe Controller - Find By Id', () => {
 
   afterAll(async () => {
     await prismaService.user.delete({ where: { id: testUser.id } });
+    await app.close();
   });
 
   it('should find one recipe by id', async () => {
