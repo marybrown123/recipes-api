@@ -9,6 +9,7 @@ import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.moc
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { AppModule } from '../../../app.module';
 
 describe('Recipe Controller - Find All Recipes', () => {
   let app: INestApplication;
@@ -20,7 +21,7 @@ describe('Recipe Controller - Find All Recipes', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule],
+      imports: [RecipeModule, AuthModule, AppModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)

@@ -16,6 +16,7 @@ import { IsUserAuthorGuard } from '../../../user/guards/is-user-author.guard';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { AppModule } from '../../../app.module';
 
 describe('Recipe Controller - Update', () => {
   let app: INestApplication;
@@ -66,7 +67,7 @@ describe('Recipe Controller - Update', () => {
   ];
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule],
+      imports: [RecipeModule, AuthModule, AppModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)

@@ -13,6 +13,9 @@ import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.moc
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { AppModule } from '../../../app.module';
+import { CacheServiceMock } from '../../../recipe/test/mocks/cashe.service.mock';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('Recipe Controller - Find By Id', () => {
   let app: INestApplication;
@@ -25,8 +28,10 @@ describe('Recipe Controller - Find By Id', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule],
+      imports: [RecipeModule, AuthModule, AppModule],
     })
+      .overrideProvider(CACHE_MANAGER)
+      .useClass(CacheServiceMock)
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)
       .compile();

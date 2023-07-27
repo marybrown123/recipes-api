@@ -11,6 +11,7 @@ import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
 import { Role, User } from '@prisma/client';
 import { UserService } from '../../../user/user.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { AppModule } from '../../../app.module';
 
 describe('Recipe Controller - Create', () => {
   let app: INestApplication;
@@ -61,7 +62,7 @@ describe('Recipe Controller - Create', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule],
+      imports: [RecipeModule, AuthModule, AppModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)

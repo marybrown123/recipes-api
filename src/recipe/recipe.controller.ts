@@ -1,6 +1,5 @@
 import {
   Body,
-  CacheTTL,
   Controller,
   Get,
   Param,
@@ -77,7 +76,6 @@ export class RecipeController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(30)
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Get one recipe by id' })

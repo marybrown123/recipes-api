@@ -9,7 +9,6 @@ import {
   RecipeIngredients,
   RecipePreparationSteps,
 } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
 
 export class RecipeServiceMock implements Required<RecipeService> {
   private generateRecipeResponse(): RecipeResponse {
@@ -60,7 +59,7 @@ export class RecipeServiceMock implements Required<RecipeService> {
     return [this.generateRecipeResponse()];
   }
 
-  async findRecipeById(recipeId: number): Promise<RecipeResponse> {
+  async findRecipeById(_recipeId: number): Promise<RecipeResponse> {
     return this.generateRecipeResponse();
   }
 }
