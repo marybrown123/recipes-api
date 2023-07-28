@@ -8,7 +8,6 @@ import {
   Post,
   Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
 import { RecipeService } from './recipe.service';
@@ -27,7 +26,6 @@ import {
 import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
 import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
-import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('/recipe')
 export class RecipeController {
@@ -75,7 +73,6 @@ export class RecipeController {
     return this.recipeService.findAllRecipes(query);
   }
 
-  @UseInterceptors(CacheInterceptor)
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Get one recipe by id' })

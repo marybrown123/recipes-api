@@ -45,11 +45,9 @@ export class RecipeService {
       const recipeFromDb = await this.queryBus.execute(
         new FindRecipeByIdQuery(recipeId),
       );
-      await this.cacheService.set(
-        `/recipe/${recipeId}`,
-        new RecipeResponse(recipeFromDb),
-      );
-      return new RecipeResponse(recipeFromDb);
+      const reciopeToReturn = new RecipeResponse(recipeFromDb);
+      await this.cacheService.set(`/recipe/${recipeId}`, reciopeToReturn);
+      return reciopeToReturn;
     }
   }
 
