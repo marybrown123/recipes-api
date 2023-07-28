@@ -7,15 +7,14 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { RecipeModule } from '../../../recipe/recipe.module';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
-import { AuthModule } from '../../../auth/auth.module';
 import { IsUserAuthorGuard } from '../../../user/guards/is-user-author.guard';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { AppModule } from '../../../app.module';
 
 describe('Recipe Controller - Update', () => {
   let app: INestApplication;
@@ -66,7 +65,7 @@ describe('Recipe Controller - Update', () => {
   ];
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule],
+      imports: [AppModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)
@@ -93,7 +92,8 @@ describe('Recipe Controller - Update', () => {
   });
 
   afterAll(async () => {
-    prismaService.user.delete({ where: { id: testUser.id } });
+    await prismaService.user.delete({ where: { id: testUser.id } });
+    await app.close();
   });
 
   it('should update a recipe', async () => {

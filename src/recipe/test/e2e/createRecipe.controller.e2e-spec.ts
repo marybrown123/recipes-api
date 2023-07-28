@@ -2,15 +2,14 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
-import { RecipeModule } from '../../recipe.module';
 import { RecipeService } from '../../recipe.service';
-import { AuthModule } from '../../../auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
 import { Role, User } from '@prisma/client';
 import { UserService } from '../../../user/user.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { AppModule } from '../../../app.module';
 
 describe('Recipe Controller - Create', () => {
   let app: INestApplication;
@@ -61,7 +60,7 @@ describe('Recipe Controller - Create', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule],
+      imports: [AppModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)
@@ -87,6 +86,7 @@ describe('Recipe Controller - Create', () => {
 
   afterAll(async () => {
     await prismaService.user.delete({ where: { id: testUser.id } });
+    await app.close();
   });
 
   it('should create a recipe', async () => {
