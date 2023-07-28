@@ -2,9 +2,7 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
-import { RecipeModule } from '../../recipe.module';
 import { RecipeService } from '../../recipe.service';
-import { AuthModule } from '../../../auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
@@ -62,7 +60,7 @@ describe('Recipe Controller - Create', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule, AppModule],
+      imports: [AppModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)

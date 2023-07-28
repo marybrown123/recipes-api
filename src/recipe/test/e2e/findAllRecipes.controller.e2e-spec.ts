@@ -2,8 +2,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AuthModule } from '../../../auth/auth.module';
-import { RecipeModule } from '../../../recipe/recipe.module';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { UserService } from '../../../user/user.service';
@@ -21,7 +19,7 @@ describe('Recipe Controller - Find All Recipes', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule, AppModule],
+      imports: [AppModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)

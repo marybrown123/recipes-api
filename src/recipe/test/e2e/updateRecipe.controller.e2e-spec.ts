@@ -7,11 +7,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { RecipeModule } from '../../../recipe/recipe.module';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
-import { AuthModule } from '../../../auth/auth.module';
 import { IsUserAuthorGuard } from '../../../user/guards/is-user-author.guard';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
@@ -67,7 +65,7 @@ describe('Recipe Controller - Update', () => {
   ];
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule, AppModule],
+      imports: [AppModule],
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)
