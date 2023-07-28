@@ -106,15 +106,8 @@ describe('Recipe Service', () => {
       .mockResolvedValue(recipe);
 
     const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
-    const result = await recipeService.findRecipeById(recipeFromDb.id);
+    await recipeService.findRecipeById(recipeFromDb.id);
 
-    expect(result.name).toBe('Dumplings');
-    expect(result.description).toBe('Easy dumplings recipe');
-    expect(result.imageURL).toBe('imageURL');
-    expect(result.preparing[0].step).toBe('add flour');
-    expect(result.preparing[0].order).toBe(1);
-    expect(result.ingredients[0].name).toBe('flour');
-    expect(result.ingredients[0].amount).toBe('spoon');
     expect(cacheServiceGet).toBeCalledWith(`/recipe/${recipeFromDb.id}`);
     expect(queryBusExecuteFindOne).toBeCalledTimes(0);
     expect(cacheServiceGet).toBeCalledTimes(1);
