@@ -8,20 +8,19 @@ import { RecipeDAO } from '../recipe/recipe.dao';
 import { FindAllRecipesHandler } from '../recipe/queries/handlers/findAllRecipes.handler';
 import { CreateRecipeHandler } from '../recipe/commands/handlers/createRecipe.handler';
 import { UpdateRecipeHandler } from '../recipe/commands/handlers/updateRecipe.handler';
-import { NotificationsGateway } from '../gateways/notification.gateway';
+import { GatewayModule } from 'src/gateways/gateway.module';
 
 export const QueryHandlers = [FindRecipeByIdHandler, FindAllRecipesHandler];
 export const CommandHandlers = [CreateRecipeHandler, UpdateRecipeHandler];
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, GatewayModule],
   providers: [
     RecipeService,
     ...QueryHandlers,
     ...CommandHandlers,
     PrismaService,
     RecipeDAO,
-    NotificationsGateway,
   ],
   exports: [RecipeService],
   controllers: [RecipeController],
