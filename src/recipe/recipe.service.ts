@@ -8,33 +8,16 @@ import { FindRecipeByIdQuery } from './queries/impl/findRecipeById.query';
 import { CreateRecipeCommand } from '../recipe/commands/impl/createRecipe.command';
 import { UpdateRecipeCommand } from '../recipe/commands/impl/updateRecipe.command';
 import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query';
-import { EventGateway } from '../websocket/event.gateway';
 
 @Injectable()
 export class RecipeService {
-  constructor(
-    private queryBus: QueryBus,
-    private commandBus: CommandBus,
-    private eventGateway: EventGateway,
-  ) {}
+  constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
 
   async createRecipe(
     recipe: CreateRecipeDTO,
     authorId: number,
   ): Promise<RecipeResponse> {
-    let notificationPayload;
-
-    const recipeFromDb = await this.commandBus.execute(
-      new CreateRecipeCommand(recipe, authorId),
-    );
-
-    if (recipeFromDb) {
-      notificationPayload = 'Recipe created succesfully';
-    }
-
-    this.eventGateway.createRecipeEvent(notificationPayload, authorId);
-
-    return new RecipeResponse(recipeFromDb);
+    return this.commandBus.execute(new CreateRecipeCommand(recipe, authorId));
   }
 
   async updateRecipe(

@@ -40,10 +40,12 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`User disconnected: ${socket.id}`);
   }
 
-  createRecipeEvent(payload: string, userId: number) {
+  createRecipeEvent(userId: number) {
     const user = this.connectedUsers.get(userId);
     if (user) {
-      this.server.to(user).emit('create_recipe_event', payload);
+      this.server
+        .to(user)
+        .emit('create_recipe_event', 'Recipe created succesfully');
     }
   }
 }
