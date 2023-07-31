@@ -16,24 +16,32 @@ export class ConnectionHandlerGateway
   public connectedUsers = new Map<number, string>();
 
   async handleConnection(socket: Socket) {
-    const connectedUser = await this.authService.verifyToken(
-      socket.handshake.headers.authorization,
-      process.env.JWT_SECRET,
-    );
+    try {
+      const connectedUser = await this.authService.verifyToken(
+        socket.handshake.headers.authorization,
+        process.env.JWT_SECRET,
+      );
 
-    this.connectedUsers.set(connectedUser.sub, socket.id);
+      this.connectedUsers.set(connectedUser.sub, socket.id);
 
-    console.log(`User connected: ${socket.id}`);
+      console.log(`User connected: ${socket.id}`);
+    } catch (error) {
+      console.error(error.message);
+    }
   }
 
   async handleDisconnect(socket: Socket) {
-    const disconnectedUser = await this.authService.verifyToken(
-      socket.handshake.headers.authorization,
-      process.env.JWT_SECRET,
-    );
+    try {
+      const disconnectedUser = await this.authService.verifyToken(
+        socket.handshake.headers.authorization,
+        process.env.JWT_SECRET,
+      );
 
-    this.connectedUsers.delete(disconnectedUser.sub);
+      this.connectedUsers.delete(disconnectedUser.sub);
 
-    console.log(`User disconnected: ${socket.id}`);
+      console.log(`User disconnected: ${socket.id}`);
+    } catch (error) {
+      console.error(error.message);
+    }
   }
 }
