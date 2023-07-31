@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { ConnectionHandlerGateway } from 'src/websocket/connection.handler.gateway';
+import { ConnectionHandlerGateway } from '../websocket/connection.handler.gateway';
 
 @WebSocketGateway()
 @Injectable()

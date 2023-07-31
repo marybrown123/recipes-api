@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateRecipeCommand } from '../../../recipe/commands/impl/createRecipe.command';
 import { RecipeDAO } from '../../../recipe/recipe.dao';
-import { EventGateway } from 'src/websocket/event.gateway';
+import { EventGateway } from '../../../websocket/event.gateway';
 
 @CommandHandler(CreateRecipeCommand)
 export class CreateRecipeHandler

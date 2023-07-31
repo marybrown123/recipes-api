@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as jwt from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { AccessToken } from '../common/interfaces/access-token.interface';
-import { LoggedUserPayload } from 'src/common/interfaces/logged-user-payload.interface';
+import { LoggedUserPayload } from '../common/interfaces/logged-user-payload.interface';
 
 @Injectable()
 export class AuthService {
