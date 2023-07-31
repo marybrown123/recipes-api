@@ -19,7 +19,6 @@ export class ConnectionHandlerGateway
     try {
       const connectedUser = await this.authService.verifyToken(
         socket.handshake.headers.authorization,
-        process.env.JWT_SECRET,
       );
 
       this.connectedUsers.set(connectedUser.sub, socket.id);
@@ -34,7 +33,6 @@ export class ConnectionHandlerGateway
     try {
       const disconnectedUser = await this.authService.verifyToken(
         socket.handshake.headers.authorization,
-        process.env.JWT_SECRET,
       );
 
       this.connectedUsers.delete(disconnectedUser.sub);
