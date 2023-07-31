@@ -2,9 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-
+import * as jwt from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { AccessToken } from '../common/interfaces/access-token.interface';
+import { LoggedUserPayload } from 'src/common/interfaces/logged-user-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -33,5 +34,12 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
     };
+  }
+
+  async verifyToken(
+    token: string,
+    secretKey: string,
+  ): Promise<LoggedUserPayload> {
+    return jwt.verify(token, secretKey) as unknown as LoggedUserPayload;
   }
 }
