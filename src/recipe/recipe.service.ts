@@ -8,14 +8,14 @@ import { FindRecipeByIdQuery } from './queries/impl/findRecipeById.query';
 import { CreateRecipeCommand } from '../recipe/commands/impl/createRecipe.command';
 import { UpdateRecipeCommand } from '../recipe/commands/impl/updateRecipe.command';
 import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query';
-import { NotificationsGateway } from '../gateways/notification.gateway';
+import { EventGateway } from '../websocket/event.gateway';
 
 @Injectable()
 export class RecipeService {
   constructor(
     private queryBus: QueryBus,
     private commandBus: CommandBus,
-    private notificationsGateway: NotificationsGateway,
+    private eventGateway: EventGateway,
   ) {}
 
   async createRecipe(
@@ -32,10 +32,7 @@ export class RecipeService {
       notificationPayload = 'Recipe created succesfully';
     }
 
-    this.notificationsGateway.createRecipeNotification(
-      notificationPayload,
-      authorId,
-    );
+    this.eventGateway.createRecipeEvent(notificationPayload, authorId);
 
     return new RecipeResponse(recipeFromDb);
   }
