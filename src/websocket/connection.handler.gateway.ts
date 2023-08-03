@@ -22,9 +22,7 @@ export class ConnectionHandlerGateway
       );
 
       this.connectedUsers.set(connectedUser.sub, socket.id);
-      console.log(`User connected: ${socket.id}`);
     } catch (error) {
-      console.error(error.message);
       socket.disconnect();
       return error;
     }
@@ -37,10 +35,7 @@ export class ConnectionHandlerGateway
       );
 
       this.connectedUsers.delete(disconnectedUser.sub);
-
-      console.log(`User disconnected: ${socket.id}`);
     } catch (error) {
-      console.error(error.message);
       socket.disconnect();
       return error;
     }
