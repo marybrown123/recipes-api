@@ -6,13 +6,14 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AuthModule } from '../../../auth/auth.module';
-import { RecipeModule } from '../../../recipe/recipe.module';
 import { RecipeService } from '../../../recipe/recipe.service';
 import { RecipeServiceMock } from '../../../recipe/test/mocks/recipe.service.mock';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { AppModule } from '../../../app.module';
+import { CacheServiceMock } from '../../../recipe/test/mocks/cashe.service.mock';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('Recipe Controller - Find By Id', () => {
   let app: INestApplication;
@@ -25,8 +26,10 @@ describe('Recipe Controller - Find By Id', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [RecipeModule, AuthModule],
+      imports: [AppModule],
     })
+      .overrideProvider(CACHE_MANAGER)
+      .useClass(CacheServiceMock)
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)
       .compile();
@@ -51,6 +54,7 @@ describe('Recipe Controller - Find By Id', () => {
 
   afterAll(async () => {
     await prismaService.user.delete({ where: { id: testUser.id } });
+    await app.close();
   });
 
   it('should find one recipe by id', async () => {

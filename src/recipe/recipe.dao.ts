@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RecipeResponse } from '../recipe/responses/recipe.response';
 import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
@@ -76,6 +76,10 @@ export class RecipeDAO {
         ingredients: true,
       },
     });
+
+    if (!recipeFromDb) {
+      throw new NotFoundException();
+    }
 
     return new RecipeResponse(recipeFromDb);
   }
