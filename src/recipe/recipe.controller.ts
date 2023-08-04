@@ -7,7 +7,9 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
 import { RecipeService } from './recipe.service';
@@ -26,21 +28,43 @@ import {
 import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
 import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileService } from 'src/recipe/file.service';
 
 @Controller('/recipe')
 export class RecipeController {
-  constructor(private readonly recipeService: RecipeService) {}
+  constructor(
+    private readonly recipeService: RecipeService,
+    private readonly fileService: FileService,
+  ) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('file'))
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Create a new recipe' })
   @ApiCreatedResponse({ type: RecipeResponse })
   @ApiUnauthorizedResponse({ description: 'Not logged in' })
   async createRecipe(
     @Body() recipe: CreateRecipeDTO,
+    @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: User,
   ): Promise<RecipeResponse> {
     return this.recipeService.createRecipe(recipe, user.id);
+  }
+
+  @Post('/upload/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(AuthGuard('jwt'), IsUserAuthorGuard)
+  @ApiOperation({ summary: 'Upload recipe image' })
+  @ApiUnauthorizedResponse({ description: 'Not logged in' })
+  @ApiForbiddenResponse({
+    description: 'User does not own this recipe',
+  })
+  async uploadRecipeImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') recipeId: number,
+  ) {
+    return this.recipeService.uploadRecipeImage(recipeId, file);
   }
 
   @Patch('/:id')

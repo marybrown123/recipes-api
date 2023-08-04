@@ -12,7 +12,7 @@ import * as redisStore from 'cache-manager-redis-store';
     UserModule,
     AuthModule,
     RecipeModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     GatewayModule,
     CacheModule.register({
       isGlobal: true,

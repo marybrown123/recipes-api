@@ -24,7 +24,7 @@ model Recipe {
   id Int @default(autoincrement()) @id
   name String
   description String
-  imageURL String @map("image_url")
+  imageURL String? @map("image_url")
   author User @relation(fields: [authorId], references: [id])
   authorId Int @map("author_id")
   preparing RecipePreparationSteps[]

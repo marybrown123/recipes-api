@@ -9,9 +9,15 @@ import { FindAllRecipesHandler } from '../recipe/queries/handlers/findAllRecipes
 import { CreateRecipeHandler } from '../recipe/commands/handlers/createRecipe.handler';
 import { UpdateRecipeHandler } from '../recipe/commands/handlers/updateRecipe.handler';
 import { GatewayModule } from '../websocket/gateway.module';
+import { FileService } from 'src/recipe/file.service';
+import { UploadRecipeImageHandler } from 'src/recipe/commands/handlers/uploadRecipeImage.handler';
 
 export const QueryHandlers = [FindRecipeByIdHandler, FindAllRecipesHandler];
-export const CommandHandlers = [CreateRecipeHandler, UpdateRecipeHandler];
+export const CommandHandlers = [
+  CreateRecipeHandler,
+  UpdateRecipeHandler,
+  UploadRecipeImageHandler,
+];
 
 @Module({
   imports: [CqrsModule, GatewayModule],
@@ -21,6 +27,7 @@ export const CommandHandlers = [CreateRecipeHandler, UpdateRecipeHandler];
     ...CommandHandlers,
     PrismaService,
     RecipeDAO,
+    FileService,
   ],
   exports: [RecipeService],
   controllers: [RecipeController],

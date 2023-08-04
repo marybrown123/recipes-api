@@ -48,6 +48,13 @@ export class RecipeServiceMock implements Required<RecipeService> {
     return this.generateRecipeResponse();
   }
 
+  async uploadRecipeImage(
+    _recipeId: number,
+    _file: Express.Multer.File,
+  ): Promise<RecipeResponse> {
+    return this.generateRecipeResponse();
+  }
+
   async updateRecipe(
     _recipeId: number,
     _newRecipe: UpdateRecipeDTO,
