@@ -9,8 +9,8 @@ import { FindAllRecipesHandler } from '../recipe/queries/handlers/findAllRecipes
 import { CreateRecipeHandler } from '../recipe/commands/handlers/createRecipe.handler';
 import { UpdateRecipeHandler } from '../recipe/commands/handlers/updateRecipe.handler';
 import { GatewayModule } from '../websocket/gateway.module';
-import { FileService } from 'src/recipe/file.service';
-import { UploadRecipeImageHandler } from 'src/recipe/commands/handlers/uploadRecipeImage.handler';
+import { FileService } from '../recipe/file.service';
+import { UploadRecipeImageHandler } from '../recipe/commands/handlers/uploadRecipeImage.handler';
 
 export const QueryHandlers = [FindRecipeByIdHandler, FindAllRecipesHandler];
 export const CommandHandlers = [

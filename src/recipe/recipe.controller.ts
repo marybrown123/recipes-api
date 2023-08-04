@@ -29,14 +29,10 @@ import { RecipeResponse } from './responses/recipe.response';
 import { User } from '@prisma/client';
 import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileService } from 'src/recipe/file.service';
 
 @Controller('/recipe')
 export class RecipeController {
-  constructor(
-    private readonly recipeService: RecipeService,
-    private readonly fileService: FileService,
-  ) {}
+  constructor(private readonly recipeService: RecipeService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))

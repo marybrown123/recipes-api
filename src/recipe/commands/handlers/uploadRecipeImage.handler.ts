@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UpdateRecipeDTO } from 'src/recipe/DTOs/update-recipe.dto';
-import { UploadRecipeImageCommand } from 'src/recipe/commands/impl/uploadRecipeImage.command';
-import { FileService } from 'src/recipe/file.service';
-import { RecipeDAO } from 'src/recipe/recipe.dao';
+import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
+import { UploadRecipeImageCommand } from '../../../recipe/commands/impl/uploadRecipeImage.command';
+import { FileService } from '../../../recipe/file.service';
+import { RecipeDAO } from '../../../recipe/recipe.dao';
 
 @CommandHandler(UploadRecipeImageCommand)
 export class UploadRecipeImageHandler
