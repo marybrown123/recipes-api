@@ -11,6 +11,7 @@ import { UpdateRecipeHandler } from '../recipe/commands/handlers/updateRecipe.ha
 import { GatewayModule } from '../websocket/gateway.module';
 import { FileService } from '../recipe/file.service';
 import { UploadRecipeImageHandler } from '../recipe/commands/handlers/uploadRecipeImage.handler';
+import { S3Service } from '../recipe/s3.service';
 
 export const QueryHandlers = [FindRecipeByIdHandler, FindAllRecipesHandler];
 export const CommandHandlers = [
@@ -28,6 +29,7 @@ export const CommandHandlers = [
     PrismaService,
     RecipeDAO,
     FileService,
+    S3Service,
   ],
   exports: [RecipeService],
   controllers: [RecipeController],

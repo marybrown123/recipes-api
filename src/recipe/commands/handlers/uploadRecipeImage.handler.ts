@@ -12,15 +12,14 @@ export class UploadRecipeImageHandler
   async execute(command: UploadRecipeImageCommand) {
     const { recipeId, file } = command;
 
-    await this.recipeDAO.findRecipeById(recipeId);
+    const recipeFromDb = await this.recipeDAO.findRecipeById(recipeId);
+    const oldImageUrl = recipeFromDb.imageURL;
+    if (oldImageUrl !== null) {
+      return 'Recipe already has an image';
+    }
 
-    const imageURL = await this.fileService.uploadFileToS3(
-      file.originalname,
-      file.buffer,
-    );
-
+    const imageURL = await this.fileService.uploadFileToS3(file);
     const recipeWithImage: UpdateRecipeDTO = { imageURL };
-
     return this.recipeDAO.updateRecipe(recipeId, recipeWithImage);
   }
 }
