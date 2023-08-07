@@ -10,7 +10,8 @@ export class FileService {
   ) {}
 
   async uploadFileToS3(file: Express.Multer.File) {
-    const bucket = this.configService.getOrThrow('S3_BUCKET_NAME');
+    const bucket =
+      this.configService.get('S3_BUCKET_NAME') || 'recipe-api-images';
     try {
       return await this.s3Service.uploadFileToS3(
         bucket,
