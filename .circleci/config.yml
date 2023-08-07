@@ -33,7 +33,7 @@ commands:
       - run: echo "No siema z brancha <<pipeline.git.branch>>"
 executors:
   executor:
-    resource_class: small
+    resource_class: medium
     docker: 
       - image: cimg/node:18.16.0
         environment:
