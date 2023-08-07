@@ -10,6 +10,7 @@ import { UpdateRecipeCommand } from '../recipe/commands/impl/updateRecipe.comman
 import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { UploadRecipeImageCommand } from '../recipe/commands/impl/uploadRecipeImage.command';
 
 @Injectable()
 export class RecipeService {
@@ -24,6 +25,12 @@ export class RecipeService {
     authorId: number,
   ): Promise<RecipeResponse> {
     return this.commandBus.execute(new CreateRecipeCommand(recipe, authorId));
+  }
+
+  async uploadRecipeImage(recipeId: number, file: Express.Multer.File) {
+    return this.commandBus.execute(
+      new UploadRecipeImageCommand(recipeId, file),
+    );
   }
 
   async updateRecipe(

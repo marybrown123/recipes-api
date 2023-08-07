@@ -21,6 +21,7 @@
     "migrate:postgres": "dotenv -e test.env -- npx prisma migrate deploy"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.383.0",
     "@nestjs/cache-manager": "2.1.0",
     "@nestjs/common": "9.4.3",
     "@nestjs/config": "2.3.3",
@@ -35,6 +36,7 @@
     "@nestjs/websockets": "9.4.3",
     "@prisma/client": "4.14.0",
     "@types/cache-manager-redis-store": "2.0.0",
+    "@types/multer": "1.4.7",
     "@types/passport-local": "1.0.35",
     "bcrypt": "5.1.0",
     "cache-manager": "5.2.3",
