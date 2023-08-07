@@ -42,7 +42,6 @@ export class RecipeController {
   @ApiUnauthorizedResponse({ description: 'Not logged in' })
   async createRecipe(
     @Body() recipe: CreateRecipeDTO,
-    @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: User,
   ): Promise<RecipeResponse> {
     return this.recipeService.createRecipe(recipe, user.id);
