@@ -21,7 +21,7 @@ describe('Recipe Controller - Create', () => {
   const correctPayload: CreateRecipeDTO = {
     name: 'testName',
     description: 'testDescription',
-    imageURL: 'testImageURL',
+    imageKey: 'testImageKey',
     preparing: [
       {
         step: 'testStep',
@@ -45,7 +45,7 @@ describe('Recipe Controller - Create', () => {
       value: 1,
     },
     {
-      property: 'imageURL',
+      property: 'imageKey',
       value: 1,
     },
     {

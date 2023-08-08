@@ -18,7 +18,7 @@ export class RecipeResponse implements Recipe {
     this.id = recipe.id;
     this.name = recipe.name;
     this.description = recipe.description;
-    this.imageURL = recipe.imageURL;
+    this.imageKey = recipe.imageKey;
     this.authorId = recipe.authorId;
     this.preparing = recipe.preparing.map((step) => {
       return new PreparationResponse(step);
@@ -33,8 +33,8 @@ export class RecipeResponse implements Recipe {
   name: string;
   @ApiProperty({ example: 'Easy dumplings recipe', type: 'string' })
   description: string;
-  @ApiProperty({ example: 'imageURL', type: 'string' })
-  imageURL: string;
+  @ApiProperty({ example: 'imageKey', type: 'string' })
+  imageKey: string;
   @ApiProperty({ example: 1, type: 'number' })
   authorId: number;
   @ApiProperty({ type: [CreatePreparingDTO], isArray: true })

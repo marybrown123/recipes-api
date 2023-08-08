@@ -19,7 +19,7 @@ export class RecipeServiceMock implements Required<RecipeService> {
       authorId: 1,
       name: 'testName',
       description: 'testDescription',
-      imageURL: 'testImageURL',
+      imageKey: 'testImageKey',
       preparing: [
         {
           id: 1,
@@ -53,6 +53,10 @@ export class RecipeServiceMock implements Required<RecipeService> {
     _file: Express.Multer.File,
   ): Promise<RecipeResponse> {
     return this.generateRecipeResponse();
+  }
+
+  async fetchRecipeImage(_recipeId: number) {
+    return 'mockedIUrl';
   }
 
   async updateRecipe(

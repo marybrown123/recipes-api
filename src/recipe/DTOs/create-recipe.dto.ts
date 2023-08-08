@@ -15,8 +15,8 @@ export class CreateRecipeDTO {
 
   @IsString()
   @IsOptional()
-  @ApiProperty({ example: 'imageURL', type: 'string' })
-  imageURL?: string;
+  @ApiProperty({ example: 'imageKey', type: 'string' })
+  imageKey?: string;
 
   @ValidateNested()
   @Type(() => CreatePreparingDTO)

@@ -1,6 +1,13 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import { GetSignedUrlCommand } from '../common/enums/getSignedUrlCommand.enum';
 
 @Injectable()
 export class S3Service {
@@ -14,16 +21,46 @@ export class S3Service {
 
   constructor(private configService: ConfigService) {}
 
-  async uploadFileToS3(bucket: string, fileName: string, file: Buffer) {
+  async generatePresignedUrl(
+    bucket: string,
+    key: string,
+    command: GetSignedUrlCommand,
+  ) {
     const params = {
       Bucket: bucket,
-      Key: fileName,
-      Body: file,
+      Key: key,
     };
-    const command = new PutObjectCommand(params);
-    await this.s3Client.send(command);
-    return `https://${bucket}.s3.${this.configService.getOrThrow(
-      'AWS_S3_REGION',
-    )}.amazonaws.com/${fileName}`;
+    if (command === GetSignedUrlCommand.PUT) {
+      return getSignedUrl(this.s3Client, new PutObjectCommand(params), {
+        expiresIn: 60,
+      });
+    } else if (command === GetSignedUrlCommand.GET) {
+      return getSignedUrl(this.s3Client, new GetObjectCommand(params), {
+        expiresIn: 60,
+      });
+    }
+  }
+
+  async uploadFileToS3(bucket: string, key: string, file: Buffer) {
+    const signedUrl = await this.generatePresignedUrl(
+      bucket,
+      key,
+      GetSignedUrlCommand.PUT,
+    );
+
+    await axios({
+      method: 'put',
+      url: signedUrl,
+      data: file,
+      headers: {
+        'Content-Type': 'image/jpg',
+      },
+    });
+
+    return signedUrl;
+  }
+
+  async fetchFileFromS3(key: string, bucket: string) {
+    return this.generatePresignedUrl(bucket, key, GetSignedUrlCommand.GET);
   }
 }

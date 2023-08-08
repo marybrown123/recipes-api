@@ -13,13 +13,14 @@ export class UploadRecipeImageHandler
     const { recipeId, file } = command;
 
     const recipeFromDb = await this.recipeDAO.findRecipeById(recipeId);
-    const oldImageUrl = recipeFromDb.imageURL;
-    if (oldImageUrl !== null) {
+    const oldImageKey = recipeFromDb.imageKey;
+    if (oldImageKey !== null) {
       return 'Recipe already has an image';
     }
 
-    const imageURL = await this.fileService.uploadFileToS3(file);
-    const recipeWithImage: UpdateRecipeDTO = { imageURL };
+    const key = this.fileService.generateS3Key(file.originalname);
+    await this.fileService.uploadFileToS3(file, key);
+    const recipeWithImage: UpdateRecipeDTO = { imageKey: key };
     return this.recipeDAO.updateRecipe(recipeId, recipeWithImage);
   }
 }
