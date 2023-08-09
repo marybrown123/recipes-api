@@ -11,7 +11,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 const recipe = {
   name: 'Dumplings',
   description: 'Easy dumplings recipe',
-  imageKey: 'imageKey',
+  imageKey: { name: 'dumplings.jpg', key: 'asdfg.dumplings.jpg' },
   preparing: [{ step: 'add flour', order: 1 }],
   ingredients: [{ name: 'flour', amount: 'spoon' }],
 };
@@ -76,7 +76,8 @@ describe('Recipe Service', () => {
     expect(commandBusExecuteCreate).toBeCalledTimes(1);
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.image.name).toBe('dumplings.jpg');
+    expect(result.image.key).toBe('asdfg.dumplings.jpg');
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
@@ -92,7 +93,8 @@ describe('Recipe Service', () => {
     expect(commandBusExecuteUpdate).toBeCalledTimes(2);
     expect(result.name).toBe('Pasta');
     expect(result.description).toBe('Easy pasta recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.image.name).toBe('dumplings.jpg');
+    expect(result.image.key).toBe('asdfg.dumplings.jpg');
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
@@ -125,7 +127,8 @@ describe('Recipe Service', () => {
 
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.image.name).toBe('dumplings.jpg');
+    expect(result.image.key).toBe('asdfg.dumplings.jpg');
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
@@ -148,7 +151,8 @@ describe('Recipe Service', () => {
     expect(queryBusExecuteFindMany).toBeCalledTimes(1);
     expect(result[0].name).toBe('Dumplings');
     expect(result[0].description).toBe('Easy dumplings recipe');
-    expect(result[0].imageKey).toBe('imageKey');
+    expect(result[0].image.name).toBe('dumplings.jpg');
+    expect(result[0].image.key).toBe('asdfg.dumplings.jpg');
     expect(result[0].preparing[0].step).toBe('add flour');
     expect(result[0].preparing[0].order).toBe(1);
     expect(result[0].ingredients[0].name).toBe('flour');
