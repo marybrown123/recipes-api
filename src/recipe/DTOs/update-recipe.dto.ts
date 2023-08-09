@@ -3,7 +3,7 @@ import { CreateIngredientDTO } from './create-ingredient.dto';
 import { CreatePreparingDTO } from './create-preparation.dto';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateImageDTO } from 'src/recipe/DTOs/create-image.dto';
+import { CreateImageDTO } from '../../recipe/DTOs/create-image.dto';
 
 export class UpdateRecipeDTO {
   @IsString()
