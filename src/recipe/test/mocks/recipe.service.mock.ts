@@ -5,6 +5,7 @@ import { CreateRecipeDTO } from '../../../recipe/DTOs/create-recipe.dto';
 import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
 import { FindAllRecipesDTO } from '../../DTOs/find-all-recipes-query';
 import {
+  Image,
   Recipe,
   RecipeIngredients,
   RecipePreparationSteps,
@@ -14,12 +15,17 @@ export class RecipeServiceMock implements Required<RecipeService> {
   private generateRecipeResponse(): RecipeResponse {
     const recipeToReturn: Recipe & { preparing: RecipePreparationSteps[] } & {
       ingredients: RecipeIngredients[];
-    } = {
+    } & { image: Image } = {
       id: 1,
       authorId: 1,
       name: 'testName',
       description: 'testDescription',
-      imageKey: 'testImageKey',
+      image: {
+        id: 1,
+        recipeId: 1,
+        name: 'testImageName',
+        key: 'testimageKey',
+      },
       preparing: [
         {
           id: 1,

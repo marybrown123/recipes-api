@@ -26,6 +26,7 @@ export class RecipeDAO {
       include: {
         preparing: true,
         ingredients: true,
+        image: true,
       },
     });
     return new RecipeResponse(newRecipe);
@@ -35,6 +36,8 @@ export class RecipeDAO {
     recipeId: number,
     newRecipe: UpdateRecipeDTO,
   ): Promise<RecipeResponse> {
+    const recipeToUpdate = await this.findRecipeById(recipeId);
+
     if (newRecipe.preparing) {
       await this.prismaService.recipePreparationSteps.deleteMany({
         where: {
@@ -50,16 +53,27 @@ export class RecipeDAO {
         },
       });
     }
+
+    if (newRecipe.image && recipeToUpdate.image) {
+      await this.prismaService.image.delete({
+        where: {
+          recipeId,
+        },
+      });
+    }
+
     const updatedRecipe = await this.prismaService.recipe.update({
       where: { id: recipeId },
       data: {
         ...newRecipe,
         preparing: { create: newRecipe.preparing },
         ingredients: { create: newRecipe.ingredients },
+        image: { create: newRecipe.image },
       },
       include: {
         preparing: true,
         ingredients: true,
+        image: true,
       },
     });
 
@@ -74,6 +88,7 @@ export class RecipeDAO {
       include: {
         preparing: true,
         ingredients: true,
+        image: true,
       },
     });
 
@@ -93,6 +108,7 @@ export class RecipeDAO {
       include: {
         preparing: true,
         ingredients: true,
+        image: true,
       },
     });
     return recipesFromDb.map((recipe) => {

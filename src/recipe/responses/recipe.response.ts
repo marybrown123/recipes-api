@@ -1,4 +1,5 @@
 import {
+  Image,
   Recipe,
   RecipeIngredients,
   RecipePreparationSteps,
@@ -8,17 +9,19 @@ import { CreatePreparingDTO } from '../DTOs/create-preparation.dto';
 import { CreateIngredientDTO } from '../DTOs/create-ingredient.dto';
 import { IngredientResponse } from './ingredient.response';
 import { ApiProperty } from '@nestjs/swagger';
+import { ImageResponse } from '../responses/image.response';
+import { CreateImageDTO } from '../DTOs/create-image.dto';
 
 export class RecipeResponse implements Recipe {
   constructor(
     recipe: Recipe & { preparing: RecipePreparationSteps[] } & {
       ingredients: RecipeIngredients[];
-    },
+    } & { image: Image },
   ) {
     this.id = recipe.id;
     this.name = recipe.name;
     this.description = recipe.description;
-    this.imageKey = recipe.imageKey;
+    this.image = new ImageResponse(recipe.image);
     this.authorId = recipe.authorId;
     this.preparing = recipe.preparing.map((step) => {
       return new PreparationResponse(step);
@@ -34,7 +37,7 @@ export class RecipeResponse implements Recipe {
   @ApiProperty({ example: 'Easy dumplings recipe', type: 'string' })
   description: string;
   @ApiProperty({ example: 'imageKey', type: 'string' })
-  imageKey: string;
+  image: CreateImageDTO;
   @ApiProperty({ example: 1, type: 'number' })
   authorId: number;
   @ApiProperty({ type: [CreatePreparingDTO], isArray: true })

@@ -3,6 +3,7 @@ import { CreateIngredientDTO } from './create-ingredient.dto';
 import { CreatePreparingDTO } from './create-preparation.dto';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateImageDTO } from 'src/recipe/DTOs/create-image.dto';
 
 export class UpdateRecipeDTO {
   @IsString()
@@ -13,9 +14,10 @@ export class UpdateRecipeDTO {
   @ApiProperty({ example: 'Easy dumplings recipe', type: 'string' })
   description?: string;
 
-  @IsString()
-  @ApiProperty({ example: 'imageKey', type: 'string' })
-  imageKey?: string;
+  @ValidateNested()
+  @Type(() => CreateImageDTO)
+  @ApiProperty({ type: CreateImageDTO })
+  image?: CreateImageDTO;
 
   @ValidateNested()
   @Type(() => CreatePreparingDTO)
