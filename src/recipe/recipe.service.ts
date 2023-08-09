@@ -11,7 +11,6 @@ import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { UploadRecipeImageCommand } from '../recipe/commands/impl/uploadRecipeImage.command';
-import { FetchRecipeImageQuery } from '../recipe/queries/impl/fetchRecipeImage.query';
 
 @Injectable()
 export class RecipeService {
@@ -28,14 +27,13 @@ export class RecipeService {
     return this.commandBus.execute(new CreateRecipeCommand(recipe, authorId));
   }
 
-  async uploadRecipeImage(recipeId: number, file: Express.Multer.File) {
+  async uploadRecipeImage(
+    recipeId: number,
+    file: Express.Multer.File,
+  ): Promise<RecipeResponse> {
     return this.commandBus.execute(
       new UploadRecipeImageCommand(recipeId, file),
     );
-  }
-
-  async fetchRecipeImage(recipeId: number) {
-    return this.queryBus.execute(new FetchRecipeImageQuery(recipeId));
   }
 
   async updateRecipe(
