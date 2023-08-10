@@ -12,13 +12,8 @@ import { GatewayModule } from '../websocket/gateway.module';
 import { FileService } from '../recipe/file.service';
 import { UploadRecipeImageHandler } from '../recipe/commands/handlers/uploadRecipeImage.handler';
 import { S3Service } from '../recipe/s3.service';
-import { FetchRecipeImageHandler } from '../recipe/queries/handlers/fetchRecipeImage.handler';
 
-export const QueryHandlers = [
-  FindRecipeByIdHandler,
-  FindAllRecipesHandler,
-  FetchRecipeImageHandler,
-];
+export const QueryHandlers = [FindRecipeByIdHandler, FindAllRecipesHandler];
 export const CommandHandlers = [
   CreateRecipeHandler,
   UpdateRecipeHandler,
