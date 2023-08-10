@@ -126,4 +126,16 @@ export class RecipeDAO {
       return new RecipeResponse(recipe);
     });
   }
+
+  async deleteImage(recipeId: number): Promise<void> {
+    const imageFromDb = await this.prismaService.image.findFirst({
+      where: { recipeId },
+    });
+
+    if (!imageFromDb) {
+      throw new NotFoundException();
+    }
+
+    await this.prismaService.image.delete({ where: { recipeId } });
+  }
 }

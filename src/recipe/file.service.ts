@@ -17,7 +17,17 @@ export class FileService {
       await this.s3Service.uploadFileToS3(bucket, key, file.buffer);
       return key;
     } catch (error) {
-      return error.message;
+      throw error;
+    }
+  }
+
+  async deleteFileFromS3(key: string): Promise<void> {
+    const bucket =
+      this.configService.get('S3_BUCKET_NAME') || 'recipe-api-images';
+    try {
+      await this.s3Service.deleteFileFromS3(bucket, key);
+    } catch (error) {
+      throw error;
     }
   }
 

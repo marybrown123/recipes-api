@@ -14,7 +14,12 @@ export class UploadRecipeImageHandler
   async execute(command: UploadRecipeImageCommand): Promise<RecipeResponse> {
     const { recipeId, file } = command;
 
-    await this.recipeDAO.findRecipeById(recipeId);
+    const recipeFromDb = await this.recipeDAO.findRecipeById(recipeId);
+
+    if (recipeFromDb.image) {
+      this.fileService.deleteFileFromS3(recipeFromDb.image.key);
+      this.recipeDAO.deleteImage(recipeFromDb.id);
+    }
 
     const key = await this.fileService.uploadFileToS3(file);
     const image: CreateImageDTO = {
