@@ -1,12 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Image } from '@prisma/client';
 
 export class ImageResponse implements Image {
-  constructor(image: Image) {
+  constructor(image: Image, url?: string) {
     this.id = image.id;
     this.name = image.name;
     this.key = image.key;
     this.recipeId = image.recipeId;
+    this.url = url;
   }
   @ApiProperty({ example: 1, type: 'number' })
   id: number;
@@ -16,4 +17,6 @@ export class ImageResponse implements Image {
   key: string;
   @ApiProperty({ example: 1, type: 'number' })
   recipeId: number;
+  @ApiPropertyOptional({ example: 'exampleUrl', type: 'string' })
+  url?: string;
 }

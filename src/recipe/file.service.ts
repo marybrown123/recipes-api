@@ -20,4 +20,10 @@ export class FileService {
       return error.message;
     }
   }
+
+  async getFileUrlFromS3(key: string): Promise<string> {
+    const bucket =
+      this.configService.get('S3_BUCKET_NAME') || 'recipe-api-images';
+    return this.s3Service.generatePresignedUrl(bucket, key);
+  }
 }

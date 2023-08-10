@@ -4,10 +4,14 @@ import { RecipeResponse } from '../recipe/responses/recipe.response';
 import { CreateRecipeDTO } from '../recipe/DTOs/create-recipe.dto';
 import { UpdateRecipeDTO } from '../recipe/DTOs/update-recipe.dto';
 import { FindAllRecipesDTO } from '../recipe/DTOs/find-all-recipes-query';
+import { FileService } from 'src/recipe/file.service';
 
 @Injectable()
 export class RecipeDAO {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private fileService: FileService,
+  ) {}
   async createRecipe(
     recipe: CreateRecipeDTO,
     authorId: number,
@@ -96,7 +100,14 @@ export class RecipeDAO {
       throw new NotFoundException();
     }
 
-    return new RecipeResponse(recipeFromDb);
+    if (recipeFromDb.image) {
+      const recipeImageUrl = await this.fileService.getFileUrlFromS3(
+        recipeFromDb.image.key,
+      );
+      return new RecipeResponse(recipeFromDb, recipeImageUrl);
+    } else {
+      return new RecipeResponse(recipeFromDb);
+    }
   }
 
   async findAllRecipes(query: FindAllRecipesDTO): Promise<RecipeResponse[]> {
