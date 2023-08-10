@@ -3,8 +3,8 @@ import { UpdateRecipeDTO } from '../../../recipe/DTOs/update-recipe.dto';
 import { UploadRecipeImageCommand } from '../../../recipe/commands/impl/uploadRecipeImage.command';
 import { FileService } from '../../../recipe/file.service';
 import { RecipeDAO } from '../../../recipe/recipe.dao';
-import { RecipeResponse } from 'src/recipe/responses/recipe.response';
-import { CreateImageDTO } from 'src/recipe/DTOs/create-image.dto';
+import { RecipeResponse } from '../../../recipe/responses/recipe.response';
+import { CreateImageDTO } from '../../../recipe/DTOs/create-image.dto';
 
 @CommandHandler(UploadRecipeImageCommand)
 export class UploadRecipeImageHandler

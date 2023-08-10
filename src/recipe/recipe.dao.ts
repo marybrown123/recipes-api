@@ -4,7 +4,7 @@ import { RecipeResponse } from '../recipe/responses/recipe.response';
 import { CreateRecipeDTO } from '../recipe/DTOs/create-recipe.dto';
 import { UpdateRecipeDTO } from '../recipe/DTOs/update-recipe.dto';
 import { FindAllRecipesDTO } from '../recipe/DTOs/find-all-recipes-query';
-import { FileService } from 'src/recipe/file.service';
+import { FileService } from '../recipe/file.service';
 
 @Injectable()
 export class RecipeDAO {
