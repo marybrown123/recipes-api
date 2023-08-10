@@ -18,8 +18,6 @@ const mockedFile = {
   stream: new Readable(),
 };
 
-const mockedKey = 'mockedKey';
-
 describe('File Service', () => {
   let fileService: FileService;
 
@@ -36,14 +34,8 @@ describe('File Service', () => {
   });
 
   it('should upload image to s3', async () => {
-    const result = await fileService.uploadFileToS3(mockedFile, mockedKey);
+    const result = await fileService.uploadFileToS3(mockedFile);
 
-    expect(result).toBe('mockedUrl');
-  });
-
-  it('should fetch image from S3', async () => {
-    const result = await fileService.fetchFileFromS3(mockedKey);
-
-    expect(result).toBe('mockedUrl');
+    expect(result).toBe('mockedKey');
   });
 });
