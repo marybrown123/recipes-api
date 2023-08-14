@@ -3,8 +3,12 @@
 import { S3Service } from '../../s3.service';
 
 const mockedKey = 'mockedKey';
+const mockedUrl = 'mockedUrl';
 
 export class S3ServiceMock implements Required<S3Service> {
+  async generatePresignedUrl(_fileKey: string): Promise<string> {
+    return mockedUrl;
+  }
   generateKey(_fileName: string): string {
     return mockedKey;
   }

@@ -1,8 +1,10 @@
 import {
   DeleteObjectCommand,
+  GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
@@ -19,6 +21,17 @@ export class S3Service {
 
   constructor(private configService: ConfigService) {}
 
+  async generatePresignedUrl(fileKey: string): Promise<string> {
+    const params = {
+      Bucket: 'recipe-api-images',
+      Key: fileKey,
+    };
+
+    return getSignedUrl(this.s3Client, new GetObjectCommand(params), {
+      expiresIn: 60,
+    });
+  }
+
   generateKey(fileName: string): string {
     return `${randomUUID()}-${fileName}`;
   }
@@ -28,7 +41,7 @@ export class S3Service {
     const params = {
       Bucket: 'recipe-api-images',
       Key: fileKey,
-      Buffer: file,
+      Body: file.buffer,
     };
     const command = new PutObjectCommand(params);
     await this.s3Client.send(command);
