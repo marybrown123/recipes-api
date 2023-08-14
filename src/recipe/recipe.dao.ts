@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RecipeResponse } from '../recipe/responses/recipe.response';
-import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
-import { UpdateRecipeDTO } from 'src/recipe/DTOs/update-recipe.dto';
-import { FindAllRecipesDTO } from 'src/recipe/DTOs/find-all-recipes-query';
+import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
+import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
+import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
 
 @Injectable()
 export class RecipeDAO {
@@ -14,7 +14,13 @@ export class RecipeDAO {
   ): Promise<RecipeResponse> {
     const newRecipe = await this.prismaService.recipe.create({
       data: {
-        ...recipe,
+        name: recipe.name,
+        description: recipe.description,
+        file: {
+          connect: {
+            id: recipe.fileId,
+          },
+        },
         author: {
           connect: {
             id: authorId,

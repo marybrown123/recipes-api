@@ -3,17 +3,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { UserService } from '../../../user/user.service';
-import { Role, User } from '@prisma/client';
+import { File, Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { FileService } from '../../../file/file.service';
 
 const recipe = {
   name: 'Dumplings',
   description: 'Easy dumplings recipe',
-  imageKey: 'imageKey',
+  fileId: 1,
   preparing: [{ step: 'add flour', order: 1 }],
   ingredients: [{ name: 'flour', amount: 'spoon' }],
+};
+
+const file = {
+  name: 'testName',
+  key: 'testKey',
 };
 
 const newRecipe = {
@@ -29,6 +35,8 @@ describe('Recipe Service', () => {
   let testUser: User;
   let prismaService: PrismaService;
   let cacheService: Cache;
+  let testFile: File;
+  let fileService: FileService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,21 +59,28 @@ describe('Recipe Service', () => {
     userService = module.get<UserService>(UserService);
     prismaService = module.get<PrismaService>(PrismaService);
     cacheService = module.get(CACHE_MANAGER);
+    fileService = module.get<FileService>(FileService);
 
     testUser = await userService.generateAccount(
       process.env.TEST_NAME,
       process.env.TEST_PASSWORD,
       Role.USER,
     );
+
+    testFile = await fileService.createFile(file);
+
+    recipe.fileId = testFile.id;
   });
 
   afterEach(async () => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
     await prismaService.recipe.deleteMany();
   });
 
   afterAll(async () => {
     await prismaService.user.deleteMany();
+    await prismaService.file.deleteMany();
   });
 
   it('should create a recipe', async () => {
@@ -76,7 +91,7 @@ describe('Recipe Service', () => {
     expect(commandBusExecuteCreate).toBeCalledTimes(1);
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.fileId).toBe(testFile.id);
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
@@ -92,7 +107,7 @@ describe('Recipe Service', () => {
     expect(commandBusExecuteUpdate).toBeCalledTimes(2);
     expect(result.name).toBe('Pasta');
     expect(result.description).toBe('Easy pasta recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.fileId).toBe(testFile.id);
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
@@ -125,7 +140,7 @@ describe('Recipe Service', () => {
 
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.fileId).toBe(testFile.id);
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
@@ -148,7 +163,7 @@ describe('Recipe Service', () => {
     expect(queryBusExecuteFindMany).toBeCalledTimes(1);
     expect(result[0].name).toBe('Dumplings');
     expect(result[0].description).toBe('Easy dumplings recipe');
-    expect(result[0].imageKey).toBe('imageKey');
+    expect(result[0].fileId).toBe(testFile.id);
     expect(result[0].preparing[0].step).toBe('add flour');
     expect(result[0].preparing[0].order).toBe(1);
     expect(result[0].ingredients[0].name).toBe('flour');

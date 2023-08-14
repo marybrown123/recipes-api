@@ -24,13 +24,23 @@ model Recipe {
   id Int @default(autoincrement()) @id
   name String
   description String
-  imageKey String? @map("image_key")
   author User @relation(fields: [authorId], references: [id])
   authorId Int @map("author_id")
   preparing RecipePreparationSteps[]
   ingredients RecipeIngredients[]
+  file File? @relation(fields: [fileId], references: [id])
+  fileId Int? @unique @map("file_id")
 
   @@map("recipe")
+}
+
+model File {
+  id Int @default(autoincrement()) @id
+  name String
+  key String
+  recipe Recipe?
+
+  @@map("file")
 }
 
 model RecipePreparationSteps {

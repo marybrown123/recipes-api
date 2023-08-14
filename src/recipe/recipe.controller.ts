@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -45,29 +44,6 @@ export class RecipeController {
     @CurrentUser() user: User,
   ): Promise<RecipeResponse> {
     return this.recipeService.createRecipe(recipe, user.id);
-  }
-
-  @Post('/upload/:id')
-  @UseInterceptors(FileInterceptor('file'))
-  @UseGuards(AuthGuard('jwt'), IsUserAuthorGuard)
-  @ApiOperation({ summary: 'Upload recipe image' })
-  @ApiUnauthorizedResponse({ description: 'Not logged in' })
-  @ApiForbiddenResponse({
-    description: 'User does not own this recipe',
-  })
-  async uploadRecipeImage(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('id') recipeId: number,
-  ) {
-    return this.recipeService.uploadRecipeImage(recipeId, file);
-  }
-
-  @Get('/image/:id')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: 'Fetch recipe image' })
-  @ApiUnauthorizedResponse({ description: 'Not logged in' })
-  async fetchRecipeImage(@Param('id') recipeId: number) {
-    return this.recipeService.fetchRecipeImage(recipeId);
   }
 
   @Patch('/:id')

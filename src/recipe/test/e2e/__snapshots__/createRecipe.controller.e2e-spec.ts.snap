@@ -10,6 +10,16 @@ Object {
 }
 `;
 
+exports[`Recipe Controller - Create should throw validation error when property fileId is test 1`] = `
+Object {
+  "error": "Bad Request",
+  "message": Array [
+    "fileId must be a number conforming to the specified constraints",
+  ],
+  "statusCode": 400,
+}
+`;
+
 exports[`Recipe Controller - Create should throw validation error when property imageKey is 1 1`] = `
 Object {
   "error": "Bad Request",
