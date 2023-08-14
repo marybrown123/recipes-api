@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { UserService } from '../../../user/user.service';
-import { File, Role, User } from '@prisma/client';
+import { File, Recipe, Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -37,6 +37,7 @@ describe('Recipe Service', () => {
   let cacheService: Cache;
   let testFile: File;
   let fileService: FileService;
+  let testRecipe: Recipe;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -68,8 +69,11 @@ describe('Recipe Service', () => {
     );
 
     testFile = await fileService.createFile(file);
-
     recipe.fileId = testFile.id;
+  });
+
+  beforeEach(async () => {
+    testRecipe = await recipeService.createRecipe(recipe, testUser.id);
   });
 
   afterEach(async () => {
@@ -101,10 +105,9 @@ describe('Recipe Service', () => {
   it('should update a recipe', async () => {
     const commandBusExecuteUpdate = jest.spyOn(commandBus, 'execute');
 
-    const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
-    const result = await recipeService.updateRecipe(recipeFromDb.id, newRecipe);
+    const result = await recipeService.updateRecipe(testRecipe.id, newRecipe);
 
-    expect(commandBusExecuteUpdate).toBeCalledTimes(2);
+    expect(commandBusExecuteUpdate).toBeCalledTimes(1);
     expect(result.name).toBe('Pasta');
     expect(result.description).toBe('Easy pasta recipe');
     expect(result.fileId).toBe(testFile.id);
@@ -120,10 +123,9 @@ describe('Recipe Service', () => {
       .spyOn(cacheService, 'get')
       .mockResolvedValue(recipe);
 
-    const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
-    await recipeService.findRecipeById(recipeFromDb.id);
+    await recipeService.findRecipeById(testRecipe.id);
 
-    expect(cacheServiceGet).toBeCalledWith(`/recipe/${recipeFromDb.id}`);
+    expect(cacheServiceGet).toBeCalledWith(`/recipe/${testRecipe.id}`);
     expect(queryBusExecuteFindOne).toBeCalledTimes(0);
     expect(cacheServiceGet).toBeCalledTimes(1);
   });
@@ -135,8 +137,7 @@ describe('Recipe Service', () => {
       .spyOn(cacheService, 'get')
       .mockResolvedValue(null);
 
-    const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
-    const result = await recipeService.findRecipeById(recipeFromDb.id);
+    const result = await recipeService.findRecipeById(testRecipe.id);
 
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
@@ -153,7 +154,6 @@ describe('Recipe Service', () => {
   it('should list all recipes', async () => {
     const queryBusExecuteFindMany = jest.spyOn(queryBus, 'execute');
 
-    await recipeService.createRecipe(recipe, testUser.id);
     const result = await recipeService.findAllRecipes({
       name: 'Dum',
       page: 1,
