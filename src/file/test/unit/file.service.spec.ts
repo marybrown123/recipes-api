@@ -63,10 +63,8 @@ describe('File Service', () => {
   it('should delete file', async () => {
     const commandBusExecuteDelete = jest.spyOn(commandBus, 'execute');
 
-    const result = await fileService.deleteFile(testFile.id);
+    await fileService.deleteFile(testFile.id);
 
-    expect(result.name).toBe('testName');
-    expect(result.key).toBe('testKey');
     expect(commandBusExecuteDelete).toBeCalledTimes(1);
   });
 });

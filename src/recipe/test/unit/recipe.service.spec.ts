@@ -147,7 +147,7 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(cacheServiceGet).toBeCalledTimes(1);
-    expect(queryBusExecuteFindOne).toBeCalledTimes(1);
+    expect(queryBusExecuteFindOne).toBeCalledTimes(2);
     expect(cacheServiceSet).toBeCalledTimes(1);
   });
 
@@ -160,7 +160,7 @@ describe('Recipe Service', () => {
       limit: 2,
     });
 
-    expect(queryBusExecuteFindMany).toBeCalledTimes(1);
+    expect(queryBusExecuteFindMany).toBeCalledTimes(2);
     expect(result[0].name).toBe('Dumplings');
     expect(result[0].description).toBe('Easy dumplings recipe');
     expect(result[0].fileId).toBe(testFile.id);

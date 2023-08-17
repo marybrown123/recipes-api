@@ -20,16 +20,6 @@ Object {
 }
 `;
 
-exports[`Recipe Controller - Create should throw validation error when property imageKey is 1 1`] = `
-Object {
-  "error": "Bad Request",
-  "message": Array [
-    "imageKey must be a string",
-  ],
-  "statusCode": 400,
-}
-`;
-
 exports[`Recipe Controller - Create should throw validation error when property ingredients is 1 1`] = `
 Object {
   "error": "Bad Request",

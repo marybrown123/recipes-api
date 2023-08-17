@@ -19,11 +19,13 @@ export class FindAllRecipesHandler
     const { queryData } = query;
     const recipesFromDb = await this.recipeDAO.findAllRecipes(queryData);
 
-    recipesFromDb.map(async (recipe) => {
-      const file = await this.fileService.findFileById(recipe.fileId);
-      const fileUrl = await this.s3Service.generatePresignedUrl(file.key);
+    return Promise.all(
+      recipesFromDb.map(async (recipe) => {
+        const file = await this.fileService.findFileById(recipe.fileId);
+        const fileUrl = await this.s3Service.generatePresignedUrl(file.key);
 
-      return new RecipeResponse(recipe, fileUrl);
-    });
+        return new RecipeResponse(recipe, fileUrl);
+      }),
+    );
   }
 }
