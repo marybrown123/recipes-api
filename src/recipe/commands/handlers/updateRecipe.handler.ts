@@ -4,7 +4,7 @@ import { UpdateRecipeCommand } from '../../../recipe/commands/impl/updateRecipe.
 import { RecipeDAO } from '../../../recipe/recipe.dao';
 import { FileService } from '../../../file/file.service';
 import { S3Service } from '../../../file/s3.service';
-import { RecipeResponse } from 'src/recipe/responses/recipe.response';
+import { RecipeResponse } from '../../responses/recipe.response';
 
 @CommandHandler(UpdateRecipeCommand)
 export class UpdateRecipeHandler

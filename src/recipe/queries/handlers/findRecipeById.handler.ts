@@ -1,9 +1,9 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { FindRecipeByIdQuery } from '../impl/findRecipeById.query';
 import { RecipeDAO } from '../../../recipe/recipe.dao';
-import { FileService } from 'src/file/file.service';
-import { S3Service } from 'src/file/s3.service';
-import { RecipeResponse } from 'src/recipe/responses/recipe.response';
+import { FileService } from '../../../file/file.service';
+import { S3Service } from '../../../file/s3.service';
+import { RecipeResponse } from '../../responses/recipe.response';
 
 @QueryHandler(FindRecipeByIdQuery)
 export class FindRecipeByIdHandler

@@ -2,9 +2,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateRecipeCommand } from '../../../recipe/commands/impl/createRecipe.command';
 import { RecipeDAO } from '../../../recipe/recipe.dao';
 import { EventGateway } from '../../../websocket/event.gateway';
-import { RecipeResponse } from 'src/recipe/responses/recipe.response';
-import { FileService } from 'src/file/file.service';
-import { S3Service } from 'src/file/s3.service';
+import { RecipeResponse } from '../../responses/recipe.response';
+import { FileService } from '../../../file/file.service';
+import { S3Service } from '../../../file/s3.service';
 
 @CommandHandler(CreateRecipeCommand)
 export class CreateRecipeHandler
