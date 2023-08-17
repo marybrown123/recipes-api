@@ -8,6 +8,7 @@ export class CreateFileHandler implements ICommandHandler<CreateFileCommand> {
   constructor(private fileDAO: FileDAO) {}
   async execute(command: CreateFileCommand): Promise<FileResponse> {
     const { file } = command;
-    return this.fileDAO.createFile(file);
+    const fileFromDb = await this.fileDAO.createFile(file);
+    return new FileResponse(fileFromDb);
   }
 }
