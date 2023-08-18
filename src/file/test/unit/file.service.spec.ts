@@ -5,6 +5,7 @@ import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { FileResponse } from '../../responses/file.response';
 import { S3Service } from '../../s3.service';
 import { S3ServiceMock } from '../mocks/s3.service.mock';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 const fileName = 'testName';
 
@@ -13,6 +14,7 @@ describe('File Service', () => {
   let commandBus: CommandBus;
   let queryBus: QueryBus;
   let testFile: FileResponse;
+  let prismaService: PrismaService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,6 +28,7 @@ describe('File Service', () => {
     fileService = module.get<FileService>(FileService);
     commandBus = module.get<CommandBus>(CommandBus);
     queryBus = module.get<QueryBus>(QueryBus);
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   beforeEach(async () => {
@@ -35,7 +38,7 @@ describe('File Service', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
-    await fileService.deleteFile(testFile.id);
+    await prismaService.file.deleteMany();
   });
 
   it('should create new file', async () => {
