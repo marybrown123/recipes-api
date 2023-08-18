@@ -3,11 +3,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { UserService } from '../../../user/user.service';
-import { File, Recipe, Role, User } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { FileService } from '../../../file/file.service';
+import { FileResponse } from 'src/file/responses/file.response';
+import { RecipeResponse } from 'src/recipe/responses/recipe.response';
+import { UserResponse } from 'src/user/responses/user.response';
 
 const recipe = {
   name: 'Dumplings',
@@ -17,10 +20,7 @@ const recipe = {
   ingredients: [{ name: 'flour', amount: 'spoon' }],
 };
 
-const file = {
-  name: 'testName',
-  key: 'testKey',
-};
+const fileName = 'testName';
 
 const newRecipe = {
   name: 'Pasta',
@@ -32,12 +32,12 @@ describe('Recipe Service', () => {
   let commandBus: CommandBus;
   let queryBus: QueryBus;
   let userService: UserService;
-  let testUser: User;
+  let testUser: UserResponse;
   let prismaService: PrismaService;
   let cacheService: Cache;
-  let testFile: File;
+  let testFile: FileResponse;
   let fileService: FileService;
-  let testRecipe: Recipe;
+  let testRecipe: RecipeResponse;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -68,11 +68,11 @@ describe('Recipe Service', () => {
       Role.USER,
     );
 
-    testFile = await fileService.createFile(file);
+    testFile = await fileService.createFile(fileName);
+    recipe.fileId = testFile.id;
   });
 
   beforeEach(async () => {
-    recipe.fileId = testFile.id;
     testRecipe = await recipeService.createRecipe(recipe, testUser.id);
   });
 

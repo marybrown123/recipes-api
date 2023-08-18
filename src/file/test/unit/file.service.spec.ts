@@ -1,25 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
 import { FileService } from '../../file.service';
-import { CreateFileDTO } from '../../DTOs/create-file.dto';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
-import { File } from '@prisma/client';
+import { FileResponse } from '../../responses/file.response';
+import { S3Service } from '../../s3.service';
+import { S3ServiceMock } from '../mocks/s3.service.mock';
 
-const file: CreateFileDTO = {
-  name: 'testName',
-  key: 'testKey',
-};
+const fileName = 'testName';
 
 describe('File Service', () => {
   let fileService: FileService;
   let commandBus: CommandBus;
   let queryBus: QueryBus;
-  let testFile: File;
+  let testFile: FileResponse;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule, CqrsModule],
-    }).compile();
+    })
+      .overrideProvider(S3Service)
+      .useClass(S3ServiceMock)
+      .compile();
 
     await module.createNestApplication().init();
     fileService = module.get<FileService>(FileService);
@@ -28,7 +29,7 @@ describe('File Service', () => {
   });
 
   beforeEach(async () => {
-    testFile = await fileService.createFile(file);
+    testFile = await fileService.createFile(fileName);
   });
 
   afterEach(async () => {
@@ -40,11 +41,12 @@ describe('File Service', () => {
   it('should create new file', async () => {
     const commandBusExecute = jest.spyOn(commandBus, 'execute');
 
-    const result = await fileService.createFile(file);
+    const result = await fileService.createFile(fileName);
 
     expect(result.name).toBe('testName');
-    expect(result.key).toBe('testKey');
     expect(commandBusExecute).toBeCalledTimes(1);
+
+    await fileService.deleteFile(result.id);
   });
 
   it('should find file by id', async () => {
@@ -53,7 +55,6 @@ describe('File Service', () => {
     const result = await fileService.findFileById(testFile.id);
 
     expect(result.name).toBe('testName');
-    expect(result.key).toBe('testKey');
     expect(queryBusExecute).toBeCalledTimes(1);
   });
 

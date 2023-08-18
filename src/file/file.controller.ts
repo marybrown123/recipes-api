@@ -14,14 +14,10 @@ import {
 } from '@nestjs/swagger';
 import { FileService } from '../file/file.service';
 import { FileResponse } from '../file/responses/file.response';
-import { S3Service } from '../file/s3.service';
 
 @Controller('/file')
 export class FileController {
-  constructor(
-    private readonly fileService: FileService,
-    private readonly s3Service: S3Service,
-  ) {}
+  constructor(private readonly fileService: FileService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -32,10 +28,6 @@ export class FileController {
   async createFile(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<FileResponse> {
-    const fileKey = await this.s3Service.uploadFile(file);
-    return this.fileService.createFile({
-      name: file.originalname,
-      key: fileKey,
-    });
+    return this.fileService.createFile(file.originalname);
   }
 }

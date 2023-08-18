@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { CreateFileDTO } from './DTOs/create-file.dto';
 import { CreateFileCommand } from './commands/impl/create-file.command';
 import { DeleteFileCommand } from './commands/impl/delete-file.command';
 import { FindFileByIdQuery } from './queries/impl/find-file-by-id.command';
@@ -10,8 +9,8 @@ import { FileResponse } from './responses/file.response';
 export class FileService {
   constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
-  async createFile(file: CreateFileDTO): Promise<FileResponse> {
-    return this.commandBus.execute(new CreateFileCommand(file));
+  async createFile(fileName: string): Promise<FileResponse> {
+    return this.commandBus.execute(new CreateFileCommand(fileName));
   }
 
   async deleteFile(fileId: number): Promise<FileResponse> {
