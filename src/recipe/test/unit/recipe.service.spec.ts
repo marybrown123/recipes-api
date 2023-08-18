@@ -84,7 +84,7 @@ describe('Recipe Service', () => {
 
   afterAll(async () => {
     await prismaService.user.deleteMany();
-    await fileService.deleteFile(testFile.id);
+    await prismaService.file.deleteMany();
   });
 
   it('should create a recipe', async () => {
