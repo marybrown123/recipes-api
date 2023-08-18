@@ -4,6 +4,7 @@ import { UpdateRecipeCommand } from '../../../recipe/commands/impl/updateRecipe.
 import { RecipeDAO } from '../../../recipe/recipe.dao';
 import { FileService } from '../../../file/file.service';
 import { S3Service } from '../../../file/s3.service';
+import { RecipeResponse } from '../../responses/recipe.response';
 
 @CommandHandler(UpdateRecipeCommand)
 export class UpdateRecipeHandler
@@ -29,6 +30,14 @@ export class UpdateRecipeHandler
       return await this.fileService.deleteFile(oldFile.id);
     }
 
-    return this.recipeDAO.updateRecipe(recipeId, newRecipe);
+    const updatedRecipe = await this.recipeDAO.updateRecipe(
+      recipeId,
+      newRecipe,
+    );
+
+    const file = await this.fileService.findFileById(updatedRecipe.fileId);
+    const fileUrl = await this.s3Service.generatePresignedUrl(file.key);
+
+    return new RecipeResponse(updatedRecipe, fileUrl);
   }
 }

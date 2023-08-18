@@ -8,6 +8,7 @@ export class FindFileByIdHandler implements IQueryHandler<FindFileByIdQuery> {
   constructor(private fileDAO: FileDAO) {}
   async execute(command: FindFileByIdQuery): Promise<FileResponse> {
     const { fileId } = command;
-    return this.fileDAO.findFileById(fileId);
+    const fileFromDb = await this.fileDAO.findFileById(fileId);
+    return new FileResponse(fileFromDb);
   }
 }
