@@ -3,7 +3,6 @@ import { AppModule } from '../../../app.module';
 import { FileService } from '../../file.service';
 import { CreateFileDTO } from '../../DTOs/create-file.dto';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { File } from '@prisma/client';
 
 const file: CreateFileDTO = {
@@ -15,7 +14,6 @@ describe('File Service', () => {
   let fileService: FileService;
   let commandBus: CommandBus;
   let queryBus: QueryBus;
-  let prismaService: PrismaService;
   let testFile: File;
 
   beforeAll(async () => {
@@ -27,7 +25,6 @@ describe('File Service', () => {
     fileService = module.get<FileService>(FileService);
     commandBus = module.get<CommandBus>(CommandBus);
     queryBus = module.get<QueryBus>(QueryBus);
-    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   beforeEach(async () => {
@@ -37,7 +34,7 @@ describe('File Service', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
-    await prismaService.file.deleteMany();
+    await fileService.deleteFile(testFile.id);
   });
 
   it('should create new file', async () => {

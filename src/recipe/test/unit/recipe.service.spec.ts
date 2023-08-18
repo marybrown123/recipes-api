@@ -67,10 +67,11 @@ describe('Recipe Service', () => {
       process.env.TEST_PASSWORD,
       Role.USER,
     );
+
+    testFile = await fileService.createFile(file);
   });
 
   beforeEach(async () => {
-    testFile = await fileService.createFile(file);
     recipe.fileId = testFile.id;
     testRecipe = await recipeService.createRecipe(recipe, testUser.id);
   });
@@ -79,11 +80,11 @@ describe('Recipe Service', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
     await prismaService.recipe.deleteMany();
-    await prismaService.file.deleteMany();
   });
 
   afterAll(async () => {
     await prismaService.user.deleteMany();
+    await fileService.deleteFile(testFile.id);
   });
 
   it('should create a recipe', async () => {
