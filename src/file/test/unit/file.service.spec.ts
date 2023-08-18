@@ -38,6 +38,9 @@ describe('File Service', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
+  });
+
+  afterAll(async () => {
     await prismaService.file.deleteMany();
   });
 
@@ -48,8 +51,6 @@ describe('File Service', () => {
 
     expect(result.name).toBe('testName');
     expect(commandBusExecute).toBeCalledTimes(1);
-
-    await fileService.deleteFile(result.id);
   });
 
   it('should find file by id', async () => {
