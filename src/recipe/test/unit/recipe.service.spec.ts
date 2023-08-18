@@ -88,11 +88,11 @@ describe('Recipe Service', () => {
   });
 
   it('should create a recipe', async () => {
-    const commandBusExecuteCreate = jest.spyOn(commandBus, 'execute');
+    const commandBusExecute = jest.spyOn(commandBus, 'execute');
 
     const result = await recipeService.createRecipe(recipe, testUser.id);
 
-    expect(commandBusExecuteCreate).toBeCalledTimes(1);
+    expect(commandBusExecute).toBeCalledTimes(1);
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
     expect(result.fileId).toBe(testFile.id);
@@ -103,11 +103,11 @@ describe('Recipe Service', () => {
   });
 
   it('should update a recipe', async () => {
-    const commandBusExecuteUpdate = jest.spyOn(commandBus, 'execute');
+    const commandBusExecute = jest.spyOn(commandBus, 'execute');
 
     const result = await recipeService.updateRecipe(testRecipe.id, newRecipe);
 
-    expect(commandBusExecuteUpdate).toBeCalledTimes(1);
+    expect(commandBusExecute).toBeCalledTimes(1);
     expect(result.name).toBe('Pasta');
     expect(result.description).toBe('Easy pasta recipe');
     expect(result.fileId).toBe(testFile.id);
@@ -118,7 +118,7 @@ describe('Recipe Service', () => {
   });
 
   it('should return cached data if available', async () => {
-    const queryBusExecuteFindOne = jest.spyOn(queryBus, 'execute');
+    const queryBusExecute = jest.spyOn(queryBus, 'execute');
     const cacheServiceGet = jest
       .spyOn(cacheService, 'get')
       .mockResolvedValue(recipe);
@@ -126,12 +126,12 @@ describe('Recipe Service', () => {
     await recipeService.findRecipeById(testRecipe.id);
 
     expect(cacheServiceGet).toBeCalledWith(`/recipe/${testRecipe.id}`);
-    expect(queryBusExecuteFindOne).toBeCalledTimes(0);
+    expect(queryBusExecute).toBeCalledTimes(0);
     expect(cacheServiceGet).toBeCalledTimes(1);
   });
 
   it('should call database and save new cache', async () => {
-    const queryBusExecuteFindOne = jest.spyOn(queryBus, 'execute');
+    const queryBusExecute = jest.spyOn(queryBus, 'execute');
     const cacheServiceSet = jest.spyOn(cacheService, 'set');
     const cacheServiceGet = jest
       .spyOn(cacheService, 'get')
@@ -147,12 +147,12 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(cacheServiceGet).toBeCalledTimes(1);
-    expect(queryBusExecuteFindOne).toBeCalledTimes(2);
+    expect(queryBusExecute).toBeCalledTimes(2);
     expect(cacheServiceSet).toBeCalledTimes(1);
   });
 
   it('should list all recipes', async () => {
-    const queryBusExecuteFindMany = jest.spyOn(queryBus, 'execute');
+    const queryBusExecute = jest.spyOn(queryBus, 'execute');
 
     const result = await recipeService.findAllRecipes({
       name: 'Dum',
@@ -160,7 +160,7 @@ describe('Recipe Service', () => {
       limit: 2,
     });
 
-    expect(queryBusExecuteFindMany).toBeCalledTimes(2);
+    expect(queryBusExecute).toBeCalledTimes(2);
     expect(result[0].name).toBe('Dumplings');
     expect(result[0].description).toBe('Easy dumplings recipe');
     expect(result[0].fileId).toBe(testFile.id);

@@ -3,11 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
 import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
 import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
-import {
-  Recipe,
-  RecipeIngredients,
-  RecipePreparationSteps,
-} from '@prisma/client';
+import { CompleteRecipe } from 'src/recipe/types/complete-recipe.type';
 
 @Injectable()
 export class RecipeDAO {
@@ -15,11 +11,7 @@ export class RecipeDAO {
   async createRecipe(
     recipe: CreateRecipeDTO,
     authorId: number,
-  ): Promise<
-    Recipe & { preparing: RecipePreparationSteps[] } & {
-      ingredients: RecipeIngredients[];
-    }
-  > {
+  ): Promise<CompleteRecipe> {
     return this.prismaService.recipe.create({
       data: {
         name: recipe.name,
@@ -47,11 +39,7 @@ export class RecipeDAO {
   async updateRecipe(
     recipeId: number,
     newRecipe: UpdateRecipeDTO,
-  ): Promise<
-    Recipe & { preparing: RecipePreparationSteps[] } & {
-      ingredients: RecipeIngredients[];
-    }
-  > {
+  ): Promise<CompleteRecipe> {
     if (newRecipe.preparing) {
       await this.prismaService.recipePreparationSteps.deleteMany({
         where: {
@@ -81,11 +69,7 @@ export class RecipeDAO {
     });
   }
 
-  async findRecipeById(recipeId: number): Promise<
-    Recipe & { preparing: RecipePreparationSteps[] } & {
-      ingredients: RecipeIngredients[];
-    }
-  > {
+  async findRecipeById(recipeId: number): Promise<CompleteRecipe> {
     const recipeFromDb = await this.prismaService.recipe.findFirst({
       where: {
         id: recipeId,
@@ -103,11 +87,7 @@ export class RecipeDAO {
     return recipeFromDb;
   }
 
-  async findAllRecipes(query: FindAllRecipesDTO): Promise<
-    (Recipe & { preparing: RecipePreparationSteps[] } & {
-      ingredients: RecipeIngredients[];
-    })[]
-  > {
+  async findAllRecipes(query: FindAllRecipesDTO): Promise<CompleteRecipe[]> {
     const whereCodition = query.name ? { name: { contains: query.name } } : {};
     const recipesFromDb = await this.prismaService.recipe.findMany({
       where: whereCodition,

@@ -38,30 +38,30 @@ describe('File Service', () => {
   });
 
   it('should create new file', async () => {
-    const commandBusExecuteCreate = jest.spyOn(commandBus, 'execute');
+    const commandBusExecute = jest.spyOn(commandBus, 'execute');
 
     const result = await fileService.createFile(file);
 
     expect(result.name).toBe('testName');
     expect(result.key).toBe('testKey');
-    expect(commandBusExecuteCreate).toBeCalledTimes(1);
+    expect(commandBusExecute).toBeCalledTimes(1);
   });
 
   it('should find file by id', async () => {
-    const queryBusExecuteFindById = jest.spyOn(queryBus, 'execute');
+    const queryBusExecute = jest.spyOn(queryBus, 'execute');
 
     const result = await fileService.findFileById(testFile.id);
 
     expect(result.name).toBe('testName');
     expect(result.key).toBe('testKey');
-    expect(queryBusExecuteFindById).toBeCalledTimes(1);
+    expect(queryBusExecute).toBeCalledTimes(1);
   });
 
   it('should delete file', async () => {
-    const commandBusExecuteDelete = jest.spyOn(commandBus, 'execute');
+    const commandBusExecute = jest.spyOn(commandBus, 'execute');
 
     await fileService.deleteFile(testFile.id);
 
-    expect(commandBusExecuteDelete).toBeCalledTimes(1);
+    expect(commandBusExecute).toBeCalledTimes(1);
   });
 });
