@@ -60,6 +60,7 @@ describe('File Service', () => {
 
     await fileService.deleteFile(testFile.id);
 
+    expect(testFile).toBe(null);
     expect(commandBusExecute).toBeCalledTimes(2);
   });
 });
