@@ -10,6 +10,6 @@ export class DeleteFileHandler implements ICommandHandler<DeleteFileCommand> {
     const { fileId } = command;
     const fileToDelete = await this.fileDAO.findFileById(fileId);
     await this.s3Service.deleteFile(fileToDelete.key);
-    this.fileDAO.deleteFile(fileId);
+    await this.fileDAO.deleteFile(fileId);
   }
 }
