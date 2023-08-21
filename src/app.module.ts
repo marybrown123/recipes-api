@@ -6,12 +6,14 @@ import { ConfigModule } from '@nestjs/config';
 import { GatewayModule } from './websocket/gateway.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
     RecipeModule,
+    FileModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GatewayModule,
     CacheModule.register({

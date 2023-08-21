@@ -9,16 +9,11 @@ import { FindAllRecipesHandler } from '../recipe/queries/handlers/findAllRecipes
 import { CreateRecipeHandler } from '../recipe/commands/handlers/createRecipe.handler';
 import { UpdateRecipeHandler } from '../recipe/commands/handlers/updateRecipe.handler';
 import { GatewayModule } from '../websocket/gateway.module';
-import { FileService } from '../recipe/file.service';
-import { UploadRecipeImageHandler } from '../recipe/commands/handlers/uploadRecipeImage.handler';
-import { S3Service } from '../recipe/s3.service';
+import { FileService } from '../file/file.service';
+import { S3Service } from '../file/s3.service';
 
 export const QueryHandlers = [FindRecipeByIdHandler, FindAllRecipesHandler];
-export const CommandHandlers = [
-  CreateRecipeHandler,
-  UpdateRecipeHandler,
-  UploadRecipeImageHandler,
-];
+export const CommandHandlers = [CreateRecipeHandler, UpdateRecipeHandler];
 
 @Module({
   imports: [CqrsModule, GatewayModule],

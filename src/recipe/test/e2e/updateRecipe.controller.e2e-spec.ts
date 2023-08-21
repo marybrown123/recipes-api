@@ -27,7 +27,7 @@ describe('Recipe Controller - Update', () => {
   const correctPayload: UpdateRecipeDTO = {
     name: 'testName',
     description: 'testDescription',
-    imageURL: 'testImageURL',
+    fileId: 1,
     preparing: [
       {
         step: 'testStep',
@@ -51,8 +51,8 @@ describe('Recipe Controller - Update', () => {
       value: 1,
     },
     {
-      property: 'imageURL',
-      value: 1,
+      property: 'fileId',
+      value: 'test',
     },
     {
       property: 'preparing',

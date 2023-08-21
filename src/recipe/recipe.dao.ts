@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RecipeResponse } from '../recipe/responses/recipe.response';
-import { CreateRecipeDTO } from 'src/recipe/DTOs/create-recipe.dto';
-import { UpdateRecipeDTO } from 'src/recipe/DTOs/update-recipe.dto';
-import { FindAllRecipesDTO } from 'src/recipe/DTOs/find-all-recipes-query';
+import { CreateRecipeDTO } from './DTOs/create-recipe.dto';
+import { UpdateRecipeDTO } from './DTOs/update-recipe.dto';
+import { FindAllRecipesDTO } from './DTOs/find-all-recipes-query';
+import { CompleteRecipe } from 'src/recipe/types/complete-recipe.type';
 
 @Injectable()
 export class RecipeDAO {
@@ -11,10 +11,16 @@ export class RecipeDAO {
   async createRecipe(
     recipe: CreateRecipeDTO,
     authorId: number,
-  ): Promise<RecipeResponse> {
-    const newRecipe = await this.prismaService.recipe.create({
+  ): Promise<CompleteRecipe> {
+    return this.prismaService.recipe.create({
       data: {
-        ...recipe,
+        name: recipe.name,
+        description: recipe.description,
+        file: {
+          connect: {
+            id: recipe.fileId,
+          },
+        },
         author: {
           connect: {
             id: authorId,
@@ -28,13 +34,12 @@ export class RecipeDAO {
         ingredients: true,
       },
     });
-    return new RecipeResponse(newRecipe);
   }
 
   async updateRecipe(
     recipeId: number,
     newRecipe: UpdateRecipeDTO,
-  ): Promise<RecipeResponse> {
+  ): Promise<CompleteRecipe> {
     if (newRecipe.preparing) {
       await this.prismaService.recipePreparationSteps.deleteMany({
         where: {
@@ -50,7 +55,7 @@ export class RecipeDAO {
         },
       });
     }
-    const updatedRecipe = await this.prismaService.recipe.update({
+    return this.prismaService.recipe.update({
       where: { id: recipeId },
       data: {
         ...newRecipe,
@@ -62,11 +67,9 @@ export class RecipeDAO {
         ingredients: true,
       },
     });
-
-    return new RecipeResponse(updatedRecipe);
   }
 
-  async findRecipeById(recipeId: number): Promise<RecipeResponse> {
+  async findRecipeById(recipeId: number): Promise<CompleteRecipe> {
     const recipeFromDb = await this.prismaService.recipe.findFirst({
       where: {
         id: recipeId,
@@ -81,10 +84,10 @@ export class RecipeDAO {
       throw new NotFoundException();
     }
 
-    return new RecipeResponse(recipeFromDb);
+    return recipeFromDb;
   }
 
-  async findAllRecipes(query: FindAllRecipesDTO): Promise<RecipeResponse[]> {
+  async findAllRecipes(query: FindAllRecipesDTO): Promise<CompleteRecipe[]> {
     const whereCodition = query.name ? { name: { contains: query.name } } : {};
     const recipesFromDb = await this.prismaService.recipe.findMany({
       where: whereCodition,
@@ -95,8 +98,6 @@ export class RecipeDAO {
         ingredients: true,
       },
     });
-    return recipesFromDb.map((recipe) => {
-      return new RecipeResponse(recipe);
-    });
+    return recipesFromDb;
   }
 }
