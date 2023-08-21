@@ -1,4 +1,9 @@
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { CreatePreparingDTO } from './create-preparation.dto';
 import { CreateIngredientDTO } from './create-ingredient.dto';
 import { Type } from 'class-transformer';
@@ -13,10 +18,10 @@ export class CreateRecipeDTO {
   @ApiProperty({ example: 'Easy dumplings recipe', type: 'string' })
   description: string;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  @ApiProperty({ example: 'imageKey', type: 'string' })
-  imageKey?: string;
+  @ApiProperty({ example: 'imageKey', type: 'number' })
+  fileId: number;
 
   @ValidateNested()
   @Type(() => CreatePreparingDTO)

@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -20,14 +21,10 @@ export class S3Service {
 
   constructor(private configService: ConfigService) {}
 
-  generateS3Key(fileName: string): string {
-    return `${randomUUID}-${fileName}`;
-  }
-
-  async generatePresignedUrl(bucket: string, key: string): Promise<string> {
+  async generatePresignedUrl(fileKey: string): Promise<string> {
     const params = {
-      Bucket: bucket,
-      Key: key,
+      Bucket: 'recipe-api-images',
+      Key: fileKey,
     };
 
     return getSignedUrl(this.s3Client, new GetObjectCommand(params), {
@@ -35,17 +32,28 @@ export class S3Service {
     });
   }
 
-  async uploadFileToS3(
-    bucket: string,
-    key: string,
-    file: Buffer,
-  ): Promise<void> {
+  generateKey(fileName: string): string {
+    return `${randomUUID()}-${fileName}`;
+  }
+
+  async uploadFile(file: Express.Multer.File): Promise<string> {
+    const fileKey = this.generateKey(file.originalname);
     const params = {
-      Bucket: bucket,
-      Key: key,
-      Body: file,
+      Bucket: 'recipe-api-images',
+      Key: fileKey,
+      Body: file.buffer,
     };
     const command = new PutObjectCommand(params);
+    await this.s3Client.send(command);
+    return fileKey;
+  }
+
+  async deleteFile(fileKey: string): Promise<void> {
+    const params = {
+      Bucket: 'recipe-api-images',
+      Key: fileKey,
+    };
+    const command = new DeleteObjectCommand(params);
     await this.s3Client.send(command);
   }
 }

@@ -19,7 +19,7 @@ export class RecipeServiceMock implements Required<RecipeService> {
       authorId: 1,
       name: 'testName',
       description: 'testDescription',
-      imageKey: 'testImageKey',
+      fileId: 1,
       preparing: [
         {
           id: 1,

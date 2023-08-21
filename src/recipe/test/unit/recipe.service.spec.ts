@@ -3,18 +3,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { UserService } from '../../../user/user.service';
-import { Role, User } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { FileService } from '../../../file/file.service';
+import { FileResponse } from 'src/file/responses/file.response';
+import { RecipeResponse } from 'src/recipe/responses/recipe.response';
+import { UserResponse } from 'src/user/responses/user.response';
 
 const recipe = {
   name: 'Dumplings',
   description: 'Easy dumplings recipe',
-  imageKey: 'imageKey',
+  fileId: 1,
   preparing: [{ step: 'add flour', order: 1 }],
   ingredients: [{ name: 'flour', amount: 'spoon' }],
 };
+
+const fileName = 'testName';
 
 const newRecipe = {
   name: 'Pasta',
@@ -26,9 +32,12 @@ describe('Recipe Service', () => {
   let commandBus: CommandBus;
   let queryBus: QueryBus;
   let userService: UserService;
-  let testUser: User;
+  let testUser: UserResponse;
   let prismaService: PrismaService;
   let cacheService: Cache;
+  let testFile: FileResponse;
+  let fileService: FileService;
+  let testRecipe: RecipeResponse;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,32 +60,37 @@ describe('Recipe Service', () => {
     userService = module.get<UserService>(UserService);
     prismaService = module.get<PrismaService>(PrismaService);
     cacheService = module.get(CACHE_MANAGER);
+    fileService = module.get<FileService>(FileService);
 
     testUser = await userService.generateAccount(
       process.env.TEST_NAME,
       process.env.TEST_PASSWORD,
       Role.USER,
     );
+
+    testFile = await fileService.createFile(fileName);
+    recipe.fileId = testFile.id;
+  });
+
+  beforeEach(async () => {
+    testRecipe = await recipeService.createRecipe(recipe, testUser.id);
   });
 
   afterEach(async () => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
     await prismaService.recipe.deleteMany();
   });
 
-  afterAll(async () => {
-    await prismaService.user.deleteMany();
-  });
-
   it('should create a recipe', async () => {
-    const commandBusExecuteCreate = jest.spyOn(commandBus, 'execute');
+    const commandBusExecute = jest.spyOn(commandBus, 'execute');
 
     const result = await recipeService.createRecipe(recipe, testUser.id);
 
-    expect(commandBusExecuteCreate).toBeCalledTimes(1);
+    expect(commandBusExecute).toBeCalledTimes(1);
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.fileId).toBe(testFile.id);
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
@@ -84,15 +98,14 @@ describe('Recipe Service', () => {
   });
 
   it('should update a recipe', async () => {
-    const commandBusExecuteUpdate = jest.spyOn(commandBus, 'execute');
+    const commandBusExecute = jest.spyOn(commandBus, 'execute');
 
-    const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
-    const result = await recipeService.updateRecipe(recipeFromDb.id, newRecipe);
+    const result = await recipeService.updateRecipe(testRecipe.id, newRecipe);
 
-    expect(commandBusExecuteUpdate).toBeCalledTimes(2);
+    expect(commandBusExecute).toBeCalledTimes(1);
     expect(result.name).toBe('Pasta');
     expect(result.description).toBe('Easy pasta recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.fileId).toBe(testFile.id);
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
@@ -100,58 +113,60 @@ describe('Recipe Service', () => {
   });
 
   it('should return cached data if available', async () => {
-    const queryBusExecuteFindOne = jest.spyOn(queryBus, 'execute');
+    const queryBusExecute = jest.spyOn(queryBus, 'execute');
     const cacheServiceGet = jest
       .spyOn(cacheService, 'get')
       .mockResolvedValue(recipe);
 
-    const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
-    await recipeService.findRecipeById(recipeFromDb.id);
+    await recipeService.findRecipeById(testRecipe.id);
 
-    expect(cacheServiceGet).toBeCalledWith(`/recipe/${recipeFromDb.id}`);
-    expect(queryBusExecuteFindOne).toBeCalledTimes(0);
+    expect(cacheServiceGet).toBeCalledWith(`/recipe/${testRecipe.id}`);
+    expect(queryBusExecute).toBeCalledTimes(0);
     expect(cacheServiceGet).toBeCalledTimes(1);
   });
 
   it('should call database and save new cache', async () => {
-    const queryBusExecuteFindOne = jest.spyOn(queryBus, 'execute');
+    const queryBusExecute = jest.spyOn(queryBus, 'execute');
     const cacheServiceSet = jest.spyOn(cacheService, 'set');
     const cacheServiceGet = jest
       .spyOn(cacheService, 'get')
       .mockResolvedValue(null);
 
-    const recipeFromDb = await recipeService.createRecipe(recipe, testUser.id);
-    const result = await recipeService.findRecipeById(recipeFromDb.id);
+    const result = await recipeService.findRecipeById(testRecipe.id);
 
     expect(result.name).toBe('Dumplings');
     expect(result.description).toBe('Easy dumplings recipe');
-    expect(result.imageKey).toBe('imageKey');
+    expect(result.fileId).toBe(testFile.id);
     expect(result.preparing[0].step).toBe('add flour');
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
     expect(cacheServiceGet).toBeCalledTimes(1);
-    expect(queryBusExecuteFindOne).toBeCalledTimes(1);
+    expect(queryBusExecute).toBeCalledTimes(2);
     expect(cacheServiceSet).toBeCalledTimes(1);
   });
 
   it('should list all recipes', async () => {
-    const queryBusExecuteFindMany = jest.spyOn(queryBus, 'execute');
+    const queryBusExecute = jest.spyOn(queryBus, 'execute');
 
-    await recipeService.createRecipe(recipe, testUser.id);
     const result = await recipeService.findAllRecipes({
       name: 'Dum',
       page: 1,
       limit: 2,
     });
 
-    expect(queryBusExecuteFindMany).toBeCalledTimes(1);
+    expect(queryBusExecute).toBeCalledTimes(2);
     expect(result[0].name).toBe('Dumplings');
     expect(result[0].description).toBe('Easy dumplings recipe');
-    expect(result[0].imageKey).toBe('imageKey');
+    expect(result[0].fileId).toBe(testFile.id);
     expect(result[0].preparing[0].step).toBe('add flour');
     expect(result[0].preparing[0].order).toBe(1);
     expect(result[0].ingredients[0].name).toBe('flour');
     expect(result[0].ingredients[0].amount).toBe('spoon');
+  });
+
+  afterAll(async () => {
+    await prismaService.user.deleteMany();
+    await prismaService.file.deleteMany();
   });
 });

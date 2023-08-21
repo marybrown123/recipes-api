@@ -10,11 +10,11 @@ Object {
 }
 `;
 
-exports[`Recipe Controller - Update should throw validation error when property imageKey is 1 1`] = `
+exports[`Recipe Controller - Update should throw validation error when property fileId is test 1`] = `
 Object {
   "error": "Bad Request",
   "message": Array [
-    "imageKey must be a string",
+    "fileId must be a number conforming to the specified constraints",
   ],
   "statusCode": 400,
 }
