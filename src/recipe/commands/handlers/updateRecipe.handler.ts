@@ -24,8 +24,7 @@ export class UpdateRecipeHandler
     }
 
     if (newRecipe.fileId) {
-      const oldFile = await this.fileService.findFileById(recipeFromDb.fileId);
-      await this.fileService.deleteFile(oldFile.id);
+      await this.fileService.deleteFile(recipeFromDb.fileId);
     }
 
     const updatedRecipe = await this.recipeDAO.updateRecipe(

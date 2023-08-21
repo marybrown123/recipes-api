@@ -9,7 +9,9 @@ export class DeleteFileHandler implements ICommandHandler<DeleteFileCommand> {
   async execute(command: DeleteFileCommand): Promise<void> {
     const { fileId } = command;
     const fileToDelete = await this.fileDAO.findFileById(fileId);
-    await this.s3Service.deleteFile(fileToDelete.key);
-    await this.fileDAO.deleteFile(fileId);
+    await Promise.all([
+      this.s3Service.deleteFile(fileToDelete.key),
+      this.fileDAO.deleteFile(fileId),
+    ]);
   }
 }

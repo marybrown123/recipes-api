@@ -82,11 +82,6 @@ describe('Recipe Service', () => {
     await prismaService.recipe.deleteMany();
   });
 
-  afterAll(async () => {
-    await prismaService.user.deleteMany();
-    await prismaService.file.deleteMany();
-  });
-
   it('should create a recipe', async () => {
     const commandBusExecute = jest.spyOn(commandBus, 'execute');
 
@@ -168,5 +163,10 @@ describe('Recipe Service', () => {
     expect(result[0].preparing[0].order).toBe(1);
     expect(result[0].ingredients[0].name).toBe('flour');
     expect(result[0].ingredients[0].amount).toBe('spoon');
+  });
+
+  afterAll(async () => {
+    await prismaService.user.deleteMany();
+    await prismaService.file.deleteMany();
   });
 });

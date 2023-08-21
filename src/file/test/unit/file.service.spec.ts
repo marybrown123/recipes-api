@@ -4,6 +4,7 @@ import { FileService } from '../../file.service';
 import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
 import { S3Service } from '../../s3.service';
 import { S3ServiceMock } from '../mocks/s3.service.mock';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 const fileName = 'testName';
 
@@ -11,6 +12,7 @@ describe('File Service', () => {
   let fileService: FileService;
   let commandBus: CommandBus;
   let queryBus: QueryBus;
+  let prismaService: PrismaService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,6 +26,7 @@ describe('File Service', () => {
     fileService = module.get<FileService>(FileService);
     commandBus = module.get<CommandBus>(CommandBus);
     queryBus = module.get<QueryBus>(QueryBus);
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(async () => {
@@ -56,11 +59,14 @@ describe('File Service', () => {
 
   it('should delete file', async () => {
     const commandBusExecute = jest.spyOn(commandBus, 'execute');
-    const testFile = await fileService.createFile(fileName);
+    const fileToDelete = await fileService.createFile(fileName);
+    await fileService.deleteFile(fileToDelete.id);
 
-    await fileService.deleteFile(testFile.id);
+    const deletedFile = await prismaService.file.findFirst({
+      where: { id: fileToDelete.id },
+    });
 
-    expect(testFile).toBe(null);
+    expect(deletedFile).toBe(null);
     expect(commandBusExecute).toBeCalledTimes(2);
   });
 });
