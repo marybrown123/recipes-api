@@ -116,7 +116,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - 'Q1DyVy6eFsq7gGkgQRz1oO0Qv3hsa843+A8pTLYbGrY'
+            - $FINGERPRINT
       - checkout
       - setup_remote_docker:
           version: 20.10.14
