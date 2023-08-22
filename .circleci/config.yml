@@ -31,14 +31,34 @@ commands:
   greetings-from-branch:
     steps:
       - run: echo "No siema z brancha <<pipeline.git.branch>>"
-  build-docker-image:
+  create-env-files:
     steps:
-      - run: docker-compose build
-  deploy-docker-image:
-    steps:
-      - run: ssh -o StrictHostKeyChecking=no ubuntu@3.72.85.161 'docker-compose down'
-      - run: ssh -o StrictHostKeyChecking=no ubuntu@3.72.85.161 'docker-compose pull'
-      - run: ssh -o StrictHostKeyChecking=no ubuntu@3.72.85.161 'docker-compose up -d'
+      - run: 
+          command: |
+            cat > .env \<< EOF
+            DATABASE_URL="$DATABASE_URL"
+            DATABASE_HOST="$DATABASE_HOST"
+            DATABASE_PORT="$DATABASE_PORT"
+            DATABASE_USER="$DATABASE_USER"
+            DATABASE_PASSWORD="$DATABASE_PASSWORD"
+            DATABASE_NAME="$DATABASE_NAME"
+            PORT="$PORT"
+            JWT_SECRET="$JWT_SECRET"
+            ADMIN_NAME="$ADMIN_NAME"
+            ADMIN_PASSWORD="$ADMIN_PASSWORD"
+            TEST_NAME="$TEST_NAME"
+            TEST_PASSWORD="$TEST_PASSWORD"
+            REDIS_HOST="$REDIS_HOST"
+            REDIS_PORT="$RESIS_PORT"
+            REDIS_USERNAME="$REDIS_USERNAME"
+            REDIS_PASSWORD="$REDIS_PASSWORD"
+            TTL_IN_SECONDS="$TTL_IN_SECONDS"
+            AWS_ACCESS_KEY_ID="$AWS_ACCES_KET_ID"
+            AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCES_KEY"
+            AWS_S3_REGION="$AWS_S3_REGION"
+            S3_BUCKET_NAME="$S3_BUCKET_NAME"
+            EOF
+            cat .env > test.env
 executors:
   executor:
     resource_class: medium
@@ -90,19 +110,20 @@ jobs:
     steps:
       - checkout
       - greetings-from-branch
-  build:
-    executor: executor
-    steps: 
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.7
-      - build-docker-image
   deploy:
-    executor: executor
+    docker: 
+      - image: cimg/node:18.16.0
     steps:
       - checkout
-      - deploy-docker-image
-  
+      - setup_remote_docker:
+          version: 20.10.14
+      - run: docker build -t $APP_IMAGE_NAME .
+      - run: docker save $APP_IMAGE_NAME | gzip > appimage.tar.gz
+      - create-env-files
+      - run: scp -o StrictHostKeyChecking=accept-new ./.env $SSH_USER@$SSH_HOST:.env
+      - run: scp -o StrictHostKeyChecking=accept-new ./appimage.tar.gz $SSH_USER@$SSH_HOST:appimage.tar.gz
+      - run: scp -o StrictHostKeyChecking=accept-new ./docker-compose.yml $SSH_USER@$SSH_HOST:docker-compose.yml
+      - run: ssh -o StrictHostKeyChecking=accept-new $SSH_USER@$SSH_HOST "source .env && ./recipe_app_setup.sh"
 workflows:
   version: 2.1
   build-and-test:
@@ -117,12 +138,8 @@ workflows:
       - greetings-from-branch:
           requires: 
             - run-tests
-      - build:
-          requires:
-            - run-tests
-      - deploy:
-          requires:
-            - build
-
+  deploy:
+    jobs:
+      - deploy
 
 
