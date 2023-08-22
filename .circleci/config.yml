@@ -118,14 +118,9 @@ workflows:
       - build:
           requires:
             - run-tests
-          filters:
-            branches:
-              only: master
       - deploy:
           requires:
             - build
-          filters:
-            branches:
-              only: master
+
 
 
