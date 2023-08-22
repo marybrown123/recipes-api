@@ -94,6 +94,8 @@ jobs:
     executor: executor
     steps: 
       - checkout
+      - setup_remote_docker:
+          version: 20.10.7
       - build-docker-image
   deploy:
     executor: executor
