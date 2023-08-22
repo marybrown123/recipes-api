@@ -126,7 +126,7 @@ jobs:
       - run: scp -o StrictHostKeyChecking=accept-new ./.env $SSH_USER@$SSH_HOST:.env
       - run: scp -o StrictHostKeyChecking=accept-new ./appimage.tar.gz $SSH_USER@$SSH_HOST:appimage.tar.gz
       - run: scp -o StrictHostKeyChecking=accept-new ./docker-compose.yml $SSH_USER@$SSH_HOST:docker-compose.yml
-      - run: ssh -o StrictHostKeyChecking=accept-new $SSH_USER@$SSH_HOST "source .env && ./recipe_app_setup.sh"
+      - run: ssh -o StrictHostKeyChecking=accept-new $SSH_USER@$SSH_HOST "source .env && docker-compose up"
 workflows:
   version: 2.1
   build-and-test:
