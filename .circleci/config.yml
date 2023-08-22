@@ -31,6 +31,14 @@ commands:
   greetings-from-branch:
     steps:
       - run: echo "No siema z brancha <<pipeline.git.branch>>"
+  build-docker-image:
+    steps:
+      - run: docker-compose build
+  deploy-docker-image:
+    steps:
+      - run: ssh -o StrictHostKeyChecking=no ubuntu@3.72.85.161 'docker-compose down'
+      - run: ssh -o StrictHostKeyChecking=no ubuntu@3.72.85.161 'docker-compose pull'
+      - run: ssh -o StrictHostKeyChecking=no ubuntu@3.72.85.161 'docker-compose up -d'
 executors:
   executor:
     resource_class: medium
@@ -82,6 +90,16 @@ jobs:
     steps:
       - checkout
       - greetings-from-branch
+  build:
+    executor: executor
+    steps: 
+      - checkout
+      - build-docker-image
+  deploy:
+    executor: executor
+    steps:
+      - checkout
+      - deploy-docker-image
   
 workflows:
   version: 2.1
@@ -97,5 +115,17 @@ workflows:
       - greetings-from-branch:
           requires: 
             - run-tests
+      - build:
+          requires:
+            - run-tests
+          filters:
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
 
 
