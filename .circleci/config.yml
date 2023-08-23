@@ -120,34 +120,13 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.14
-      - run: |
-          docker build \
-            -e DATABASE_URL="$DATABASE_URL" \
-            -e DATABASE_HOST="$DATABASE_HOST" \
-            -e DATABASE_PORT="$DATABASE_PORT" \
-            -e DATABASE_USER="$DATABASE_USER" \
-            -e DATABASE_PASSWORD="$DATABASE_PASSWORD" \
-            -e DATABASE_NAME="$DATABASE_NAME" \
-            -e PORT="$PORT" \
-            -e JWT_SECRET="$JWT_SECRET" \
-            -e ADMIN_NAME="$ADMIN_NAME" \
-            -e ADMIN_PASSWORD="$ADMIN_PASSWORD" \
-            -e TEST_NAME="$TEST_NAME" \
-            -e TEST_PASSWORD="$TEST_PASSWORD" \
-            -e REDIS_HOST="$REDIS_HOST" \
-            -e REDIS_PORT="$RESIS_PORT" \ 
-            -e REDIS_USERNAME="$REDIS_USERNAME" \
-            -e REDIS_PASSWORD="$REDIS_PASSWORD" \
-            -e TTL_IN_SECONDS="$TTL_IN_SECONDS" \
-            -e AWS_ACCESS_KEY_ID="$AWS_ACCES_KET_ID" \
-            -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCES_KEY" \
-            -e AWS_S3_REGION="$AWS_S3_REGION" \
-            -e S3_BUCKET_NAME="$S3_BUCKET_NAME" \
-            -t $APP_IMAGE_NAME .
+      - run: docker build -t $APP_IMAGE_NAME .
       - run: docker save $APP_IMAGE_NAME | gzip > appimage.tar.gz
+      - create-env-files
+      - run: scp -o StrictHostKeyChecking=accept-new ./.env $SSH_USER@$SSH_HOST:.env
       - run: scp -o StrictHostKeyChecking=accept-new ./appimage.tar.gz $SSH_USER@$SSH_HOST:appimage.tar.gz
       - run: scp -o StrictHostKeyChecking=accept-new ./docker-compose.yml $SSH_USER@$SSH_HOST:docker-compose.yml
-      - run: ssh -o StrictHostKeyChecking=accept-new $SSH_USER@$SSH_HOST "sudo docker load < appimage.tar.gz && source .env && docker run recipes"
+      - run: ssh -o StrictHostKeyChecking=accept-new $SSH_USER@$SSH_HOST "sudo docker load < appimage.tar.gz && sudo docker-compose up"
 workflows:
   version: 2.1
   build-and-test:
