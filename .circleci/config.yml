@@ -147,7 +147,7 @@ jobs:
       - run: docker save $APP_IMAGE_NAME | gzip > appimage.tar.gz
       - run: scp -o StrictHostKeyChecking=accept-new ./appimage.tar.gz $SSH_USER@$SSH_HOST:appimage.tar.gz
       - run: scp -o StrictHostKeyChecking=accept-new ./docker-compose.yml $SSH_USER@$SSH_HOST:docker-compose.yml
-      - run: ssh -o StrictHostKeyChecking=accept-new $SSH_USER@$SSH_HOST "sudo docker load < appimage.tar.gz && docker run recipes"
+      - run: ssh -o StrictHostKeyChecking=accept-new $SSH_USER@$SSH_HOST "sudo docker load < appimage.tar.gz && docker-compose up"
 workflows:
   version: 2.1
   build-and-test:
