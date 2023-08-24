@@ -122,7 +122,7 @@ jobs:
           version: 20.10.14
       - run: |
           docker build \
-          --build-arg DATABASE_URL="$DATABASE_URL" \
+          --build-arg DATABASE_URL=$DATABASE_URL \
           -t $APP_IMAGE_NAME .
       - run: docker save $APP_IMAGE_NAME | gzip > appimage.tar.gz
       - create-env-files
