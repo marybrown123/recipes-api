@@ -122,7 +122,7 @@ jobs:
           version: 20.10.14
       - run: docker build -t $APP_IMAGE_NAME .
       - run: docker save $APP_IMAGE_NAME | gzip > appimage.tar.gz
-      - create_env_files
+      - create-env-files
       - run: scp -o StrictHostKeyChecking=accept-new ./.env $SSH_USER@$SSH_HOST:.env
       - run: scp -o StrictHostKeyChecking=accept-new ./appimage.tar.gz $SSH_USER@$SSH_HOST:appimage.tar.gz
       - run: scp -o StrictHostKeyChecking=accept-new ./docker-compose.yml $SSH_USER@$SSH_HOST:docker-compose.yml
