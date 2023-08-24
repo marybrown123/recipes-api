@@ -8,6 +8,6 @@ RUN npm install
 
 COPY . .
 
-RUN npx prisma generate && npm run build
+RUN npx prisma generate && npx prisma migrate deploy && npm run build
 
 CMD [ "node", "dist/main.js" ]
