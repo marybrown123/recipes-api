@@ -120,10 +120,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.14
-      - run: |
-          docker build \
-          --build-arg DATABASE_URL=$DATABASE_URL \
-          -t $APP_IMAGE_NAME .
+      - run: docker build --build-arg -t $APP_IMAGE_NAME .
       - run: docker save $APP_IMAGE_NAME | gzip > appimage.tar.gz
       - create-env-files
       - run: scp -o StrictHostKeyChecking=accept-new ./.env $SSH_USER@$SSH_HOST:.env
