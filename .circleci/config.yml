@@ -36,8 +36,8 @@ commands:
       - run: 
           command: |
             cat > .env \<< EOF
-            DATABASE_URL=$DATABASE_URL
-            DATABASE_HOST=$DATABASE_HOST
+            DATABASE_URL=$DATABASE_URL_DEPLOY
+            DATABASE_HOST=$DATABASE_HOST_DEPLOY
             DATABASE_PORT=$DATABASE_PORT
             DATABASE_USER=$DATABASE_USER
             DATABASE_PASSWORD=$DATABASE_PASSWORD
@@ -48,7 +48,7 @@ commands:
             ADMIN_PASSWORD=$ADMIN_PASSWORD
             TEST_NAME=$TEST_NAME
             TEST_PASSWORD=$TEST_PASSWORD
-            REDIS_HOST=$REDIS_HOST
+            REDIS_HOST=$REDIS_HOST_DEPLOY
             REDIS_PORT=$REDIS_PORT
             REDIS_USERNAME=$REDIS_USERNAME
             REDIS_PASSWORD=$REDIS_PASSWORD
