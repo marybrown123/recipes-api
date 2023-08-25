@@ -28,9 +28,34 @@ commands:
     steps:
       - run: npm run test:ci 
       - run: npm run test:e2e 
-  greetings-from-branch:
+  create-env-files:
     steps:
-      - run: echo "No siema z brancha <<pipeline.git.branch>>"
+      - run: 
+          command: |
+            cat > .env \<< EOF
+            DATABASE_URL=$DATABASE_URL_DEPLOY
+            DATABASE_HOST=$DATABASE_HOST_DEPLOY
+            DATABASE_PORT=$DATABASE_PORT
+            DATABASE_USER=$DATABASE_USER
+            DATABASE_PASSWORD=$DATABASE_PASSWORD
+            DATABASE_NAME=$DATABASE_NAME
+            PORT=$PORT
+            JWT_SECRET=$JWT_SECRET
+            ADMIN_NAME=$ADMIN_NAME
+            ADMIN_PASSWORD=$ADMIN_PASSWORD
+            TEST_NAME=$TEST_NAME
+            TEST_PASSWORD=$TEST_PASSWORD
+            REDIS_HOST=$REDIS_HOST_DEPLOY
+            REDIS_PORT=$REDIS_PORT
+            REDIS_USERNAME=$REDIS_USERNAME
+            REDIS_PASSWORD=$REDIS_PASSWORD
+            TTL_IN_SECONDS=$TTL_IN_SECONDS
+            AWS_ACCESS_KEY_ID=$AWS_ACCESS_KET_ID
+            AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            AWS_S3_REGION=$AWS_S3_REGION
+            S3_BUCKET_NAME=$S3_BUCKET_NAME
+            EOF
+            cat .env > test.env
 executors:
   executor:
     resource_class: medium
@@ -77,12 +102,23 @@ jobs:
       - deploy-prisma-migrations
       - generate-prisma-client
       - run-tests
-  greetings-from-branch:
-    executor: executor
+  deploy:
+    docker: 
+      - image: cimg/node:18.16.0
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - 50:44:92:48:b3:4f:f8:b6:d9:dd:b8:b9:5f:8e:6a:06
       - checkout
-      - greetings-from-branch
-  
+      - setup_remote_docker:
+          version: 20.10.14
+      - run: docker build -t $APP_IMAGE_NAME .
+      - run: docker save $APP_IMAGE_NAME | gzip > appimage.tar.gz
+      - create-env-files
+      - run: scp -o StrictHostKeyChecking=accept-new ./.env $SSH_USER@$SSH_HOST:.env
+      - run: scp -o StrictHostKeyChecking=accept-new ./appimage.tar.gz $SSH_USER@$SSH_HOST:appimage.tar.gz
+      - run: scp -o StrictHostKeyChecking=accept-new ./docker-compose.yml $SSH_USER@$SSH_HOST:docker-compose.yml
+      - run: ssh -o StrictHostKeyChecking=accept-new $SSH_USER@$SSH_HOST "sudo docker system prune && docker load < appimage.tar.gz && docker-compose up -d"
 workflows:
   version: 2.1
   build-and-test:
@@ -94,8 +130,12 @@ workflows:
       - run-tests:
           requires: 
             - prisma
-      - greetings-from-branch:
-          requires: 
-            - run-tests
+  deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master
 
 
