@@ -28,9 +28,6 @@ commands:
     steps:
       - run: npm run test:ci 
       - run: npm run test:e2e 
-  greetings-from-branch:
-    steps:
-      - run: echo "No siema z brancha <<pipeline.git.branch>>"
   create-env-files:
     steps:
       - run: 
@@ -105,11 +102,6 @@ jobs:
       - deploy-prisma-migrations
       - generate-prisma-client
       - run-tests
-  greetings-from-branch:
-    executor: executor
-    steps:
-      - checkout
-      - greetings-from-branch
   deploy:
     docker: 
       - image: cimg/node:18.16.0
@@ -138,9 +130,6 @@ workflows:
       - run-tests:
           requires: 
             - prisma
-      - greetings-from-branch:
-          requires: 
-            - run-tests
   deploy:
     jobs:
       - deploy:
