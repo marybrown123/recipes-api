@@ -143,7 +143,7 @@ workflows:
             - run-tests
   deploy:
     jobs:
-      - deploy
+      - deploy:
           filters:
             branches:
               only:
