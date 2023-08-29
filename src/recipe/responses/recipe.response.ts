@@ -44,10 +44,16 @@ export class RecipeResponse implements Recipe {
   @ApiProperty({ example: 1, type: 'number' })
   authorId: number;
 
-  @ApiProperty({ type: [CreatePreparingDTO], isArray: true })
+  @ApiProperty({
+    type: CreatePreparingDTO,
+    isArray: true,
+  })
   preparing: CreatePreparingDTO[];
 
-  @ApiProperty({ type: [CreateIngredientDTO], isArray: true })
+  @ApiProperty({
+    type: CreateIngredientDTO,
+    isArray: true,
+  })
   ingredients: CreateIngredientDTO[];
 
   @ApiPropertyOptional({ example: 'fileUrl', type: 'string' })

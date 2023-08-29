@@ -20,16 +20,22 @@ export class CreateRecipeDTO {
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty({ example: 'imageKey', type: 'number' })
+  @ApiProperty({ example: 1, type: 'number' })
   fileId: number;
 
   @ValidateNested()
   @Type(() => CreatePreparingDTO)
-  @ApiProperty({ type: [CreatePreparingDTO], isArray: true })
+  @ApiProperty({
+    type: CreatePreparingDTO,
+    isArray: true,
+  })
   preparing: CreatePreparingDTO[];
 
   @ValidateNested()
   @Type(() => CreateIngredientDTO)
-  @ApiProperty({ type: [CreateIngredientDTO], isArray: true })
+  @ApiProperty({
+    type: CreateIngredientDTO,
+    isArray: true,
+  })
   ingredients: CreateIngredientDTO[];
 }
