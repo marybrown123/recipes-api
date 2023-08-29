@@ -26,18 +26,16 @@ export class CreateRecipeDTO {
   @ValidateNested()
   @Type(() => CreatePreparingDTO)
   @ApiProperty({
-    type: [CreatePreparingDTO],
+    type: CreatePreparingDTO,
     isArray: true,
-    example: [{ name: 'add flour', step: 1 }],
   })
   preparing: CreatePreparingDTO[];
 
   @ValidateNested()
   @Type(() => CreateIngredientDTO)
   @ApiProperty({
-    type: [CreateIngredientDTO],
+    type: CreateIngredientDTO,
     isArray: true,
-    example: [{ name: 'flour', amount: 'one spoon' }],
   })
   ingredients: CreateIngredientDTO[];
 }

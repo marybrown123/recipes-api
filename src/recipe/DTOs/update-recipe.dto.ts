@@ -29,9 +29,8 @@ export class UpdateRecipeDTO {
   @IsOptional()
   @Type(() => CreatePreparingDTO)
   @ApiPropertyOptional({
-    type: [CreatePreparingDTO],
+    type: CreatePreparingDTO,
     isArray: true,
-    example: [{ name: 'add flour', step: 1 }],
   })
   preparing?: CreatePreparingDTO[];
 
@@ -39,9 +38,8 @@ export class UpdateRecipeDTO {
   @IsOptional()
   @Type(() => CreateIngredientDTO)
   @ApiPropertyOptional({
-    type: [CreateIngredientDTO],
+    type: CreateIngredientDTO,
     isArray: true,
-    example: [{ name: 'flour', amount: 'one spoon' }],
   })
   ingredients?: CreateIngredientDTO[];
 }
