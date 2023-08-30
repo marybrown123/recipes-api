@@ -1,4 +1,4 @@
 export interface LoggedUserPayload {
-  name: string;
+  email: string;
   sub: number;
 }
