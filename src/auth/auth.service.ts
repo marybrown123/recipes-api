@@ -12,8 +12,8 @@ export class AuthService {
     private readonly userService: UserService,
     private jwtService: JwtService,
   ) {}
-  async validateUser(name: string, password: string): Promise<User> {
-    const user = await this.userService.findOne(name);
+  async validateUser(email: string, password: string): Promise<User> {
+    const user = await this.userService.findOne(email);
 
     if (!user) {
       throw new UnauthorizedException();
@@ -29,7 +29,7 @@ export class AuthService {
   }
 
   async login(user: User): Promise<AccessToken> {
-    const payload = { name: user.name, sub: user.id };
+    const payload = { email: user.email, sub: user.id };
     return {
       accessToken: this.jwtService.sign(payload),
     };

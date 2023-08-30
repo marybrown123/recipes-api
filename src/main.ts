@@ -10,6 +10,7 @@ async function bootstrap() {
 
   const userService: UserService = app.get<UserService>(UserService);
   userService.generateAccount(
+    process.env.ADMIN_EMAIL,
     process.env.ADMIN_NAME,
     process.env.ADMIN_PASSWORD,
     Role.ADMIN,

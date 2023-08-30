@@ -2,28 +2,43 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UserService } from '../../user.service';
+import { MailService } from '../../../mail/mail.service';
+import { MailServiceMock } from '../mocks/mail.service.mock';
 
 const user = {
-  name: 'mary',
-  password: 'abcdefgh',
+  email: 'testEmail',
+  name: 'testName',
+  password: 'testPassword',
 };
 
 describe('UserService', () => {
   let userService: UserService;
   let prismaService: PrismaService;
+  let mailService: MailService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, PrismaService],
-    }).compile();
+      providers: [PrismaService, UserService, MailService],
+    })
+      .overrideProvider(MailService)
+      .useClass(MailServiceMock)
+      .compile();
 
+    await module.createNestApplication().init();
     userService = module.get<UserService>(UserService);
     prismaService = module.get<PrismaService>(PrismaService);
+    mailService = module.get<MailService>(MailService);
+  });
+
+  afterEach(async () => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('should create a user', async () => {
     const mockCreateResult = {
       id: 1,
+      email: 'testEmail',
       name: 'mary',
       password: 'afuakuasbukaUAASGSA',
       roles: [Role.USER],
@@ -43,18 +58,23 @@ describe('UserService', () => {
       .spyOn(userService, 'hashPassword')
       .mockResolvedValue('afuakuasbukaUAASGSA');
 
+    const mailSend = jest.spyOn(mailService, 'sendMail');
+
     const result = await userService.createUser(user);
 
     expect(prismaCreate).toBeCalledTimes(1);
     expect(prismaFindUnique).toBeCalledTimes(1);
     expect(hashedPassword).toBeCalledTimes(1);
+    expect(mailSend).toBeCalledTimes(1);
     expect(result.id).toBe(1);
+    expect(result.email).toBe('testEmail');
     expect(result.name).toBe('mary');
   });
 
   it('should find one user by id', async () => {
     const mockFindUniqueResult = {
       id: 1,
+      email: 'testEmail',
       name: 'mary',
       password: 'afuakuasbukaUAASGSA',
       roles: [Role.USER],
@@ -64,10 +84,11 @@ describe('UserService', () => {
       .spyOn(prismaService.user, 'findUnique')
       .mockResolvedValue(mockFindUniqueResult);
 
-    const result = await userService.findOne('mary');
+    const result = await userService.findOne('testEmail');
 
     expect(prismaFindUnique).toBeCalledTimes(1);
     expect(result.id).toBe(1);
+    expect(result.email).toBe('testEmail');
     expect(result.name).toBe('mary');
     expect(result.password).toBe('afuakuasbukaUAASGSA');
     expect(result.roles[0]).toBe(Role.USER);
@@ -76,6 +97,7 @@ describe('UserService', () => {
   it('should generate admin account', async () => {
     const mockPrismaCreateResult = {
       id: 2,
+      email: 'adminEmail',
       name: 'admin123',
       password: 'admin456',
       roles: [Role.USER, Role.ADMIN],
@@ -94,6 +116,7 @@ describe('UserService', () => {
       .mockResolvedValue(mockPrismaCreateResult);
 
     const result = await userService.generateAccount(
+      'adminEmail',
       'admin123',
       'admin456',
       Role.ADMIN,
@@ -102,6 +125,7 @@ describe('UserService', () => {
     expect(prismaFindUnique).toBeCalledTimes(1);
     expect(prismaCreate).toBeCalledTimes(1);
     expect(hashPassword).toBeCalledTimes(1);
+    expect(result.email).toBe('adminEmail');
     expect(result.id).toBe(2);
     expect(result.name).toBe('admin123');
   });

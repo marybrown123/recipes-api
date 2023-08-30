@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { CreateUserDTO } from 'src/user/DTOs/create-user.DTO';
+import { CreateUserDTO } from '../../DTOs/create-user.DTO';
 import { UserResponse } from '../../../user/responses/user.response';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
@@ -8,6 +8,7 @@ export class UserServiceMock implements Required<UserService> {
   private generateUser(): User {
     return {
       id: 1,
+      email: 'testEmail',
       name: 'testName',
       password: 'testPassword',
       roles: [Role.USER],
@@ -35,11 +36,6 @@ export class UserServiceMock implements Required<UserService> {
     _password: string,
     _role: Role,
   ): Promise<User> {
-    return {
-      id: 1,
-      name: 'testName',
-      password: 'testPassword',
-      roles: [Role.USER],
-    };
+    return this.generateUser();
   }
 }

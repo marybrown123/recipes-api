@@ -5,14 +5,18 @@ import { Role } from '@prisma/client';
 import { UserResponse } from './responses/user.response';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async createUser(user: CreateUserDTO): Promise<UserResponse> {
     const userFromDb = await this.prisma.user.findUnique({
-      where: { name: user.name },
+      where: { email: user.email },
     });
 
     if (userFromDb) {
@@ -23,19 +27,29 @@ export class UserService {
 
     const userForDb = await this.prisma.user.create({
       data: {
+        email: user.email,
         name: user.name,
         password: hashedPassword,
         roles: [Role.USER],
       },
     });
 
+    if (userForDb) {
+      await this.mailService.sendMail(
+        userForDb.email,
+        'Recipe App',
+        'Account created succesfully',
+        `Hello ${userForDb.name}, welcome in Recipe App!`,
+      );
+    }
+
     return new UserResponse(userForDb);
   }
 
-  async findOne(name: string): Promise<User> {
+  async findOne(email: string): Promise<User> {
     return await this.prisma.user.findUnique({
       where: {
-        name,
+        email,
       },
     });
   }
@@ -46,12 +60,13 @@ export class UserService {
   }
 
   async generateAccount(
+    email: string,
     name: string,
     password: string,
     role: Role,
   ): Promise<User> {
     const userFromDb = await this.prisma.user.findUnique({
-      where: { name },
+      where: { email },
     });
     if (userFromDb) {
       return userFromDb;
@@ -61,6 +76,7 @@ export class UserService {
 
     return await this.prisma.user.create({
       data: {
+        email,
         name,
         password: hashedUserPassword,
         roles: [role],
