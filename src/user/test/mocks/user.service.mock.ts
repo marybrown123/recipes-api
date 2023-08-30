@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { CreateUserDTO } from 'src/user/DTOs/create-user.DTO';
+import { CreateUserDTO } from '../../DTOs/create-user.DTO';
 import { UserResponse } from '../../../user/responses/user.response';
 import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';

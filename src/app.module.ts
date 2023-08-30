@@ -8,7 +8,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { FileModule } from './file/file.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { MailModule } from 'src/mail/mail.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
