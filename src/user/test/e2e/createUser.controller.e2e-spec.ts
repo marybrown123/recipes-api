@@ -4,13 +4,14 @@ import { CreateUserDTO } from '../../../user/DTOs/create-user.DTO';
 import { UserServiceMock } from '../../../user/test/mocks/user.service.mock';
 import { UserService } from '../../../user/user.service';
 import * as request from 'supertest';
-import { UserModule } from '../../../user/user.module';
+import { AppModule } from '../../../app.module';
 
 describe('User Controller - Create', () => {
   let app: INestApplication;
   const path = '/user/signup';
 
   const correctPayload: CreateUserDTO = {
+    email: 'testEmail@test.com',
     name: 'testName',
     password: 'testPassword',
   };
@@ -35,7 +36,7 @@ describe('User Controller - Create', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [UserModule],
+      imports: [AppModule],
     })
       .overrideProvider(UserService)
       .useClass(UserServiceMock)

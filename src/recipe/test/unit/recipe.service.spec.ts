@@ -11,6 +11,8 @@ import { FileService } from '../../../file/file.service';
 import { FileResponse } from 'src/file/responses/file.response';
 import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 import { UserResponse } from 'src/user/responses/user.response';
+import { MailService } from '../../../mail/mail.service';
+import { MailServiceMock } from '../../../user/test/mocks/mail.service.mock';
 
 const recipe = {
   name: 'Dumplings',
@@ -51,7 +53,10 @@ describe('Recipe Service', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideProvider(MailService)
+      .useClass(MailServiceMock)
+      .compile();
 
     await module.createNestApplication().init();
     recipeService = module.get<RecipeService>(RecipeService);
@@ -63,6 +68,7 @@ describe('Recipe Service', () => {
     fileService = module.get<FileService>(FileService);
 
     testUser = await userService.generateAccount(
+      process.env.TEST_EMAIL,
       process.env.TEST_NAME,
       process.env.TEST_PASSWORD,
       Role.USER,

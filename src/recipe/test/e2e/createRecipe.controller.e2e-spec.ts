@@ -74,6 +74,7 @@ describe('Recipe Controller - Create', () => {
     prismaService = moduleFixture.get<PrismaService>(PrismaService);
 
     testUser = await userService.generateAccount(
+      process.env.TEST_EMAIL,
       process.env.TEST_NAME,
       process.env.TEST_PASSWORD,
       Role.USER,
