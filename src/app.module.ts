@@ -7,6 +7,8 @@ import { GatewayModule } from './websocket/gateway.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { FileModule } from './file/file.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -23,6 +25,17 @@ import { FileModule } from './file/file.module';
       port: process.env.REDIS_PORT,
       ttl: parseInt(process.env.TTL_IN_SECONDS, 10),
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        port: parseInt(process.env.MAIL_PORT, 10),
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+      },
+    }),
+    MailModule,
   ],
 })
 export class AppModule {}

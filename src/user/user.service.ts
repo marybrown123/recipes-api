@@ -5,10 +5,14 @@ import { Role } from '@prisma/client';
 import { UserResponse } from './responses/user.response';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async createUser(user: CreateUserDTO): Promise<UserResponse> {
     const userFromDb = await this.prisma.user.findUnique({
@@ -28,6 +32,15 @@ export class UserService {
         roles: [Role.USER],
       },
     });
+
+    if (userForDb) {
+      await this.mailService.sendMail(
+        userForDb.name,
+        'Recipe App',
+        'Account created succesfully',
+        'Welcome in recipe app!',
+      );
+    }
 
     return new UserResponse(userForDb);
   }
