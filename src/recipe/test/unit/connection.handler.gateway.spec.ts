@@ -7,7 +7,7 @@ import { Socket } from 'socket.io-client';
 import { GatewayModule } from '../../../websocket/gateway.module';
 
 const verifiedToken: LoggedUserPayload = {
-  name: 'testName',
+  email: 'testEmail',
   sub: 1,
 };
 

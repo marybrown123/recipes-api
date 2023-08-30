@@ -14,6 +14,7 @@ const user = {
 describe('UserService', () => {
   let userService: UserService;
   let prismaService: PrismaService;
+  let mailService: MailService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,6 +27,7 @@ describe('UserService', () => {
     await module.createNestApplication().init();
     userService = module.get<UserService>(UserService);
     prismaService = module.get<PrismaService>(PrismaService);
+    mailService = module.get<MailService>(MailService);
   });
 
   afterEach(async () => {
@@ -56,11 +58,14 @@ describe('UserService', () => {
       .spyOn(userService, 'hashPassword')
       .mockResolvedValue('afuakuasbukaUAASGSA');
 
+    const mailSend = jest.spyOn(mailService, 'sendMail');
+
     const result = await userService.createUser(user);
 
     expect(prismaCreate).toBeCalledTimes(1);
     expect(prismaFindUnique).toBeCalledTimes(1);
     expect(hashedPassword).toBeCalledTimes(1);
+    expect(mailSend).toBeCalledTimes(1);
     expect(result.id).toBe(1);
     expect(result.email).toBe('testEmail');
     expect(result.name).toBe('mary');
