@@ -8,6 +8,7 @@ export class UserServiceMock implements Required<UserService> {
   private generateUser(): User {
     return {
       id: 1,
+      email: 'testEmail',
       name: 'testName',
       password: 'testPassword',
       roles: [Role.USER],
@@ -35,11 +36,6 @@ export class UserServiceMock implements Required<UserService> {
     _password: string,
     _role: Role,
   ): Promise<User> {
-    return {
-      id: 1,
-      name: 'testName',
-      password: 'testPassword',
-      roles: [Role.USER],
-    };
+    return this.generateUser();
   }
 }

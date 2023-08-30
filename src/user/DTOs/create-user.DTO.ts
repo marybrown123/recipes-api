@@ -5,6 +5,10 @@ export class CreateUserDTO {
   @IsString()
   @IsEmail()
   @ApiProperty({ type: 'string' })
+  email: string;
+
+  @IsString()
+  @ApiProperty({ type: 'string' })
   name: string;
 
   @IsString()
