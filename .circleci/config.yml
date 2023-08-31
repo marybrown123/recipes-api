@@ -24,10 +24,21 @@ commands:
   deploy-prisma-migrations:
     steps:
       - run: npx prisma migrate deploy --preview-feature
-  run-tests:
+  run-tests-unit:
     steps:
-      - run: npm run test:ci 
-      - run: npm run test:e2e 
+      - run: |
+          UNIT_TESTS=$(circleci tests glob "./src/**/*.spec.ts" | circleci tests split --split-by=timings)
+          npm run test:ci -- $UNIT_TEST 
+      - store_test_results:
+          path: ./test_results
+  run-tests-e2e:
+    steps:
+      - run: |
+          E2E_TEST=$(circleci tests glob "./src/**/*{e2e-spec}.ts" | circleci tests split --split-by=timings)
+          npm run test:e2e -- $E2E_TEST
+      - store_test_results:
+          path: ./test_results
+
   create-env-files:
     steps:
       - run: 
@@ -58,7 +69,7 @@ commands:
             cat .env > test.env
 executors:
   executor:
-    resource_class: medium
+    resource_class: small
     docker: 
       - image: cimg/node:18.16.0
         environment:
@@ -92,8 +103,9 @@ jobs:
           root: .
           paths:
             - prisma
-  run-tests:
+  run-tests-unit:
     executor: executor
+    parallelism: 3
     steps:
       - checkout
       - restore-cache
@@ -101,7 +113,18 @@ jobs:
           at: .
       - deploy-prisma-migrations
       - generate-prisma-client
-      - run-tests
+      - run-tests-unit
+  run-tests-e2e:
+    executor: executor
+    parallelism: 2
+    steps:
+      - checkout
+      - restore-cache
+      - attach_workspace:
+          at: .
+      - deploy-prisma-migrations
+      - generate-prisma-client
+      - run-tests-e2e
   deploy:
     docker: 
       - image: cimg/node:18.16.0
@@ -127,8 +150,11 @@ workflows:
       - prisma:
           requires: 
             - install-dependencies
-      - run-tests:
+      - run-tests-unit:
           requires: 
+            - prisma
+      - run-tests-e2e:
+          requires:
             - prisma
   deploy:
     jobs:
@@ -137,5 +163,3 @@ workflows:
             branches:
               only:
                 - master
-
-

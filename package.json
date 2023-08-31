@@ -49,6 +49,7 @@
     "class-validator": "0.14.0",
     "dotenv": "16.3.1",
     "nodemailer": "6.9.4",
+    "jest-junit": "16.0.0",
     "passport": "0.6.0",
     "passport-jwt": "4.0.1",
     "passport-local": "1.0.0",
@@ -102,6 +103,18 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-    "verbose": true
+    "verbose": true,
+    "reporters": [ "default", "jest-junit" ]
+  },
+  "jest-junit": {
+    "suiteName": "jest tests",
+    "outputDirectory": "./test_results",
+    "outputName": "junit.xml",
+    "uniqueOutputName": "false",
+    "classNameTemplate": "{classname}-{title}",
+    "titleTemplate": "{classname}-{title}",
+    "ancestorSeparator": " › ",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
   }
 }
