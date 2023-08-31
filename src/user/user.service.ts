@@ -60,7 +60,7 @@ export class UserService {
       userForDb.email,
       'Recipe App',
       'Account Verification',
-      `Hello ${userForDb.name}, verify your account by clicking the following link: http://localhost:3000/verification/${verificationToken.verificationToken}`,
+      `Hello ${userForDb.name}, verify your account by clicking the following link: http://${process.env.APP_HOST}:${process.env.APP_PORT}/verification/${verificationToken.verificationToken}`,
     );
 
     return new UserResponse(userForDb);
