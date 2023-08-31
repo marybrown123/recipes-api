@@ -4,6 +4,8 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { UserService } from '../../user.service';
 import { MailService } from '../../../mail/mail.service';
 import { MailServiceMock } from '../mocks/mail.service.mock';
+import { VerificationService } from '../../../verification/verification.service';
+import { JwtService } from '@nestjs/jwt';
 
 const user = {
   email: 'testEmail',
@@ -15,10 +17,17 @@ describe('UserService', () => {
   let userService: UserService;
   let prismaService: PrismaService;
   let mailService: MailService;
+  let verificationService: VerificationService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PrismaService, UserService, MailService],
+      providers: [
+        PrismaService,
+        UserService,
+        MailService,
+        VerificationService,
+        JwtService,
+      ],
     })
       .overrideProvider(MailService)
       .useClass(MailServiceMock)
@@ -28,6 +37,7 @@ describe('UserService', () => {
     userService = module.get<UserService>(UserService);
     prismaService = module.get<PrismaService>(PrismaService);
     mailService = module.get<MailService>(MailService);
+    verificationService = module.get<VerificationService>(VerificationService);
   });
 
   afterEach(async () => {
@@ -42,9 +52,21 @@ describe('UserService', () => {
       name: 'mary',
       password: 'afuakuasbukaUAASGSA',
       roles: [Role.USER],
+      isVerified: false,
+      verificationToken: null,
     };
 
     const mockFindUniqueResult = null;
+
+    const mockUpdateResult = {
+      id: 1,
+      email: 'testEmail',
+      name: 'mary',
+      password: 'afuakuasbukaUAASGSA',
+      roles: [Role.USER],
+      isVerified: false,
+      verificationToken: 'testToken',
+    };
 
     const prismaCreate = jest
       .spyOn(prismaService.user, 'create')
@@ -58,6 +80,14 @@ describe('UserService', () => {
       .spyOn(userService, 'hashPassword')
       .mockResolvedValue('afuakuasbukaUAASGSA');
 
+    const generateVerificationToken = jest
+      .spyOn(verificationService, 'generateVerificationToken')
+      .mockResolvedValue({ verificationToken: 'testToken' });
+
+    const prismaUpdate = jest
+      .spyOn(prismaService.user, 'update')
+      .mockResolvedValue(mockUpdateResult);
+
     const mailSend = jest.spyOn(mailService, 'sendMail');
 
     const result = await userService.createUser(user);
@@ -65,7 +95,9 @@ describe('UserService', () => {
     expect(prismaCreate).toBeCalledTimes(1);
     expect(prismaFindUnique).toBeCalledTimes(1);
     expect(hashedPassword).toBeCalledTimes(1);
+    expect(generateVerificationToken).toBeCalledTimes(1);
     expect(mailSend).toBeCalledTimes(1);
+    expect(prismaUpdate).toBeCalledTimes(1);
     expect(result.id).toBe(1);
     expect(result.email).toBe('testEmail');
     expect(result.name).toBe('mary');
@@ -78,6 +110,8 @@ describe('UserService', () => {
       name: 'mary',
       password: 'afuakuasbukaUAASGSA',
       roles: [Role.USER],
+      isVerified: false,
+      verificationToken: 'testVerificationToken',
     };
 
     const prismaFindUnique = jest
@@ -101,6 +135,8 @@ describe('UserService', () => {
       name: 'admin123',
       password: 'admin456',
       roles: [Role.USER, Role.ADMIN],
+      isVerified: false,
+      verificationToken: 'testVerificationToken',
     };
 
     const prismaFindUnique = jest

@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role, User } from '@prisma/client';
 
-export class UserResponse implements Omit<User, 'password'> {
+export class UserResponse
+  implements Omit<User, 'password' | 'isVerified' | 'verificationToken'>
+{
   constructor(user: User) {
     this.email = user.email;
     this.name = user.name;

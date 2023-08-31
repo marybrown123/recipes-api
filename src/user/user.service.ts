@@ -1,4 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDTO } from './DTOs/create-user.DTO';
 import { Role } from '@prisma/client';
@@ -6,12 +13,15 @@ import { UserResponse } from './responses/user.response';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
+import { VerificationService } from '../verification/verification.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private prisma: PrismaService,
     private mailService: MailService,
+    @Inject(forwardRef(() => VerificationService))
+    private verificationService: VerificationService,
   ) {}
 
   async createUser(user: CreateUserDTO): Promise<UserResponse> {
@@ -34,14 +44,24 @@ export class UserService {
       },
     });
 
-    if (userForDb) {
-      await this.mailService.sendMail(
-        userForDb.email,
-        'Recipe App',
-        'Account created succesfully',
-        `Hello ${userForDb.name}, welcome in Recipe App!`,
-      );
-    }
+    const verificationToken =
+      await this.verificationService.generateVerificationToken(userForDb);
+
+    await this.prisma.user.update({
+      where: {
+        id: userForDb.id,
+      },
+      data: {
+        verificationToken: verificationToken.verificationToken,
+      },
+    });
+
+    await this.mailService.sendMail(
+      userForDb.email,
+      'Recipe App',
+      'Account Verification',
+      `Hello ${userForDb.name}, verify your account by clicking the following link: http://localhost:3000/verification/${verificationToken.verificationToken}`,
+    );
 
     return new UserResponse(userForDb);
   }
@@ -52,6 +72,20 @@ export class UserService {
         email,
       },
     });
+  }
+
+  async finsOneByVerificationToken(verificationToken: string): Promise<User> {
+    const userFromDb = await this.prisma.user.findUnique({
+      where: {
+        verificationToken,
+      },
+    });
+
+    if (!userFromDb) {
+      throw new NotFoundException();
+    }
+
+    return userFromDb;
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -80,6 +114,17 @@ export class UserService {
         name,
         password: hashedUserPassword,
         roles: [role],
+      },
+    });
+  }
+
+  async updateUserVerification(userId: number) {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        isVerified: true,
       },
     });
   }

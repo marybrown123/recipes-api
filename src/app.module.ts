@@ -9,6 +9,7 @@ import * as redisStore from 'cache-manager-redis-store';
 import { FileModule } from './file/file.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailModule } from './mail/mail.module';
+import { VerificationModule } from './verification/verification.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MailModule } from './mail/mail.module';
       },
     }),
     MailModule,
+    VerificationModule,
   ],
 })
 export class AppModule {}

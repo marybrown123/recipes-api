@@ -9,12 +9,13 @@ import {
 } from '@nestjs/swagger';
 import { AccessToken } from '../common/interfaces/access-token.interface';
 import { User } from '@prisma/client';
+import { IsUserVerifiedGuard } from 'src/user/guards/is-user-verified.guard';
 
 @Controller('/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(AuthGuard('local'), IsUserVerifiedGuard)
   @ApiOperation({ summary: 'Log in' })
   @ApiOkResponse({ description: 'Token' })
   @ApiUnauthorizedResponse({ description: 'Wrong credentials' })

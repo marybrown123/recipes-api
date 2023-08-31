@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { CreateUserDTO } from '../../DTOs/create-user.DTO';
 import { UserResponse } from '../../../user/responses/user.response';
@@ -12,6 +13,8 @@ export class UserServiceMock implements Required<UserService> {
       name: 'testName',
       password: 'testPassword',
       roles: [Role.USER],
+      isVerified: false,
+      verificationToken: 'testVerificationToken',
     };
   }
 
@@ -27,6 +30,10 @@ export class UserServiceMock implements Required<UserService> {
     return this.generateUser();
   }
 
+  async finsOneByVerificationToken(_verificationToken: string): Promise<User> {
+    return this.generateUser();
+  }
+
   async hashPassword(_password: string): Promise<string> {
     return 'abcdefg';
   }
@@ -38,4 +45,6 @@ export class UserServiceMock implements Required<UserService> {
   ): Promise<User> {
     return this.generateUser();
   }
+
+  async updateUserVerification(_userId: number): Promise<void> {}
 }
