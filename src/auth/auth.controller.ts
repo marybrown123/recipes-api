@@ -9,7 +9,7 @@ import {
 } from '@nestjs/swagger';
 import { AccessToken } from '../common/interfaces/access-token.interface';
 import { User } from '@prisma/client';
-import { IsUserVerifiedGuard } from 'src/user/guards/is-user-verified.guard';
+import { IsUserVerifiedGuard } from '../user/guards/is-user-verified.guard';
 
 @Controller('/auth')
 export class AuthController {
