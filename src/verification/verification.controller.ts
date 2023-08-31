@@ -7,6 +7,5 @@ export class VerificationController {
   @Get('/:token')
   async verifyAccount(@Param('token') token: string) {
     await this.verificationService.verifyAccount(token);
-    console.log('zweryfikowano');
   }
 }
