@@ -39,4 +39,8 @@ export class UserServiceMock implements Required<UserService> {
   ): Promise<User> {
     return this.generateUser();
   }
+
+  async updateVerificationStatus(_userId: number): Promise<UserResponse> {
+    return this.generateUserResponse();
+  }
 }

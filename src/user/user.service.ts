@@ -83,4 +83,17 @@ export class UserService {
       },
     });
   }
+
+  async updateVerificationStatus(userId: number): Promise<UserResponse> {
+    const verifiedUser = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        isVerified: true,
+      },
+    });
+
+    return new UserResponse(verifiedUser);
+  }
 }

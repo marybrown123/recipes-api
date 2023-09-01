@@ -33,6 +33,10 @@ export class AuthService {
   }
 
   async verifyToken(token: string): Promise<UserPayload> {
-    return this.jwtService.verify(token) as UserPayload;
+    try {
+      return this.jwtService.verify(token);
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 }
