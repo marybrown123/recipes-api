@@ -12,6 +12,7 @@ export class UserServiceMock implements Required<UserService> {
       name: 'testName',
       password: 'testPassword',
       roles: [Role.USER],
+      isVerified: false,
     };
   }
 

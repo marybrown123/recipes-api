@@ -42,6 +42,7 @@ describe('UserService', () => {
       name: 'mary',
       password: 'afuakuasbukaUAASGSA',
       roles: [Role.USER],
+      isVerified: false,
     };
 
     const mockFindUniqueResult = null;
@@ -78,6 +79,7 @@ describe('UserService', () => {
       name: 'mary',
       password: 'afuakuasbukaUAASGSA',
       roles: [Role.USER],
+      isVerified: false,
     };
 
     const prismaFindUnique = jest
@@ -101,6 +103,7 @@ describe('UserService', () => {
       name: 'admin123',
       password: 'admin456',
       roles: [Role.USER, Role.ADMIN],
+      isVerified: false,
     };
 
     const prismaFindUnique = jest
