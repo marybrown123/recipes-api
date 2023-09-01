@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
 import { AuthService } from '../../../auth/auth.service';
-import { LoggedUserPayload } from '../../../common/interfaces/logged-user-payload.interface';
+import { LoggedUserPayload } from '../../../common/interfaces/user-payload.interface';
 import { ConnectionHandlerGateway } from '../../../websocket/connection.handler.gateway';
 import { Socket } from 'socket.io-client';
 import { GatewayModule } from '../../../websocket/gateway.module';

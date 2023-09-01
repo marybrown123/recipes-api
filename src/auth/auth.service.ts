@@ -3,8 +3,7 @@ import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import { AccessToken } from '../common/interfaces/access-token.interface';
-import { LoggedUserPayload } from '../common/interfaces/logged-user-payload.interface';
+import { UserPayload } from '../common/interfaces/user-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -28,14 +27,12 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User): Promise<AccessToken> {
-    const payload = { email: user.email, sub: user.id };
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+  async generateToken(user: User): Promise<string> {
+    const payload: UserPayload = { email: user.email, sub: user.id };
+    return this.jwtService.sign(payload);
   }
 
-  async verifyToken(token: string): Promise<LoggedUserPayload> {
-    return this.jwtService.verify(token) as LoggedUserPayload;
+  async verifyToken(token: string): Promise<UserPayload> {
+    return this.jwtService.verify(token) as UserPayload;
   }
 }
