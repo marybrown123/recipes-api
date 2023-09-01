@@ -17,6 +17,7 @@ model User {
   password String
   recipes Recipe[]
   roles Role[]
+  isVerified Boolean @default(false) @map("is_verified")
 
   @@map("user")
 }
