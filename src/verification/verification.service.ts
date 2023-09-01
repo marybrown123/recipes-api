@@ -2,7 +2,12 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { VerificationToken } from '../common/interfaces/verification-token.interface';
 import { UserService } from '../user/user.service';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 
 @Injectable()
 export class VerificationService {
@@ -20,10 +25,13 @@ export class VerificationService {
   }
 
   async verifyAccount(verificationToken: string): Promise<void> {
-    const userToBeVerified = await this.userService.finsOneByVerificationToken(
-      verificationToken,
-    );
-
-    await this.userService.updateUserVerification(userToBeVerified.id);
+    try {
+      await this.jwtService.verify(verificationToken);
+      const userToBeVerified =
+        await this.userService.finsOneByVerificationToken(verificationToken);
+      await this.userService.updateUserVerification(userToBeVerified.id);
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
 }
