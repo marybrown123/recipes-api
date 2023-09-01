@@ -6,6 +6,7 @@ export class UserResponse implements Omit<User, 'password'> {
     this.email = user.email;
     this.name = user.name;
     this.id = user.id;
+    this.isVerified = user.isVerified;
   }
   @ApiProperty({ type: 'string' })
   email: string;
@@ -15,6 +16,9 @@ export class UserResponse implements Omit<User, 'password'> {
 
   @ApiProperty({ type: 'number' })
   id: number;
+
+  @ApiProperty({ type: 'boolean' })
+  isVerified: boolean;
 
   @ApiProperty({ enum: Role, isArray: true })
   roles: Role[];
