@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { UserPayload } from '../common/interfaces/user-payload.interface';
+import { Token } from '../common/interfaces/token.interface';
 
 @Injectable()
 export class AuthService {
@@ -33,14 +34,15 @@ export class AuthService {
     return user;
   }
 
-  async generateToken(user: User): Promise<string> {
+  async generateToken(user: User): Promise<Token> {
     const payload: UserPayload = { email: user.email, sub: user.id };
-    return this.jwtService.sign(payload);
+    const token = await this.jwtService.sign(payload);
+    return { token };
   }
 
-  async verifyToken(token: string): Promise<UserPayload> {
+  async verifyToken(token: Token): Promise<UserPayload> {
     try {
-      return this.jwtService.verify(token);
+      return this.jwtService.verify(token.token);
     } catch (error) {
       throw new UnauthorizedException();
     }
