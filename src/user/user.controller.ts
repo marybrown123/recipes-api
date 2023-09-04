@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDTO } from './DTOs/create-user.DTO';
 import { ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -20,11 +20,11 @@ export class UserController {
     return await this.usersService.createUser(user);
   }
 
-  @Put('/verify/:token')
+  @Put('/verify')
   @ApiOperation({ summary: 'Account verification' })
   @ApiResponse({ type: UserResponse })
   async verifyAccount(
-    @Param() verificationToken: VerificationToken,
+    @Body() verificationToken: VerificationToken,
   ): Promise<UserResponse> {
     const userPayload = await this.tokenService.verifyVerificationToken(
       verificationToken,
