@@ -6,12 +6,12 @@ import { UserResponse } from './responses/user.response';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
-import { AuthService } from '../auth/auth.service';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class UserService {
   constructor(
-    private authService: AuthService,
+    private tokenService: TokenService,
     private prisma: PrismaService,
     private mailService: MailService,
   ) {}
@@ -36,14 +36,16 @@ export class UserService {
       },
     });
 
-    const verificationToken = await this.authService.generateToken(userForDb);
+    const verificationToken = await this.tokenService.generateVerificationToken(
+      userForDb,
+    );
 
     if (userForDb) {
       await this.mailService.sendMail(
         userForDb.email,
         'Recipe App',
         'Verify your account',
-        `Hello ${userForDb.name}, click the following link to verify your account: http://testLink/${verificationToken.token}`,
+        `Hello ${userForDb.name}, click the following link to verify your account: http://testLink/${verificationToken.verificationToken}`,
       );
     }
 
