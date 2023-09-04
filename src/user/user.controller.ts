@@ -12,6 +12,7 @@ import { CreateUserDTO } from './DTOs/create-user.DTO';
 import { ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserResponse } from './responses/user.response';
 import { AuthService } from '../auth/auth.service';
+import { Token } from 'src/common/interfaces/token.interface';
 @Controller('/user')
 export class UserController {
   constructor(
@@ -31,7 +32,7 @@ export class UserController {
   @ApiOperation({ summary: 'Account verification' })
   @ApiResponse({ type: UserResponse })
   async verifyAccount(
-    @Param() verificationToken: string,
+    @Param() verificationToken: Token,
   ): Promise<UserResponse> {
     const userPayload = await this.authService.verifyToken(verificationToken);
     return this.usersService.updateVerificationStatus(userPayload.sub);
