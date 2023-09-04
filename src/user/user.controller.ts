@@ -11,7 +11,7 @@ import { UserService } from './user.service';
 import { CreateUserDTO } from './DTOs/create-user.DTO';
 import { ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserResponse } from './responses/user.response';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 @Controller('/user')
 export class UserController {
   constructor(
