@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Inject,
+  Param,
+  Post,
+  Put,
+  forwardRef,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDTO } from './DTOs/create-user.DTO';
 import { ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -8,6 +16,7 @@ import { AuthService } from 'src/auth/auth.service';
 export class UserController {
   constructor(
     private readonly usersService: UserService,
+    @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
   ) {}
 
