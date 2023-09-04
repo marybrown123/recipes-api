@@ -8,7 +8,7 @@ import { AuthController } from './auth.controller';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtStrategy } from './jwt.strategy';
 import { MailModule } from '../mail/mail.module';
-import { TokenModule } from 'src/token/token.module';
+import { TokenModule } from '../token/token.module';
 
 @Module({
   imports: [UserModule, PassportModule, MailModule, TokenModule],

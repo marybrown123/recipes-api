@@ -5,7 +5,7 @@ import { ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserResponse } from './responses/user.response';
 
 import { VerificationToken } from '../common/interfaces/verification-token.interface';
-import { TokenService } from 'src/token/token.service';
+import { TokenService } from '../token/token.service';
 @Controller('/user')
 export class UserController {
   constructor(

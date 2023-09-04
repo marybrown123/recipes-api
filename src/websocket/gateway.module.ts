@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { EventGateway } from './event.gateway';
 import { ConnectionHandlerGateway } from '../websocket/connection.handler.gateway';
-import { TokenModule } from 'src/token/token.module';
+import { TokenModule } from '../token/token.module';
 
 @Module({
   providers: [EventGateway, ConnectionHandlerGateway],

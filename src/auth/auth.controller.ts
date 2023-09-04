@@ -8,7 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { AuthenticationToken } from '../common/interfaces/authentication-token.interface';
-import { TokenService } from 'src/token/token.service';
+import { TokenService } from '../token/token.service';
 
 @Controller('/auth')
 export class AuthController {

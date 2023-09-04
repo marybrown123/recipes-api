@@ -5,7 +5,7 @@ import {
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io-client';
-import { TokenService } from 'src/token/token.service';
+import { TokenService } from '../token/token.service';
 
 @WebSocketGateway()
 @Injectable()
