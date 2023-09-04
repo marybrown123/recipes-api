@@ -93,7 +93,7 @@ describe('Connection Handler Gateway', () => {
     expect(authServiceVerifyToken).toBeCalledWith(
       socket.handshake.headers.authorization,
     );
-    expect(result.message).toBe('jwt malformed');
+    expect(result.message).toBe('Unauthorized');
     expect(connectedUsersSet).toBeCalledTimes(0);
     expect(connectedUsers.size).toBe(0);
     expect(socket.disconnect).toBeCalledTimes(1);
@@ -119,7 +119,7 @@ describe('Connection Handler Gateway', () => {
     expect(authServiceVerifyToken).toBeCalledWith(
       socketWithoutToken.handshake.headers.authorization,
     );
-    expect(result.message).toBe('jwt must be provided');
+    expect(result.message).toBe('Unauthorized');
     expect(connectedUsersSet).toBeCalledTimes(0);
     expect(connectedUsers.size).toBe(0);
     expect(socketWithoutToken.disconnect).toBeCalledTimes(1);
@@ -170,7 +170,7 @@ describe('Connection Handler Gateway', () => {
     expect(authServiceVerifyToken).toBeCalledWith(
       socket.handshake.headers.authorization,
     );
-    expect(result.message).toBe('jwt malformed');
+    expect(result.message).toBe('Unauthorized');
     expect(connectedUsersDelete).toBeCalledTimes(0);
     expect(connectedUsers.size).toBe(1);
     expect(socket.disconnect).toBeCalledTimes(1);
@@ -198,7 +198,7 @@ describe('Connection Handler Gateway', () => {
     expect(authServiceVerifyToken).toBeCalledWith(
       socketWithoutToken.handshake.headers.authorization,
     );
-    expect(result.message).toBe('jwt must be provided');
+    expect(result.message).toBe('Unauthorized');
     expect(connectedUsersDelete).toBeCalledTimes(0);
     expect(connectedUsers.size).toBe(1);
     expect(socketWithoutToken.disconnect).toBeCalledTimes(1);
