@@ -4,6 +4,8 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { UserService } from '../../user.service';
 import { MailService } from '../../../mail/mail.service';
 import { MailServiceMock } from '../mocks/mail.service.mock';
+import { AuthService } from '../../../auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 const user = {
   email: 'testEmail',
@@ -15,10 +17,17 @@ describe('UserService', () => {
   let userService: UserService;
   let prismaService: PrismaService;
   let mailService: MailService;
+  let authService: AuthService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PrismaService, UserService, MailService],
+      providers: [
+        PrismaService,
+        UserService,
+        MailService,
+        AuthService,
+        JwtService,
+      ],
     })
       .overrideProvider(MailService)
       .useClass(MailServiceMock)
@@ -28,6 +37,7 @@ describe('UserService', () => {
     userService = module.get<UserService>(UserService);
     prismaService = module.get<PrismaService>(PrismaService);
     mailService = module.get<MailService>(MailService);
+    authService = module.get<AuthService>(AuthService);
   });
 
   afterEach(async () => {
@@ -45,6 +55,10 @@ describe('UserService', () => {
       isVerified: false,
     };
 
+    const mockToken = {
+      token: 'testToken',
+    };
+
     const mockFindUniqueResult = null;
 
     const prismaCreate = jest
@@ -59,6 +73,7 @@ describe('UserService', () => {
       .spyOn(userService, 'hashPassword')
       .mockResolvedValue('afuakuasbukaUAASGSA');
 
+    jest.spyOn(authService, 'generateToken').mockResolvedValue(mockToken);
     const mailSend = jest.spyOn(mailService, 'sendMail');
 
     const result = await userService.createUser(user);
