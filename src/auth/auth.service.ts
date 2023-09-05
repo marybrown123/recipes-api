@@ -1,22 +1,11 @@
-import {
-  Inject,
-  Injectable,
-  UnauthorizedException,
-  forwardRef,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import { UserPayload } from '../common/interfaces/user-payload.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @Inject(forwardRef(() => UserService))
-    private readonly userService: UserService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userService.findOne(email);
 
@@ -31,18 +20,5 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  async generateToken(user: User): Promise<string> {
-    const payload: UserPayload = { email: user.email, sub: user.id };
-    return this.jwtService.sign(payload);
-  }
-
-  async verifyToken(token: string): Promise<UserPayload> {
-    try {
-      return this.jwtService.verify(token);
-    } catch (error) {
-      throw new UnauthorizedException();
-    }
   }
 }

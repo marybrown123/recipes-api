@@ -1,23 +1,16 @@
-import {
-  Body,
-  Controller,
-  Inject,
-  Param,
-  Post,
-  Put,
-  forwardRef,
-} from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDTO } from './DTOs/create-user.DTO';
 import { ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserResponse } from './responses/user.response';
-import { AuthService } from '../auth/auth.service';
+
+import { VerificationToken } from '../common/interfaces/verification-token.interface';
+import { TokenService } from '../token/token.service';
 @Controller('/user')
 export class UserController {
   constructor(
     private readonly usersService: UserService,
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
+    private readonly tokenService: TokenService,
   ) {}
 
   @Post('/signup')
@@ -27,13 +20,15 @@ export class UserController {
     return await this.usersService.createUser(user);
   }
 
-  @Put('/verify/:token')
+  @Put('/verify')
   @ApiOperation({ summary: 'Account verification' })
   @ApiResponse({ type: UserResponse })
   async verifyAccount(
-    @Param() verificationToken: string,
+    @Body() verificationToken: VerificationToken,
   ): Promise<UserResponse> {
-    const userPayload = await this.authService.verifyToken(verificationToken);
+    const userPayload = await this.tokenService.verifyVerificationToken(
+      verificationToken,
+    );
     return this.usersService.updateVerificationStatus(userPayload.sub);
   }
 }
