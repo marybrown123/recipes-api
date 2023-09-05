@@ -10,11 +10,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiCreatedResponse,
   ApiOperation,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { FileService } from '../file/file.service';
 import { FileResponse } from '../file/responses/file.response';
 
+@ApiTags('file')
 @Controller('/file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
@@ -24,7 +26,7 @@ export class FileController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Create a new file' })
   @ApiCreatedResponse({ type: FileResponse })
-  @ApiUnauthorizedResponse({ description: 'Not logged in' })
+  @ApiUnauthorizedResponse({ description: 'Not logged in or unverified' })
   async createFile(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<FileResponse> {
