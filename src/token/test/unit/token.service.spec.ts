@@ -3,11 +3,11 @@ import { AppModule } from '../../../app.module';
 import { TokenService } from '../../token.service';
 import { Role, User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
-import { VerificationToken } from '../../../common/interfaces/verification-token.interface';
 import { VerifiedUserPayload } from 'src/common/interfaces/verified-user-payload.interface';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthenticatedUserPayload } from 'src/common/interfaces/authenticated-user-payload.interface';
-import { AuthenticationToken } from 'src/common/interfaces/authentication-token.interface';
+import { VerificationTokenDTO } from 'src/token/DTOs/verification-token.dto';
+import { AuthenticationTokenDTO } from 'src/token/DTOs/authentication-token.dto';
 
 const testUser: User = {
   email: 'testEmail',
@@ -24,7 +24,7 @@ const verifiedTestUserPayload: VerifiedUserPayload = {
   sub: testUser.id,
 };
 
-const invalidVerificationToken: VerificationToken = {
+const invalidVerificationToken: VerificationTokenDTO = {
   verificationToken: 'invalidVerificationToken',
 };
 
@@ -33,15 +33,15 @@ const authenticatedTestUserPayload: AuthenticatedUserPayload = {
   sub: testUser.id,
 };
 
-const invalidAuthenticationToken: AuthenticationToken = {
+const invalidAuthenticationToken: AuthenticationTokenDTO = {
   authenticationToken: 'invalidAuthenticationToken',
 };
 
 describe('Token Service', () => {
   let tokenService: TokenService;
   let jwtService: JwtService;
-  let validVerificationToken: VerificationToken;
-  let validAuthenticationToken: AuthenticationToken;
+  let validVerificationToken: VerificationTokenDTO;
+  let validAuthenticationToken: AuthenticationTokenDTO;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
