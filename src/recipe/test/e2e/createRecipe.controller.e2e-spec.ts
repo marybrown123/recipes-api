@@ -16,8 +16,10 @@ describe('Recipe Controller - Create', () => {
   let userService: UserService;
   let prismaService: PrismaService;
   let jwtService: JwtService;
-  let accessToken: string;
   let testUser: User;
+  let unverifiedTestUser: User;
+  let verifiedUserAccessToken: string;
+  let unverifiedUserAccessToken: string;
   const correctPayload: CreateRecipeDTO = {
     name: 'testName',
     description: 'testDescription',
@@ -79,9 +81,24 @@ describe('Recipe Controller - Create', () => {
       process.env.TEST_PASSWORD,
       Role.USER,
     );
-    accessToken = jwtService.sign({
+
+    await userService.updateVerificationStatus(testUser.id);
+
+    verifiedUserAccessToken = jwtService.sign({
       name: testUser.name,
       sub: testUser.id,
+    });
+
+    unverifiedTestUser = await userService.generateAccount(
+      process.env.TEST_UNVERIFIED_EMAIL,
+      process.env.TEST_NAME,
+      process.env.TEST_PASSWORD,
+      Role.USER,
+    );
+
+    unverifiedUserAccessToken = jwtService.sign({
+      name: unverifiedTestUser.name,
+      sub: unverifiedTestUser.id,
     });
   });
 
@@ -91,10 +108,11 @@ describe('Recipe Controller - Create', () => {
   });
 
   it('should create a recipe', async () => {
+    await userService.updateVerificationStatus(testUser.id);
     return request(app.getHttpServer())
       .post('/recipe')
       .send(correctPayload)
-      .set('Authorization', `bearer ${accessToken}`)
+      .set('Authorization', `bearer ${verifiedUserAccessToken}`)
       .expect(HttpStatus.CREATED);
   });
 
@@ -105,14 +123,23 @@ describe('Recipe Controller - Create', () => {
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
+  it('should throw an error on unverified user', async () => {
+    return request(app.getHttpServer())
+      .post('/recipe')
+      .send(correctPayload)
+      .set('Authorization', `bearer ${unverifiedUserAccessToken}`)
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+
   validationTestsStructure.map((object) => {
     const uncorrectPayload = { ...correctPayload };
     uncorrectPayload[object.property] = object.value;
     return it(`should throw validation error when property ${object.property} is ${object.value}`, async () => {
+      await userService.updateVerificationStatus(testUser.id);
       return request(app.getHttpServer())
         .post('/recipe')
         .send(uncorrectPayload)
-        .set('Authorization', `bearer ${accessToken}`)
+        .set('Authorization', `bearer ${verifiedUserAccessToken}`)
         .expect(HttpStatus.BAD_REQUEST)
         .then((res) => {
           expect(res.body).toMatchSnapshot();
