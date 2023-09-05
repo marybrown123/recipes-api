@@ -56,6 +56,7 @@ commands:
             ADMIN_NAME=$ADMIN_NAME
             ADMIN_PASSWORD=$ADMIN_PASSWORD
             TEST_EMAIL=$TEST_EMAIL
+            TEST_UNVERIFIED_EMAIL=$TEST_UNVERIFIED_EMAIL
             TEST_NAME=$TEST_NAME
             TEST_PASSWORD=$TEST_PASSWORD
             REDIS_HOST=$REDIS_HOST_DEPLOY
@@ -71,6 +72,8 @@ commands:
             MAIL_PASS=$MAIL_PASS
             MAIL_HOST=$MAIL_HOST
             MAIL_PORT=$MAIL_PORT
+            APP_HOST=$APP_HOST
+            APP_PORT=$APP_PORT
             EOF
             cat .env > test.env
 executors:
