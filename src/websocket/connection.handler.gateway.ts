@@ -5,19 +5,19 @@ import {
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io-client';
-import { AuthService } from '../auth/auth.service';
+import { TokenService } from '../token/token.service';
 
 @WebSocketGateway()
 @Injectable()
 export class ConnectionHandlerGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private authService: AuthService) {}
+  constructor(private tokenService: TokenService) {}
   public connectedUsers = new Map<number, string>();
 
   async handleConnection(socket: Socket) {
     try {
-      const connectedUser = await this.authService.verifyToken(
+      const connectedUser = await this.tokenService.verifyAuthenticationToken(
         socket.handshake.headers.authorization,
       );
 
@@ -30,9 +30,10 @@ export class ConnectionHandlerGateway
 
   async handleDisconnect(socket: Socket) {
     try {
-      const disconnectedUser = await this.authService.verifyToken(
-        socket.handshake.headers.authorization,
-      );
+      const disconnectedUser =
+        await this.tokenService.verifyAuthenticationToken(
+          socket.handshake.headers.authorization,
+        );
 
       this.connectedUsers.delete(disconnectedUser.sub);
     } catch (error) {
