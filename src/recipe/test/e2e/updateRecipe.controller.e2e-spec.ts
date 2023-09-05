@@ -20,9 +20,11 @@ describe('Recipe Controller - Update', () => {
   let app: INestApplication;
   let jwtService: JwtService;
   let userService: UserService;
-  let accessToken: string;
+  let verifiedUserAccessToken: string;
+  let unverifiedUserAccessToken: string;
   let prismaService: PrismaService;
   let testUser: User;
+  let unverifiedTestUser: User;
   const fakeGuard: CanActivate = { canActivate: jest.fn(() => true) };
   const correctPayload: UpdateRecipeDTO = {
     name: 'testName',
@@ -86,9 +88,24 @@ describe('Recipe Controller - Update', () => {
       process.env.TEST_PASSWORD,
       Role.USER,
     );
-    accessToken = jwtService.sign({
+
+    await userService.updateVerificationStatus(testUser.id);
+
+    verifiedUserAccessToken = jwtService.sign({
       name: testUser.name,
       sub: testUser.id,
+    });
+
+    unverifiedTestUser = await userService.generateAccount(
+      process.env.TEST_UNVERIFIED_EMAIL,
+      process.env.TEST_NAME,
+      process.env.TEST_PASSWORD,
+      Role.USER,
+    );
+
+    unverifiedUserAccessToken = jwtService.sign({
+      name: unverifiedTestUser.name,
+      sub: unverifiedTestUser.id,
     });
   });
 
@@ -101,7 +118,7 @@ describe('Recipe Controller - Update', () => {
     return request(app.getHttpServer())
       .patch('/recipe/1')
       .send(correctPayload)
-      .set('Authorization', `bearer ${accessToken}`)
+      .set('Authorization', `bearer ${verifiedUserAccessToken}`)
       .expect(HttpStatus.OK);
   });
 
@@ -112,6 +129,14 @@ describe('Recipe Controller - Update', () => {
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
+  it('should throw error on unverified user', async () => {
+    return request(app.getHttpServer())
+      .patch('/recipe/1')
+      .send(correctPayload)
+      .set('Authorization', `bearer ${unverifiedUserAccessToken}`)
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+
   validationTestsStructure.map((object) => {
     const uncorrectPayload = { ...correctPayload };
     uncorrectPayload[object.property] = object.value;
@@ -119,7 +144,7 @@ describe('Recipe Controller - Update', () => {
       return request(app.getHttpServer())
         .patch('/recipe/1')
         .send(uncorrectPayload)
-        .set('Authorization', `bearer ${accessToken}`)
+        .set('Authorization', `bearer ${verifiedUserAccessToken}`)
         .expect(HttpStatus.BAD_REQUEST)
         .then((res) => {
           expect(res.body).toMatchSnapshot();
