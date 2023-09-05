@@ -12,10 +12,12 @@ import { AppModule } from '../../../app.module';
 describe('Recipe Controller - Find All Recipes', () => {
   let app: INestApplication;
   let jwtService: JwtService;
-  let accessToken: string;
   let userService: UserService;
   let prismaService: PrismaService;
   let testUser: User;
+  let unverifiedTestUser: User;
+  let verifiedUserAccessToken: string;
+  let unverifiedUserAccessToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -37,9 +39,24 @@ describe('Recipe Controller - Find All Recipes', () => {
       process.env.TEST_PASSWORD,
       Role.USER,
     );
-    accessToken = jwtService.sign({
+
+    await userService.updateVerificationStatus(testUser.id);
+
+    verifiedUserAccessToken = jwtService.sign({
       name: testUser.name,
       sub: testUser.id,
+    });
+
+    unverifiedTestUser = await userService.generateAccount(
+      process.env.TEST_UNVERIFIED_EMAIL,
+      process.env.TEST_NAME,
+      process.env.TEST_PASSWORD,
+      Role.USER,
+    );
+
+    unverifiedUserAccessToken = jwtService.sign({
+      name: unverifiedTestUser.name,
+      sub: unverifiedTestUser.id,
     });
   });
 
@@ -49,15 +66,23 @@ describe('Recipe Controller - Find All Recipes', () => {
   });
 
   it('should find all recipes which names match query', async () => {
+    await userService.updateVerificationStatus(testUser.id);
     return request(app.getHttpServer())
       .get('/recipe?name=test')
-      .set('Authorization', `bearer ${accessToken}`)
+      .set('Authorization', `bearer ${verifiedUserAccessToken}`)
       .expect(HttpStatus.OK);
   });
 
   it('should throw error on unathourized user', async () => {
     return request(app.getHttpServer())
       .get('/recipe?name=test')
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+
+  it('should throw an error on unverified user', async () => {
+    return request(app.getHttpServer())
+      .get('/recipe?name=test')
+      .set('Authorization', `bearer ${unverifiedUserAccessToken}`)
       .expect(HttpStatus.UNAUTHORIZED);
   });
 });

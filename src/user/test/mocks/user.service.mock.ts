@@ -12,6 +12,7 @@ export class UserServiceMock implements Required<UserService> {
       name: 'testName',
       password: 'testPassword',
       roles: [Role.USER],
+      isVerified: false,
     };
   }
 
@@ -37,5 +38,9 @@ export class UserServiceMock implements Required<UserService> {
     _role: Role,
   ): Promise<User> {
     return this.generateUser();
+  }
+
+  async updateVerificationStatus(_userId: number): Promise<UserResponse> {
+    return this.generateUserResponse();
   }
 }

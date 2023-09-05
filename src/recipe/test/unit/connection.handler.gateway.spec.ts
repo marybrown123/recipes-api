@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
-import { AuthService } from '../../../auth/auth.service';
-import { LoggedUserPayload } from '../../../common/interfaces/logged-user-payload.interface';
+import { AuthenticatedUserPayload } from '../../../common/interfaces/authenticated-user-payload.interface';
 import { ConnectionHandlerGateway } from '../../../websocket/connection.handler.gateway';
 import { Socket } from 'socket.io-client';
 import { GatewayModule } from '../../../websocket/gateway.module';
+import { TokenService } from '../../../token/token.service';
 
-const verifiedToken: LoggedUserPayload = {
+const verifiedToken: AuthenticatedUserPayload = {
   email: 'testEmail',
   sub: 1,
 };
@@ -31,7 +31,7 @@ const socketWithoutToken: Socket = {
 
 describe('Connection Handler Gateway', () => {
   let connectionHandlerGateway: ConnectionHandlerGateway;
-  let authService: AuthService;
+  let tokenService: TokenService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -42,7 +42,7 @@ describe('Connection Handler Gateway', () => {
     connectionHandlerGateway = module.get<ConnectionHandlerGateway>(
       ConnectionHandlerGateway,
     );
-    authService = module.get<AuthService>(AuthService);
+    tokenService = module.get<TokenService>(TokenService);
   });
 
   afterEach(() => {
@@ -53,7 +53,7 @@ describe('Connection Handler Gateway', () => {
 
   it('should connect current user', async () => {
     const authServiceVerifyToken = jest
-      .spyOn(authService, 'verifyToken')
+      .spyOn(tokenService, 'verifyAuthenticationToken')
       .mockResolvedValue(verifiedToken);
 
     const connectedUsersSet = jest.spyOn(
@@ -76,7 +76,10 @@ describe('Connection Handler Gateway', () => {
   });
 
   it('should not connect current user when provided token is invalid', async () => {
-    const authServiceVerifyToken = jest.spyOn(authService, 'verifyToken');
+    const authServiceVerifyToken = jest.spyOn(
+      tokenService,
+      'verifyAuthenticationToken',
+    );
 
     socket.disconnect = jest.fn();
 
@@ -93,14 +96,17 @@ describe('Connection Handler Gateway', () => {
     expect(authServiceVerifyToken).toBeCalledWith(
       socket.handshake.headers.authorization,
     );
-    expect(result.message).toBe('jwt malformed');
+    expect(result.message).toBe('Unauthorized');
     expect(connectedUsersSet).toBeCalledTimes(0);
     expect(connectedUsers.size).toBe(0);
     expect(socket.disconnect).toBeCalledTimes(1);
   });
 
   it('should not connect current user when token is not provided', async () => {
-    const authServiceVerifyToken = jest.spyOn(authService, 'verifyToken');
+    const authServiceVerifyToken = jest.spyOn(
+      tokenService,
+      'verifyAuthenticationToken',
+    );
 
     socketWithoutToken.disconnect = jest.fn();
 
@@ -119,7 +125,7 @@ describe('Connection Handler Gateway', () => {
     expect(authServiceVerifyToken).toBeCalledWith(
       socketWithoutToken.handshake.headers.authorization,
     );
-    expect(result.message).toBe('jwt must be provided');
+    expect(result.message).toBe('Unauthorized');
     expect(connectedUsersSet).toBeCalledTimes(0);
     expect(connectedUsers.size).toBe(0);
     expect(socketWithoutToken.disconnect).toBeCalledTimes(1);
@@ -127,7 +133,7 @@ describe('Connection Handler Gateway', () => {
 
   it('should disconect current user', async () => {
     const authServiceVerifyToken = jest
-      .spyOn(authService, 'verifyToken')
+      .spyOn(tokenService, 'verifyAuthenticationToken')
       .mockResolvedValue(verifiedToken);
 
     const connectedUsersDelete = jest.spyOn(
@@ -151,7 +157,10 @@ describe('Connection Handler Gateway', () => {
   });
 
   it('should not disconnect current user when provided token is invalid', async () => {
-    const authServiceVerifyToken = jest.spyOn(authService, 'verifyToken');
+    const authServiceVerifyToken = jest.spyOn(
+      tokenService,
+      'verifyAuthenticationToken',
+    );
 
     socket.disconnect = jest.fn();
 
@@ -170,14 +179,17 @@ describe('Connection Handler Gateway', () => {
     expect(authServiceVerifyToken).toBeCalledWith(
       socket.handshake.headers.authorization,
     );
-    expect(result.message).toBe('jwt malformed');
+    expect(result.message).toBe('Unauthorized');
     expect(connectedUsersDelete).toBeCalledTimes(0);
     expect(connectedUsers.size).toBe(1);
     expect(socket.disconnect).toBeCalledTimes(1);
   });
 
   it('should not disconnect current user when token is not provided', async () => {
-    const authServiceVerifyToken = jest.spyOn(authService, 'verifyToken');
+    const authServiceVerifyToken = jest.spyOn(
+      tokenService,
+      'verifyAuthenticationToken',
+    );
 
     socketWithoutToken.disconnect = jest.fn();
 
@@ -198,7 +210,7 @@ describe('Connection Handler Gateway', () => {
     expect(authServiceVerifyToken).toBeCalledWith(
       socketWithoutToken.handshake.headers.authorization,
     );
-    expect(result.message).toBe('jwt must be provided');
+    expect(result.message).toBe('Unauthorized');
     expect(connectedUsersDelete).toBeCalledTimes(0);
     expect(connectedUsers.size).toBe(1);
     expect(socketWithoutToken.disconnect).toBeCalledTimes(1);

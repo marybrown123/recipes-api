@@ -4,6 +4,8 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { UserService } from '../../user.service';
 import { MailService } from '../../../mail/mail.service';
 import { MailServiceMock } from '../mocks/mail.service.mock';
+import { JwtService } from '@nestjs/jwt';
+import { TokenService } from '../../../token/token.service';
 
 const user = {
   email: 'testEmail',
@@ -15,10 +17,17 @@ describe('UserService', () => {
   let userService: UserService;
   let prismaService: PrismaService;
   let mailService: MailService;
+  let tokenService: TokenService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PrismaService, UserService, MailService],
+      providers: [
+        PrismaService,
+        UserService,
+        MailService,
+        TokenService,
+        JwtService,
+      ],
     })
       .overrideProvider(MailService)
       .useClass(MailServiceMock)
@@ -28,6 +37,7 @@ describe('UserService', () => {
     userService = module.get<UserService>(UserService);
     prismaService = module.get<PrismaService>(PrismaService);
     mailService = module.get<MailService>(MailService);
+    tokenService = module.get<TokenService>(TokenService);
   });
 
   afterEach(async () => {
@@ -42,6 +52,11 @@ describe('UserService', () => {
       name: 'mary',
       password: 'afuakuasbukaUAASGSA',
       roles: [Role.USER],
+      isVerified: false,
+    };
+
+    const mockToken = {
+      verificationToken: 'testToken',
     };
 
     const mockFindUniqueResult = null;
@@ -58,6 +73,9 @@ describe('UserService', () => {
       .spyOn(userService, 'hashPassword')
       .mockResolvedValue('afuakuasbukaUAASGSA');
 
+    jest
+      .spyOn(tokenService, 'generateVerificationToken')
+      .mockResolvedValue(mockToken);
     const mailSend = jest.spyOn(mailService, 'sendMail');
 
     const result = await userService.createUser(user);
@@ -78,6 +96,7 @@ describe('UserService', () => {
       name: 'mary',
       password: 'afuakuasbukaUAASGSA',
       roles: [Role.USER],
+      isVerified: false,
     };
 
     const prismaFindUnique = jest
@@ -101,6 +120,7 @@ describe('UserService', () => {
       name: 'admin123',
       password: 'admin456',
       roles: [Role.USER, Role.ADMIN],
+      isVerified: false,
     };
 
     const prismaFindUnique = jest
