@@ -26,7 +26,7 @@ export class FileController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Create a new file' })
   @ApiCreatedResponse({ type: FileResponse })
-  @ApiUnauthorizedResponse({ description: 'Not logged in or unverified' })
+  @ApiUnauthorizedResponse({ description: 'User not authorized' })
   async createFile(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<FileResponse> {

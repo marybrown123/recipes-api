@@ -42,7 +42,7 @@ export class RecipeController {
   @ApiOperation({ summary: 'Create a new recipe' })
   @ApiCreatedResponse({ type: RecipeResponse })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  @ApiUnauthorizedResponse({ description: 'Not logged in or unverified' })
+  @ApiUnauthorizedResponse({ description: 'User not authorized' })
   async createRecipe(
     @Body() recipe: CreateRecipeDTO,
     @CurrentUser() user: User,
@@ -54,7 +54,7 @@ export class RecipeController {
   @UseGuards(AuthGuard('jwt'), IsUserAuthorGuard)
   @ApiOperation({ summary: 'Update a recipe' })
   @ApiCreatedResponse({ type: RecipeResponse })
-  @ApiUnauthorizedResponse({ description: 'Not logged in or unverified' })
+  @ApiUnauthorizedResponse({ description: 'User not authorized' })
   @ApiForbiddenResponse({
     description: 'User does not own this recipe',
   })
@@ -71,7 +71,7 @@ export class RecipeController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Get all recipes' })
   @ApiResponse({ type: [RecipeResponse] })
-  @ApiUnauthorizedResponse({ description: 'Not logged in or unverified' })
+  @ApiUnauthorizedResponse({ description: 'User not authorized' })
   async getAllRecipes(
     @Query() query: FindAllRecipesDTO,
   ): Promise<RecipeResponse[]> {
@@ -81,7 +81,7 @@ export class RecipeController {
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Get one recipe by id' })
-  @ApiUnauthorizedResponse({ description: 'Not logged in or unverified' })
+  @ApiUnauthorizedResponse({ description: 'User not authorized' })
   @ApiResponse({ type: RecipeResponse })
   @ApiParam({ name: 'id', required: true })
   async getOneRecipe(
