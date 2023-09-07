@@ -1,3 +1,4 @@
+import { HttpException } from '@nestjs/common';
 import axios from 'axios';
 import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 
@@ -8,6 +9,10 @@ export class WebhookService {
       ...recipe,
     };
 
-    await axios.post(webhookURL, webhookData);
+    try {
+      await axios.post(webhookURL, webhookData);
+    } catch (error) {
+      throw Error('There was an error while sending a request');
+    }
   }
 }
