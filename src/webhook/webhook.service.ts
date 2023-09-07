@@ -1,4 +1,3 @@
-import { HttpException } from '@nestjs/common';
 import axios from 'axios';
 import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 
