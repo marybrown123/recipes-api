@@ -13,6 +13,8 @@ import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 import { UserResponse } from 'src/user/responses/user.response';
 import { MailService } from '../../../mail/mail.service';
 import { MailServiceMock } from '../../../user/test/mocks/mail.service.mock';
+import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookServiceMock } from '../../../webhook/test/mock/webhook.service.mock';
 
 const recipe = {
   name: 'Dumplings',
@@ -56,6 +58,8 @@ describe('Recipe Service', () => {
     })
       .overrideProvider(MailService)
       .useClass(MailServiceMock)
+      .overrideProvider(WebhookService)
+      .useClass(WebhookServiceMock)
       .compile();
 
     await module.createNestApplication().init();
