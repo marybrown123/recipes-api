@@ -11,7 +11,7 @@ import { UpdateRecipeHandler } from '../recipe/commands/handlers/updateRecipe.ha
 import { GatewayModule } from '../websocket/gateway.module';
 import { FileService } from '../file/file.service';
 import { S3Service } from '../file/s3.service';
-import { WebhookModule } from 'src/webhook/webhook.module';
+import { WebhookModule } from '../webhook/webhook.module';
 
 export const QueryHandlers = [FindRecipeByIdHandler, FindAllRecipesHandler];
 export const CommandHandlers = [CreateRecipeHandler, UpdateRecipeHandler];

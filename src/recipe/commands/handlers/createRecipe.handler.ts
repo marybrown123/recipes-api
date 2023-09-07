@@ -5,7 +5,7 @@ import { EventGateway } from '../../../websocket/event.gateway';
 import { RecipeResponse } from '../../responses/recipe.response';
 import { FileService } from '../../../file/file.service';
 import { S3Service } from '../../../file/s3.service';
-import { WebhookService } from 'src/webhook/webhook.service';
+import { WebhookService } from '../../../webhook/webhook.service';
 
 @CommandHandler(CreateRecipeCommand)
 export class CreateRecipeHandler
