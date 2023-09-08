@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../../app.module';
-import axios from 'axios';
 import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { WebhookService } from '../../webhook.service';
+import { HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
+import { of } from 'rxjs';
 
 const recipeForWebhook: RecipeResponse = {
   id: 1,
@@ -27,6 +29,7 @@ const recipeForWebhook: RecipeResponse = {
 
 describe('Webhook Service', () => {
   let webhookService: WebhookService;
+  let httpService: HttpService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,15 +38,91 @@ describe('Webhook Service', () => {
 
     await module.createNestApplication().init();
     webhookService = module.get<WebhookService>(WebhookService);
+    httpService = module.get<HttpService>(HttpService);
+  });
+
+  afterEach(async () => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('should send a webhook', async () => {
-    const axiosPost = jest.spyOn(axios, 'post');
     const webhookUrl = process.env.WEBHOOK_URL;
+
+    const response: AxiosResponse<any> = {
+      data: recipeForWebhook,
+      headers: {},
+      config: {
+        url: 'http://localhost:3000/mockUrl',
+        headers: undefined,
+      },
+      status: 200,
+      statusText: 'OK',
+    };
+
+    const httpPost = jest
+      .spyOn(httpService, 'post')
+      .mockImplementationOnce(() => of(response));
 
     await webhookService.sendWebhookWithRecipe(recipeForWebhook);
 
-    expect(axiosPost).toBeCalledTimes(1);
-    expect(axiosPost).toBeCalledWith(webhookUrl, recipeForWebhook);
+    expect(httpPost).toBeCalledTimes(1);
+    expect(httpPost).toBeCalledWith(webhookUrl, recipeForWebhook);
+  });
+
+  it('should throw an error when call fails with status 500', async () => {
+    const webhookUrl = process.env.WEBHOOK_URL;
+
+    const response: AxiosResponse<any> = {
+      data: recipeForWebhook,
+      headers: {},
+      config: {
+        url: 'http://localhost:3000/mockUrl',
+        headers: undefined,
+      },
+      status: 500,
+      statusText: 'Internal server error',
+    };
+
+    const httpPost = jest
+      .spyOn(httpService, 'post')
+      .mockImplementationOnce(() => of(response));
+
+    try {
+      await webhookService.sendWebhookWithRecipe(recipeForWebhook);
+    } catch (error) {
+      expect(error.message).toBe('There was an error while sending request');
+    }
+
+    expect(httpPost).toBeCalledTimes(1);
+    expect(httpPost).toBeCalledWith(webhookUrl, recipeForWebhook);
+  });
+
+  it('should throw an error when call fails with status 400', async () => {
+    const webhookUrl = process.env.WEBHOOK_URL;
+
+    const response: AxiosResponse<any> = {
+      data: recipeForWebhook,
+      headers: {},
+      config: {
+        url: 'http://localhost:3000/mockUrl',
+        headers: undefined,
+      },
+      status: 400,
+      statusText: 'Bad request',
+    };
+
+    const httpPost = jest
+      .spyOn(httpService, 'post')
+      .mockImplementationOnce(() => of(response));
+
+    try {
+      await webhookService.sendWebhookWithRecipe(recipeForWebhook);
+    } catch (error) {
+      expect(error.message).toBe('There was an error while sending request');
+    }
+
+    expect(httpPost).toBeCalledTimes(1);
+    expect(httpPost).toBeCalledWith(webhookUrl, recipeForWebhook);
   });
 });
