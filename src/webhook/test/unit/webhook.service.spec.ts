@@ -3,8 +3,8 @@ import { AppModule } from '../../../app.module';
 import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { WebhookService } from '../../webhook.service';
 import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Observable, of } from 'rxjs';
 
 const recipeForWebhook: RecipeResponse = {
   id: 1,
@@ -30,6 +30,10 @@ const recipeForWebhook: RecipeResponse = {
 describe('Webhook Service', () => {
   let webhookService: WebhookService;
   let httpService: HttpService;
+  let httpPost: jest.SpyInstance<
+    Observable<AxiosResponse<unknown, any>>,
+    [url: string, data?: any, config?: AxiosRequestConfig<any>]
+  >;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -39,6 +43,10 @@ describe('Webhook Service', () => {
     await module.createNestApplication().init();
     webhookService = module.get<WebhookService>(WebhookService);
     httpService = module.get<HttpService>(HttpService);
+  });
+
+  beforeEach(async () => {
+    httpPost = jest.spyOn(httpService, 'post').mockImplementation(jest.fn());
   });
 
   afterEach(async () => {
@@ -60,9 +68,9 @@ describe('Webhook Service', () => {
       statusText: 'OK',
     };
 
-    const httpPost = jest
+    httpPost = jest
       .spyOn(httpService, 'post')
-      .mockImplementationOnce(() => of(response));
+      .mockImplementation(() => of(response));
 
     await webhookService.sendWebhookWithRecipe(recipeForWebhook);
 
@@ -84,9 +92,9 @@ describe('Webhook Service', () => {
       statusText: 'Internal server error',
     };
 
-    const httpPost = jest
+    httpPost = jest
       .spyOn(httpService, 'post')
-      .mockImplementationOnce(() => of(response));
+      .mockImplementation(() => of(response));
 
     try {
       await webhookService.sendWebhookWithRecipe(recipeForWebhook);
@@ -112,9 +120,9 @@ describe('Webhook Service', () => {
       statusText: 'Bad request',
     };
 
-    const httpPost = jest
+    httpPost = jest
       .spyOn(httpService, 'post')
-      .mockImplementationOnce(() => of(response));
+      .mockImplementation(() => of(response));
 
     try {
       await webhookService.sendWebhookWithRecipe(recipeForWebhook);
