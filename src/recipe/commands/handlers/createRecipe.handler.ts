@@ -5,6 +5,7 @@ import { EventGateway } from '../../../websocket/event.gateway';
 import { RecipeResponse } from '../../responses/recipe.response';
 import { FileService } from '../../../file/file.service';
 import { S3Service } from '../../../file/s3.service';
+import { WebhookService } from '../../../webhook/webhook.service';
 
 @CommandHandler(CreateRecipeCommand)
 export class CreateRecipeHandler
@@ -15,6 +16,7 @@ export class CreateRecipeHandler
     private eventGateway: EventGateway,
     private fileService: FileService,
     private s3Service: S3Service,
+    private webhookService: WebhookService,
   ) {}
   async execute(command: CreateRecipeCommand) {
     const { recipe, authorId } = command;
@@ -27,6 +29,10 @@ export class CreateRecipeHandler
     const file = await this.fileService.findFileById(recipeFromDb.fileId);
     const fileUrl = await this.s3Service.generatePresignedUrl(file.key);
 
-    return new RecipeResponse(recipeFromDb, fileUrl);
+    const recipeToReturn = new RecipeResponse(recipeFromDb, fileUrl);
+
+    await this.webhookService.sendWebhookWithRecipe(recipeToReturn);
+
+    return recipeToReturn;
   }
 }

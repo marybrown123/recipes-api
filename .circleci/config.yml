@@ -74,6 +74,7 @@ commands:
             MAIL_PORT=$MAIL_PORT
             APP_HOST=$APP_HOST
             APP_PORT=$APP_PORT
+            WEBHOOK_URL=$WEBHOOK_URL
             EOF
             cat .env > test.env
 executors:

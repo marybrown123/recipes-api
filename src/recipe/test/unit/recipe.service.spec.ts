@@ -13,6 +13,8 @@ import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 import { UserResponse } from 'src/user/responses/user.response';
 import { MailService } from '../../../mail/mail.service';
 import { MailServiceMock } from '../../../user/test/mocks/mail.service.mock';
+import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookServiceMock } from '../../../webhook/test/mock/webhook.service.mock';
 
 const recipe = {
   name: 'Dumplings',
@@ -40,6 +42,7 @@ describe('Recipe Service', () => {
   let testFile: FileResponse;
   let fileService: FileService;
   let testRecipe: RecipeResponse;
+  let webhookService: WebhookService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -56,6 +59,8 @@ describe('Recipe Service', () => {
     })
       .overrideProvider(MailService)
       .useClass(MailServiceMock)
+      .overrideProvider(WebhookService)
+      .useClass(WebhookServiceMock)
       .compile();
 
     await module.createNestApplication().init();
@@ -66,6 +71,7 @@ describe('Recipe Service', () => {
     prismaService = module.get<PrismaService>(PrismaService);
     cacheService = module.get(CACHE_MANAGER);
     fileService = module.get<FileService>(FileService);
+    webhookService = module.get<WebhookService>(WebhookService);
 
     testUser = await userService.generateAccount(
       process.env.TEST_EMAIL,
@@ -101,6 +107,17 @@ describe('Recipe Service', () => {
     expect(result.preparing[0].order).toBe(1);
     expect(result.ingredients[0].name).toBe('flour');
     expect(result.ingredients[0].amount).toBe('spoon');
+  });
+
+  it('should call webhook service', async () => {
+    const webhookServiceRecipe = jest.spyOn(
+      webhookService,
+      'sendWebhookWithRecipe',
+    );
+
+    await recipeService.createRecipe(recipe, testUser.id);
+
+    expect(webhookServiceRecipe).toBeCalledTimes(1);
   });
 
   it('should update a recipe', async () => {
