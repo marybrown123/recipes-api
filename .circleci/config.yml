@@ -75,6 +75,7 @@ commands:
             APP_HOST=$APP_HOST
             APP_PORT=$APP_PORT
             WEBHOOK_URL=$WEBHOOK_URL
+            CREATE_RECIPE_WEBHOOK_NAME=$CREATE_RECIPE_WEBHOOK_NAME
             EOF
             cat .env > test.env
 executors:
