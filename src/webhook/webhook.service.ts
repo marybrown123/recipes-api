@@ -44,4 +44,11 @@ export class WebhookService {
 
     return new WebhookResponse(updatedWebhook);
   }
+
+  async fetchAllWebhooks(): Promise<WebhookResponse[]> {
+    const webhooks = await this.prismaService.webhook.findMany();
+    return webhooks.map((webhook) => {
+      return new WebhookResponse(webhook);
+    });
+  }
 }

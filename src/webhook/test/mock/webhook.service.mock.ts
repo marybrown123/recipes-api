@@ -29,4 +29,8 @@ export class WebhookServiceMock implements Required<WebhookService> {
   ): Promise<WebhookResponse> {
     return this.generateWebhookResponse();
   }
+
+  async fetchAllWebhooks(): Promise<WebhookResponse[]> {
+    return [this.generateWebhookResponse()];
+  }
 }
