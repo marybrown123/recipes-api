@@ -112,7 +112,7 @@ describe('Recipe Service', () => {
   it('should call webhook service', async () => {
     const webhookServiceRecipe = jest.spyOn(
       webhookService,
-      'sendWebhookWithRecipe',
+      'createRecipeWebhook',
     );
 
     await recipeService.createRecipe(recipe, testUser.id);

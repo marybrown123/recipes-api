@@ -41,6 +41,14 @@ const newWebhook: UpdateWebhookDTO = {
   retriesAmount: 10,
 };
 
+const createRecipeWebhookMock = {
+  id: 1,
+  name: process.env.CREATE_RECIPE_WEBHOOK_NAME,
+  url: 'mockedUrl',
+  isEnabled: true,
+  retriesAmount: 5,
+};
+
 describe('Webhook Service', () => {
   let webhookService: WebhookService;
   let httpService: HttpService;
@@ -76,9 +84,7 @@ describe('Webhook Service', () => {
     await prismaService.webhook.deleteMany();
   });
 
-  it('should send a webhook', async () => {
-    const webhookUrl = process.env.WEBHOOK_URL;
-
+  it('should send a create recipe webhook', async () => {
     const response: AxiosResponse<any> = {
       data: recipeForWebhook,
       headers: {},
@@ -94,15 +100,16 @@ describe('Webhook Service', () => {
       .spyOn(httpService, 'post')
       .mockImplementation(() => of(response));
 
-    await webhookService.sendWebhookWithRecipe(recipeForWebhook);
+    const mockFetchAllWebhooks = jest
+      .spyOn(webhookService, 'fetchAllWebhooks')
+      .mockResolvedValue([createRecipeWebhookMock]);
 
+    await webhookService.createRecipeWebhook(recipeForWebhook);
+    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
     expect(httpPost).toBeCalledTimes(1);
-    expect(httpPost).toBeCalledWith(webhookUrl, recipeForWebhook);
   });
 
   it('should throw an error when call fails with status 500', async () => {
-    const webhookUrl = process.env.WEBHOOK_URL;
-
     const response: AxiosResponse<any> = {
       data: recipeForWebhook,
       headers: {},
@@ -118,19 +125,21 @@ describe('Webhook Service', () => {
       .spyOn(httpService, 'post')
       .mockImplementation(() => of(response));
 
+    const mockFetchAllWebhooks = jest
+      .spyOn(webhookService, 'fetchAllWebhooks')
+      .mockResolvedValue([createRecipeWebhookMock]);
+
     try {
-      await webhookService.sendWebhookWithRecipe(recipeForWebhook);
+      await webhookService.createRecipeWebhook(recipeForWebhook);
     } catch (error) {
       expect(error.message).toBe('There was an error while sending request');
     }
 
     expect(httpPost).toBeCalledTimes(1);
-    expect(httpPost).toBeCalledWith(webhookUrl, recipeForWebhook);
+    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
   });
 
   it('should throw an error when call fails with status 400', async () => {
-    const webhookUrl = process.env.WEBHOOK_URL;
-
     const response: AxiosResponse<any> = {
       data: recipeForWebhook,
       headers: {},
@@ -146,14 +155,18 @@ describe('Webhook Service', () => {
       .spyOn(httpService, 'post')
       .mockImplementation(() => of(response));
 
+    const mockFetchAllWebhooks = jest
+      .spyOn(webhookService, 'fetchAllWebhooks')
+      .mockResolvedValue([createRecipeWebhookMock]);
+
     try {
-      await webhookService.sendWebhookWithRecipe(recipeForWebhook);
+      await webhookService.createRecipeWebhook(recipeForWebhook);
     } catch (error) {
       expect(error.message).toBe('There was an error while sending request');
     }
 
     expect(httpPost).toBeCalledTimes(1);
-    expect(httpPost).toBeCalledWith(webhookUrl, recipeForWebhook);
+    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
   });
 
   it('should update a webhook', async () => {
