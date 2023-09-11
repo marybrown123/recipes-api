@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { RecipeResponse } from 'src/recipe/responses/recipe.response';
+import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { WebhookService } from '../../webhook.service';
-import { UpdateWebhookDTO } from 'src/webhook/DTOs/update-webhook.dto';
-import { WebhookResponse } from 'src/webhook/responses/webhook.response';
+import { UpdateWebhookDTO } from '../../DTOs/update-webhook.dto';
+import { WebhookResponse } from '../../responses/webhook.response';
 import { Webhook } from '@prisma/client';
 
 export class WebhookServiceMock implements Required<WebhookService> {
