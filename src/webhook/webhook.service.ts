@@ -3,8 +3,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 import { lastValueFrom } from 'rxjs';
 import { UpdateWebhookDTO } from './DTOs/update-webhook.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { WebhookResponse } from 'src/webhook/responses/webhook.response';
+import { PrismaService } from '../prisma/prisma.service';
+import { WebhookResponse } from './responses/webhook.response';
 
 @Injectable()
 export class WebhookService {

@@ -10,9 +10,9 @@ import {
 } from '@nestjs/swagger';
 import { UpdateWebhookDTO } from './DTOs/update-webhook.dto';
 import { WebhookService } from './webhook.service';
-import { WebhookResponse } from 'src/webhook/responses/webhook.response';
+import { WebhookResponse } from './responses/webhook.response';
 import { AuthGuard } from '@nestjs/passport';
-import { IsAdminGuard } from 'src/user/guards/is-admin.guard';
+import { IsAdminGuard } from '../user/guards/is-admin.guard';
 
 @ApiTags('webhook')
 @Controller('/webhook')
