@@ -5,6 +5,7 @@ import { lastValueFrom } from 'rxjs';
 import { UpdateWebhookDTO } from './DTOs/update-webhook.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { WebhookResponse } from './responses/webhook.response';
+import { UserResponse } from 'src/user/responses/user.response';
 
 @Injectable()
 export class WebhookService {
@@ -32,6 +33,27 @@ export class WebhookService {
       }
     }
   }
+
+  async verifyUserWebhook(user: UserResponse): Promise<void> {
+    const webhooks = await this.fetchAllWebhooks();
+
+    const verifyUserWebhook = webhooks.filter((webhook) => {
+      if (webhook.name === process.env.VERIFY_USER_WEBHOOK_NAME) {
+        return webhook;
+      }
+    });
+
+    if (verifyUserWebhook[0].isEnabled) {
+      const webhookURL = verifyUserWebhook[0].url;
+
+      try {
+        await lastValueFrom(this.httpService.post(webhookURL, user));
+      } catch (error) {
+        throw new Error('There was an error while sending request');
+      }
+    }
+  }
+
   async updateWebhook(
     webhookId: number,
     newWebhook: UpdateWebhookDTO,

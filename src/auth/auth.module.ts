@@ -9,9 +9,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtStrategy } from './jwt.strategy';
 import { MailModule } from '../mail/mail.module';
 import { TokenModule } from '../token/token.module';
+import { WebhookModule } from 'src/webhook/webhook.module';
 
 @Module({
-  imports: [UserModule, PassportModule, MailModule, TokenModule],
+  imports: [UserModule, PassportModule, MailModule, TokenModule, WebhookModule],
   providers: [
     AuthService,
     UserService,

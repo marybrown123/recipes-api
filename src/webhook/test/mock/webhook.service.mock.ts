@@ -5,6 +5,7 @@ import { WebhookService } from '../../webhook.service';
 import { UpdateWebhookDTO } from '../../DTOs/update-webhook.dto';
 import { WebhookResponse } from '../../responses/webhook.response';
 import { Webhook } from '@prisma/client';
+import { UserResponse } from 'src/user/responses/user.response';
 
 export class WebhookServiceMock implements Required<WebhookService> {
   generateTestWebhook(): Webhook {
@@ -22,6 +23,8 @@ export class WebhookServiceMock implements Required<WebhookService> {
   }
 
   async createRecipeWebhook(_recipe: RecipeResponse): Promise<void> {}
+
+  async verifyUserWebhook(_user: UserResponse): Promise<void> {}
 
   async updateWebhook(
     _webhookId: number,
