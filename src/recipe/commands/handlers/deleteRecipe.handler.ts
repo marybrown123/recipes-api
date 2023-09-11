@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { FileService } from 'src/file/file.service';
-import { DeleteRecipeCommand } from 'src/recipe/commands/impl/deleteRecipe.command';
-import { RecipeDAO } from 'src/recipe/recipe.dao';
+import { FileService } from '../../../file/file.service';
+import { DeleteRecipeCommand } from '../impl/deleteRecipe.command';
+import { RecipeDAO } from '../../recipe.dao';
 
 @CommandHandler(DeleteRecipeCommand)
 export class DeleteRecipeHandler

@@ -188,6 +188,19 @@ describe('Recipe Service', () => {
     expect(result[0].ingredients[0].amount).toBe('spoon');
   });
 
+  it('should delete recipe', async () => {
+    const commandBusExecute = jest.spyOn(commandBus, 'execute');
+
+    await recipeService.deleteRecipe(testRecipe.id);
+
+    const deletedRecipe = await prismaService.recipe.findFirst({
+      where: { id: testRecipe.id },
+    });
+
+    expect(commandBusExecute).toBeCalledTimes(2);
+    expect(deletedRecipe).toBe(null);
+  });
+
   afterAll(async () => {
     await prismaService.user.deleteMany();
     await prismaService.file.deleteMany();

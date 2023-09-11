@@ -10,7 +10,7 @@ import { UpdateRecipeCommand } from '../recipe/commands/impl/updateRecipe.comman
 import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { DeleteRecipeCommand } from 'src/recipe/commands/impl/deleteRecipe.command';
+import { DeleteRecipeCommand } from './commands/impl/deleteRecipe.command';
 
 @Injectable()
 export class RecipeService {
