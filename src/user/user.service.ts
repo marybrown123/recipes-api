@@ -7,7 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
 import { TokenService } from '../token/token.service';
-import { WebhookService } from 'src/webhook/webhook.service';
+import { WebhookService } from '../webhook/webhook.service';
 
 @Injectable()
 export class UserService {

@@ -4,7 +4,7 @@ import { UserController } from './user.controller';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailModule } from '../mail/mail.module';
 import { TokenModule } from '../token/token.module';
-import { WebhookModule } from 'src/webhook/webhook.module';
+import { WebhookModule } from '../webhook/webhook.module';
 
 @Module({
   imports: [MailModule, TokenModule, WebhookModule],
