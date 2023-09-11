@@ -173,4 +173,17 @@ describe('Webhook Service', () => {
     expect(result.isEnabled).toBe(webhookMock.isEnabled);
     expect(result.retriesAmount).toBe(newWebhook.retriesAmount);
   });
+
+  it('should find all webhooks', async () => {
+    const mockPismaFindMany = jest.spyOn(prismaService.webhook, 'findMany');
+
+    const result = await webhookService.fetchAllWebhooks();
+
+    expect(mockPismaFindMany).toBeCalledTimes(1);
+    expect(result[0].id).toBe(testWebhook.id);
+    expect(result[0].name).toBe(webhookMock.name);
+    expect(result[0].url).toBe(webhookMock.url);
+    expect(result[0].isEnabled).toBe(webhookMock.isEnabled);
+    expect(result[0].retriesAmount).toBe(webhookMock.retriesAmount);
+  });
 });
