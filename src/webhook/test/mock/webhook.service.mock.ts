@@ -21,7 +21,7 @@ export class WebhookServiceMock implements Required<WebhookService> {
     return new WebhookResponse(this.generateTestWebhook());
   }
 
-  async sendWebhookWithRecipe(_recipe: RecipeResponse): Promise<void> {}
+  async createRecipeWebhook(_recipe: RecipeResponse): Promise<void> {}
 
   async updateWebhook(
     _webhookId: number,

@@ -13,16 +13,25 @@ export class WebhookService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async sendWebhookWithRecipe(recipe: RecipeResponse): Promise<void> {
-    const webhookURL = process.env.WEBHOOK_URL;
+  async createRecipeWebhook(recipe: RecipeResponse): Promise<void> {
+    const webhooks = await this.fetchAllWebhooks();
 
-    try {
-      await lastValueFrom(this.httpService.post(webhookURL, recipe));
-    } catch (error) {
-      throw new Error('There was an error while sending request');
+    const createRecipeWebhook = webhooks.filter((webhook) => {
+      if (webhook.name === process.env.CREATE_RECIPE_WEBHOOK_NAME) {
+        return webhook;
+      }
+    });
+
+    if (createRecipeWebhook[0].isEnabled) {
+      const webhookURL = createRecipeWebhook[0].url;
+
+      try {
+        await lastValueFrom(this.httpService.post(webhookURL, recipe));
+      } catch (error) {
+        throw new Error('There was an error while sending request');
+      }
     }
   }
-
   async updateWebhook(
     webhookId: number,
     newWebhook: UpdateWebhookDTO,
