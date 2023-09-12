@@ -54,6 +54,26 @@ export class WebhookService {
     }
   }
 
+  async deleteRecipeWebhook(recipe: RecipeResponse): Promise<void> {
+    const webhooks = await this.fetchAllWebhooks();
+
+    const deleteRecipeWebhook = webhooks.filter((webhook) => {
+      if (webhook.name === process.env.DELETE_RECIPE_WEBHOOK_NAME) {
+        return webhook;
+      }
+    });
+
+    if (deleteRecipeWebhook[0].isEnabled) {
+      const webhookURL = deleteRecipeWebhook[0].url;
+
+      try {
+        await lastValueFrom(this.httpService.post(webhookURL, recipe));
+      } catch (error) {
+        throw new Error('There was an error while sending request');
+      }
+    }
+  }
+
   async updateWebhook(
     webhookId: number,
     newWebhook: UpdateWebhookDTO,

@@ -26,6 +26,8 @@ export class WebhookServiceMock implements Required<WebhookService> {
 
   async verifyUserWebhook(_user: UserResponse): Promise<void> {}
 
+  async deleteRecipeWebhook(_recipe: RecipeResponse): Promise<void> {}
+
   async updateWebhook(
     _webhookId: number,
     _newWebhook: UpdateWebhookDTO,
