@@ -5,8 +5,8 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  MaxLength,
-  MinLength,
+  Max,
+  Min,
 } from 'class-validator';
 
 export class UpdateWebhookDTO {
@@ -24,7 +24,7 @@ export class UpdateWebhookDTO {
   @IsNumber()
   @IsOptional()
   @ApiPropertyOptional({ type: 'number', example: 5 })
-  @MaxLength(10)
-  @MinLength(1)
+  @Min(1)
+  @Max(10)
   retriesAmount?: number;
 }

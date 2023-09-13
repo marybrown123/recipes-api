@@ -6,7 +6,7 @@ import { RecipeResponse } from '../../responses/recipe.response';
 import { FileService } from '../../../file/file.service';
 import { S3Service } from '../../../file/s3.service';
 import { WebhookService } from '../../../webhook/webhook.service';
-import { WebhookName } from 'src/webhook/enums/webhookName.enum';
+import { WebhookName } from '../../../webhook/enums/webhookName.enum';
 
 @CommandHandler(CreateRecipeCommand)
 export class CreateRecipeHandler

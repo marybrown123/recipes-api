@@ -8,7 +8,7 @@ import { User } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
 import { TokenService } from '../token/token.service';
 import { WebhookService } from '../webhook/webhook.service';
-import { WebhookName } from 'src/webhook/enums/webhookName.enum';
+import { WebhookName } from '../webhook/enums/webhookName.enum';
 
 @Injectable()
 export class UserService {

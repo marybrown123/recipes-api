@@ -5,8 +5,8 @@ import { WebhookService } from '../../webhook.service';
 import { UpdateWebhookDTO } from '../../DTOs/update-webhook.dto';
 import { WebhookResponse } from '../../responses/webhook.response';
 import { Webhook } from '@prisma/client';
-import { UserResponse } from 'src/user/responses/user.response';
-import { WebhookName } from 'src/webhook/enums/webhookName.enum';
+import { UserResponse } from '../../../user/responses/user.response';
+import { WebhookName } from '../../enums/webhookName.enum';
 
 export class WebhookServiceMock implements Required<WebhookService> {
   generateTestWebhook(): Webhook {

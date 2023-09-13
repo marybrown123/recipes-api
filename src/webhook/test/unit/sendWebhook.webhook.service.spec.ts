@@ -1,29 +1,42 @@
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role } from '@prisma/client';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
-import { UserResponse } from '../../../user/responses/user.response';
+import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { WebhookService } from '../../webhook.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { WebhookName } from '../../enums/webhookName.enum';
 
-const userForWebhook: UserResponse = {
+const recipeForWebhook: RecipeResponse = {
   id: 1,
-  name: 'mockName',
-  email: 'mockEmail',
-  isVerified: true,
-  roles: [Role.USER],
+  name: 'testName',
+  description: 'testDescription',
+  fileId: 1,
+  authorId: 1,
+  preparing: [
+    {
+      step: 'testStep',
+      order: 1,
+    },
+  ],
+  ingredients: [
+    {
+      name: 'testName',
+      amount: 'testAmout',
+    },
+  ],
+  fileUrl: 'testFileUrl',
 };
 
-const verifyUserWebhookMock = {
+const recipeCreatedWebhookMock = {
   id: 1,
-  name: process.env.VERIFY_USER_WEBHOOK_NAME,
+  name: WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
   url: 'mockedUrl',
   isEnabled: true,
   retriesAmount: 5,
 };
 
-describe('Webhook Service - Verify User Webhook', () => {
+describe('Webhook Service - Send Webhook', () => {
   let webhookService: WebhookService;
   let httpService: HttpService;
   let httpPost: jest.SpyInstance<
@@ -51,9 +64,9 @@ describe('Webhook Service - Verify User Webhook', () => {
     jest.restoreAllMocks();
   });
 
-  it('should send a verify user webhook', async () => {
+  it('should send a webhook', async () => {
     const response: AxiosResponse<any> = {
-      data: userForWebhook,
+      data: recipeForWebhook,
       headers: {},
       config: {
         url: 'http://localhost:3000/mockUrl',
@@ -67,18 +80,54 @@ describe('Webhook Service - Verify User Webhook', () => {
       .spyOn(httpService, 'post')
       .mockImplementation(() => of(response));
 
-    const mockFetchAllWebhooks = jest
-      .spyOn(webhookService, 'fetchAllWebhooks')
-      .mockResolvedValue([verifyUserWebhookMock]);
+    const mockFetchOneByName = jest
+      .spyOn(webhookService, 'fetchOneWebhookByName')
+      .mockResolvedValue(recipeCreatedWebhookMock);
 
-    await webhookService.verifyUserWebhook(userForWebhook);
-    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
+    await webhookService.sendWebhook(
+      recipeForWebhook,
+      WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
+    );
+    expect(mockFetchOneByName).toBeCalledTimes(1);
     expect(httpPost).toBeCalledTimes(1);
   });
 
-  it('should throw an error when call fails with status 400 - verify user webhook', async () => {
+  it('should throw an error when call fails with status 500', async () => {
     const response: AxiosResponse<any> = {
-      data: userForWebhook,
+      data: recipeForWebhook,
+      headers: {},
+      config: {
+        url: 'http://localhost:3000/mockUrl',
+        headers: undefined,
+      },
+      status: 500,
+      statusText: 'Internal server error',
+    };
+
+    httpPost = jest
+      .spyOn(httpService, 'post')
+      .mockImplementation(() => of(response));
+
+    const mockFetchOneByName = jest
+      .spyOn(webhookService, 'fetchOneWebhookByName')
+      .mockResolvedValue(recipeCreatedWebhookMock);
+
+    try {
+      await webhookService.sendWebhook(
+        recipeForWebhook,
+        WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
+      );
+    } catch (error) {
+      expect(error.message).toBe('There was an error while sending request');
+    }
+
+    expect(httpPost).toBeCalledTimes(1);
+    expect(mockFetchOneByName).toBeCalledTimes(1);
+  });
+
+  it('should throw an error when call fails with status 400', async () => {
+    const response: AxiosResponse<any> = {
+      data: recipeForWebhook,
       headers: {},
       config: {
         url: 'http://localhost:3000/mockUrl',
@@ -92,47 +141,20 @@ describe('Webhook Service - Verify User Webhook', () => {
       .spyOn(httpService, 'post')
       .mockImplementation(() => of(response));
 
-    const mockFetchAllWebhooks = jest
-      .spyOn(webhookService, 'fetchAllWebhooks')
-      .mockResolvedValue([verifyUserWebhookMock]);
+    const mockFetchOneByName = jest
+      .spyOn(webhookService, 'fetchOneWebhookByName')
+      .mockResolvedValue(recipeCreatedWebhookMock);
 
     try {
-      await webhookService.verifyUserWebhook(userForWebhook);
+      await webhookService.sendWebhook(
+        recipeForWebhook,
+        WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
+      );
     } catch (error) {
       expect(error.message).toBe('There was an error while sending request');
     }
 
     expect(httpPost).toBeCalledTimes(1);
-    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
-  });
-
-  it('should throw an error when call fails with status 500 - verify user webhook', async () => {
-    const response: AxiosResponse<any> = {
-      data: userForWebhook,
-      headers: {},
-      config: {
-        url: 'http://localhost:3000/mockUrl',
-        headers: undefined,
-      },
-      status: 500,
-      statusText: 'Bad request',
-    };
-
-    httpPost = jest
-      .spyOn(httpService, 'post')
-      .mockImplementation(() => of(response));
-
-    const mockFetchAllWebhooks = jest
-      .spyOn(webhookService, 'fetchAllWebhooks')
-      .mockResolvedValue([verifyUserWebhookMock]);
-
-    try {
-      await webhookService.verifyUserWebhook(userForWebhook);
-    } catch (error) {
-      expect(error.message).toBe('There was an error while sending request');
-    }
-
-    expect(httpPost).toBeCalledTimes(1);
-    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
+    expect(mockFetchOneByName).toBeCalledTimes(1);
   });
 });
