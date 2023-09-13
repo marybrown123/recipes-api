@@ -6,6 +6,7 @@ import { UpdateWebhookDTO } from './DTOs/update-webhook.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { WebhookResponse } from './responses/webhook.response';
 import { UserResponse } from 'src/user/responses/user.response';
+import { WebhookName } from 'src/webhook/enums/webhookName.enum';
 
 @Injectable()
 export class WebhookService {
@@ -15,16 +16,12 @@ export class WebhookService {
   ) {}
 
   async sendRecipeCreatedWebhook(recipe: RecipeResponse): Promise<void> {
-    const webhooks = await this.fetchAllWebhooks();
+    const webhook = await this.fetchOneWebhookByName(
+      WebhookName.RecipeCreatedWebhook,
+    );
 
-    const createRecipeWebhook = webhooks.filter((webhook) => {
-      if (webhook.name === process.env.CREATE_RECIPE_WEBHOOK_NAME) {
-        return webhook;
-      }
-    });
-
-    if (createRecipeWebhook[0].isEnabled) {
-      const webhookURL = createRecipeWebhook[0].url;
+    if (webhook.isEnabled) {
+      const webhookURL = webhook.url;
 
       try {
         await lastValueFrom(this.httpService.post(webhookURL, recipe));
@@ -35,16 +32,12 @@ export class WebhookService {
   }
 
   async sendUserVerifiedWebhook(user: UserResponse): Promise<void> {
-    const webhooks = await this.fetchAllWebhooks();
+    const webhook = await this.fetchOneWebhookByName(
+      WebhookName.UserVerifiedWebhook,
+    );
 
-    const verifyUserWebhook = webhooks.filter((webhook) => {
-      if (webhook.name === process.env.VERIFY_USER_WEBHOOK_NAME) {
-        return webhook;
-      }
-    });
-
-    if (verifyUserWebhook[0].isEnabled) {
-      const webhookURL = verifyUserWebhook[0].url;
+    if (webhook.isEnabled) {
+      const webhookURL = webhook.url;
 
       try {
         await lastValueFrom(this.httpService.post(webhookURL, user));
@@ -55,16 +48,12 @@ export class WebhookService {
   }
 
   async sendRecipeDeletedWebhook(recipe: RecipeResponse): Promise<void> {
-    const webhooks = await this.fetchAllWebhooks();
+    const webhook = await this.fetchOneWebhookByName(
+      WebhookName.RecipeDeletedWebhook,
+    );
 
-    const deleteRecipeWebhook = webhooks.filter((webhook) => {
-      if (webhook.name === process.env.DELETE_RECIPE_WEBHOOK_NAME) {
-        return webhook;
-      }
-    });
-
-    if (deleteRecipeWebhook[0].isEnabled) {
-      const webhookURL = deleteRecipeWebhook[0].url;
+    if (webhook.isEnabled) {
+      const webhookURL = webhook.url;
 
       try {
         await lastValueFrom(this.httpService.post(webhookURL, recipe));
@@ -100,6 +89,15 @@ export class WebhookService {
     const webhooks = await this.prismaService.webhook.findMany();
     return webhooks.map((webhook) => {
       return new WebhookResponse(webhook);
+    });
+  }
+
+  async fetchOneWebhookByName(
+    webhookName: WebhookName,
+  ): Promise<WebhookResponse> {
+    const name = String(webhookName);
+    return this.prismaService.webhook.findFirst({
+      where: { name },
     });
   }
 }
