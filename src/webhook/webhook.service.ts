@@ -14,7 +14,7 @@ export class WebhookService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async createRecipeWebhook(recipe: RecipeResponse): Promise<void> {
+  async sendRecipeCreatedWebhook(recipe: RecipeResponse): Promise<void> {
     const webhooks = await this.fetchAllWebhooks();
 
     const createRecipeWebhook = webhooks.filter((webhook) => {
@@ -34,7 +34,7 @@ export class WebhookService {
     }
   }
 
-  async verifyUserWebhook(user: UserResponse): Promise<void> {
+  async sendUserVerifiedWebhook(user: UserResponse): Promise<void> {
     const webhooks = await this.fetchAllWebhooks();
 
     const verifyUserWebhook = webhooks.filter((webhook) => {
@@ -54,7 +54,7 @@ export class WebhookService {
     }
   }
 
-  async deleteRecipeWebhook(recipe: RecipeResponse): Promise<void> {
+  async sendRecipeDeletedWebhook(recipe: RecipeResponse): Promise<void> {
     const webhooks = await this.fetchAllWebhooks();
 
     const deleteRecipeWebhook = webhooks.filter((webhook) => {

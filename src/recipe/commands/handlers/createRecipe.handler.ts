@@ -31,7 +31,7 @@ export class CreateRecipeHandler
 
     const recipeToReturn = new RecipeResponse(recipeFromDb, fileUrl);
 
-    await this.webhookService.createRecipeWebhook(recipeToReturn);
+    await this.webhookService.sendRecipeCreatedWebhook(recipeToReturn);
 
     return recipeToReturn;
   }

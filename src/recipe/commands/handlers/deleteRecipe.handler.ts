@@ -23,6 +23,6 @@ export class DeleteRecipeHandler
     ]);
 
     const recipeForWebhook = new RecipeResponse(recipeToDelete);
-    await this.webhookService.deleteRecipeWebhook(recipeForWebhook);
+    await this.webhookService.sendRecipeDeletedWebhook(recipeForWebhook);
   }
 }

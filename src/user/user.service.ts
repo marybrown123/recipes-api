@@ -104,7 +104,7 @@ export class UserService {
 
     const userToReturn = new UserResponse(verifiedUser);
 
-    await this.webhookService.verifyUserWebhook(userToReturn);
+    await this.webhookService.sendUserVerifiedWebhook(userToReturn);
 
     return userToReturn;
   }
