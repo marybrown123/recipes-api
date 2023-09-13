@@ -17,8 +17,10 @@ export class DeleteRecipeHandler
   async execute(command: DeleteRecipeCommand) {
     const { recipeId } = command;
     const recipeToDelete = await this.recipeDAO.findRecipeById(recipeId);
-    await this.recipeDAO.deleteRecipe(recipeId);
-    await this.fileService.deleteFile(recipeToDelete.fileId);
+    await Promise.all([
+      this.recipeDAO.deleteRecipe(recipeId),
+      this.fileService.deleteFile(recipeToDelete.fileId),
+    ]);
 
     const recipeForWebhook = new RecipeResponse(recipeToDelete);
     await this.webhookService.deleteRecipeWebhook(recipeForWebhook);
