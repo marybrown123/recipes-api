@@ -14,49 +14,17 @@ export class WebhookService {
     private readonly httpService: HttpService,
     private readonly prismaService: PrismaService,
   ) {}
+  async sendWebhook(
+    webhookPayload: RecipeResponse | UserResponse,
+    webhookName: WebhookName,
+  ): Promise<void> {
+    const webhookFromDb = await this.fetchOneWebhookByName(webhookName);
 
-  async sendRecipeCreatedWebhook(recipe: RecipeResponse): Promise<void> {
-    const webhook = await this.fetchOneWebhookByName(
-      WebhookName.RecipeCreatedWebhook,
-    );
-
-    if (webhook.isEnabled) {
-      const webhookURL = webhook.url;
-
+    if (webhookFromDb.isEnabled) {
       try {
-        await lastValueFrom(this.httpService.post(webhookURL, recipe));
-      } catch (error) {
-        throw new Error('There was an error while sending request');
-      }
-    }
-  }
-
-  async sendUserVerifiedWebhook(user: UserResponse): Promise<void> {
-    const webhook = await this.fetchOneWebhookByName(
-      WebhookName.UserVerifiedWebhook,
-    );
-
-    if (webhook.isEnabled) {
-      const webhookURL = webhook.url;
-
-      try {
-        await lastValueFrom(this.httpService.post(webhookURL, user));
-      } catch (error) {
-        throw new Error('There was an error while sending request');
-      }
-    }
-  }
-
-  async sendRecipeDeletedWebhook(recipe: RecipeResponse): Promise<void> {
-    const webhook = await this.fetchOneWebhookByName(
-      WebhookName.RecipeDeletedWebhook,
-    );
-
-    if (webhook.isEnabled) {
-      const webhookURL = webhook.url;
-
-      try {
-        await lastValueFrom(this.httpService.post(webhookURL, recipe));
+        await lastValueFrom(
+          this.httpService.post(webhookFromDb.url, webhookPayload),
+        );
       } catch (error) {
         throw new Error('There was an error while sending request');
       }
@@ -95,9 +63,9 @@ export class WebhookService {
   async fetchOneWebhookByName(
     webhookName: WebhookName,
   ): Promise<WebhookResponse> {
-    const name = String(webhookName);
-    return this.prismaService.webhook.findFirst({
-      where: { name },
+    const webhookFromDb = await this.prismaService.webhook.findFirst({
+      where: { name: webhookName },
     });
+    return new WebhookResponse(webhookFromDb);
   }
 }

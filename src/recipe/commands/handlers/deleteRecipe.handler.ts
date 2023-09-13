@@ -4,6 +4,7 @@ import { DeleteRecipeCommand } from '../impl/deleteRecipe.command';
 import { RecipeDAO } from '../../recipe.dao';
 import { RecipeResponse } from '../../responses/recipe.response';
 import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookName } from 'src/webhook/enums/webhookName.enum';
 
 @CommandHandler(DeleteRecipeCommand)
 export class DeleteRecipeHandler
@@ -23,6 +24,9 @@ export class DeleteRecipeHandler
     ]);
 
     const recipeForWebhook = new RecipeResponse(recipeToDelete);
-    await this.webhookService.sendRecipeDeletedWebhook(recipeForWebhook);
+    await this.webhookService.sendWebhook(
+      recipeForWebhook,
+      WebhookName.RECIPE_DELETED_WEBHOOK_NAME,
+    );
   }
 }

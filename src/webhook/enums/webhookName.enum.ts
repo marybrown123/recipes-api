@@ -1,5 +1,5 @@
 export enum WebhookName {
-  RecipeCreatedWebhook,
-  RecipeDeletedWebhook,
-  UserVerifiedWebhook,
+  RECIPE_CREATED_WEBHOOK_NAME = 'RecipeCreatedWebhook',
+  RECIPE_DELETED_WEBHOOK_NAME = 'RecipeDeletedWebhook',
+  USER_VERIFIED_WEBHOOK_NAME = 'UserVerifiedWebhook',
 }
