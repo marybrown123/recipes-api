@@ -19,12 +19,20 @@ export class WebhookService {
     const webhookFromDb = await this.fetchOneWebhookByName(webhookName);
 
     if (webhookFromDb.isEnabled) {
-      try {
-        await lastValueFrom(
-          this.httpService.post(webhookFromDb.url, webhookPayload),
-        );
-      } catch (error) {
-        throw new Error('There was an error while sending request');
+      let retriesAmount = webhookFromDb.retriesAmount;
+
+      while (retriesAmount > 0) {
+        try {
+          await lastValueFrom(
+            this.httpService.post(webhookFromDb.url, webhookPayload),
+          );
+          break;
+        } catch (error) {
+          retriesAmount--;
+          if (retriesAmount > 0) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+        }
       }
     }
   }
