@@ -4,6 +4,7 @@ import { DeleteRecipeCommand } from '../impl/deleteRecipe.command';
 import { RecipeDAO } from '../../recipe.dao';
 import { RecipeResponse } from '../../responses/recipe.response';
 import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookName } from '../../../webhook/enums/webhookName.enum';
 
 @CommandHandler(DeleteRecipeCommand)
 export class DeleteRecipeHandler
@@ -17,10 +18,15 @@ export class DeleteRecipeHandler
   async execute(command: DeleteRecipeCommand) {
     const { recipeId } = command;
     const recipeToDelete = await this.recipeDAO.findRecipeById(recipeId);
-    await this.recipeDAO.deleteRecipe(recipeId);
-    await this.fileService.deleteFile(recipeToDelete.fileId);
+    await Promise.all([
+      this.recipeDAO.deleteRecipe(recipeId),
+      this.fileService.deleteFile(recipeToDelete.fileId),
+    ]);
 
     const recipeForWebhook = new RecipeResponse(recipeToDelete);
-    await this.webhookService.deleteRecipeWebhook(recipeForWebhook);
+    await this.webhookService.sendWebhook<RecipeResponse>(
+      recipeForWebhook,
+      WebhookName.RecipeDeletedWebhook,
+    );
   }
 }
