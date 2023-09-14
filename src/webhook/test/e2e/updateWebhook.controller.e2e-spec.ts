@@ -20,7 +20,7 @@ describe('Webhook Controller - Update', () => {
   let testAdminAuthenticationToken: string;
   let testUserAuthenticationToken: string;
   const correctPayload: UpdateWebhookDTO = {
-    url: 'testUrl',
+    url: 'http://www.mock.com',
     isEnabled: false,
     retriesAmount: 5,
   };

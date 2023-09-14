@@ -5,7 +5,8 @@ import { WebhookService } from '../../webhook.service';
 import { UpdateWebhookDTO } from '../../DTOs/update-webhook.dto';
 import { WebhookResponse } from '../../responses/webhook.response';
 import { Webhook } from '@prisma/client';
-import { UserResponse } from 'src/user/responses/user.response';
+import { UserResponse } from '../../../user/responses/user.response';
+import { WebhookName } from '../../enums/webhookName.enum';
 
 export class WebhookServiceMock implements Required<WebhookService> {
   generateTestWebhook(): Webhook {
@@ -22,9 +23,10 @@ export class WebhookServiceMock implements Required<WebhookService> {
     return new WebhookResponse(this.generateTestWebhook());
   }
 
-  async createRecipeWebhook(_recipe: RecipeResponse): Promise<void> {}
-
-  async verifyUserWebhook(_user: UserResponse): Promise<void> {}
+  async sendWebhook<T>(
+    _webhookPayload: T,
+    _webhookName: WebhookName,
+  ): Promise<void> {}
 
   async updateWebhook(
     _webhookId: number,
@@ -35,5 +37,11 @@ export class WebhookServiceMock implements Required<WebhookService> {
 
   async fetchAllWebhooks(): Promise<WebhookResponse[]> {
     return [this.generateWebhookResponse()];
+  }
+
+  async fetchOneWebhookByName(
+    _webhookName: WebhookName,
+  ): Promise<WebhookResponse> {
+    return this.generateWebhookResponse();
   }
 }

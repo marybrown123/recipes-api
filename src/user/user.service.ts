@@ -8,6 +8,7 @@ import { User } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
 import { TokenService } from '../token/token.service';
 import { WebhookService } from '../webhook/webhook.service';
+import { WebhookName } from '../webhook/enums/webhookName.enum';
 
 @Injectable()
 export class UserService {
@@ -104,7 +105,10 @@ export class UserService {
 
     const userToReturn = new UserResponse(verifiedUser);
 
-    await this.webhookService.verifyUserWebhook(userToReturn);
+    await this.webhookService.sendWebhook<UserResponse>(
+      userToReturn,
+      WebhookName.UserVerifiedWebhook,
+    );
 
     return userToReturn;
   }

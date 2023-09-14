@@ -6,6 +6,7 @@ import { RecipeResponse } from '../../responses/recipe.response';
 import { FileService } from '../../../file/file.service';
 import { S3Service } from '../../../file/s3.service';
 import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookName } from '../../../webhook/enums/webhookName.enum';
 
 @CommandHandler(CreateRecipeCommand)
 export class CreateRecipeHandler
@@ -31,7 +32,10 @@ export class CreateRecipeHandler
 
     const recipeToReturn = new RecipeResponse(recipeFromDb, fileUrl);
 
-    await this.webhookService.createRecipeWebhook(recipeToReturn);
+    await this.webhookService.sendWebhook<RecipeResponse>(
+      recipeToReturn,
+      WebhookName.RecipeCreatedWebhook,
+    );
 
     return recipeToReturn;
   }
