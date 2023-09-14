@@ -5,6 +5,8 @@ import { UserServiceMock } from '../../../user/test/mocks/user.service.mock';
 import { UserService } from '../../../user/user.service';
 import * as request from 'supertest';
 import { AppModule } from '../../../app.module';
+import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookServiceMock } from '../../../webhook/test/mock/webhook.service.mock';
 
 describe('User Controller - Create', () => {
   let app: INestApplication;
@@ -40,6 +42,8 @@ describe('User Controller - Create', () => {
     })
       .overrideProvider(UserService)
       .useClass(UserServiceMock)
+      .overrideProvider(WebhookService)
+      .useClass(WebhookServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication();

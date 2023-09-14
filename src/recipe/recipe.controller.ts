@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -88,5 +89,17 @@ export class RecipeController {
     @Param('id', ParseIntPipe) recipeId: number,
   ): Promise<RecipeResponse> {
     return this.recipeService.findRecipeById(recipeId);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthGuard('jwt'), IsUserAuthorGuard)
+  @ApiOperation({ summary: 'Delete one recipe by id' })
+  @ApiUnauthorizedResponse({ description: 'User not authorized' })
+  @ApiForbiddenResponse({
+    description: 'User does not own this recipe',
+  })
+  @ApiParam({ name: 'id', required: true })
+  async deleteRecipe(@Param('id') recipeId: number) {
+    await this.recipeService.deleteRecipe(recipeId);
   }
 }

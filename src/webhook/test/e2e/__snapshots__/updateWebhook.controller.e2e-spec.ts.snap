@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Webhook Controller - Update should throw validation error when property isEnabled is 1 1`] = `
+Object {
+  "error": "Bad Request",
+  "message": Array [
+    "isEnabled must be a boolean value",
+  ],
+  "statusCode": 400,
+}
+`;
+
+exports[`Webhook Controller - Update should throw validation error when property retriesAmount is test 1`] = `
+Object {
+  "error": "Bad Request",
+  "message": Array [
+    "retriesAmount must not be greater than 10",
+    "retriesAmount must not be less than 1",
+    "retriesAmount must be a number conforming to the specified constraints",
+  ],
+  "statusCode": 400,
+}
+`;
+
+exports[`Webhook Controller - Update should throw validation error when property url is 1 1`] = `
+Object {
+  "error": "Bad Request",
+  "message": Array [
+    "url must be a URL address",
+    "url must be a string",
+  ],
+  "statusCode": 400,
+}
+`;
