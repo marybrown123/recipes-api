@@ -23,8 +23,8 @@ export class WebhookServiceMock implements Required<WebhookService> {
     return new WebhookResponse(this.generateTestWebhook());
   }
 
-  async sendWebhook(
-    _webhookPayload: RecipeResponse | UserResponse,
+  async sendWebhook<T>(
+    _webhookPayload: T,
     _webhookName: WebhookName,
   ): Promise<void> {}
 

@@ -24,7 +24,7 @@ export class DeleteRecipeHandler
     ]);
 
     const recipeForWebhook = new RecipeResponse(recipeToDelete);
-    await this.webhookService.sendWebhook(
+    await this.webhookService.sendWebhook<RecipeResponse>(
       recipeForWebhook,
       WebhookName.RecipeDeletedWebhook,
     );

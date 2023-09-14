@@ -32,7 +32,7 @@ export class CreateRecipeHandler
 
     const recipeToReturn = new RecipeResponse(recipeFromDb, fileUrl);
 
-    await this.webhookService.sendWebhook(
+    await this.webhookService.sendWebhook<RecipeResponse>(
       recipeToReturn,
       WebhookName.RecipeCreatedWebhook,
     );

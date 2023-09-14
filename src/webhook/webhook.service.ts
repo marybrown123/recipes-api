@@ -1,11 +1,9 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { RecipeResponse } from '../recipe/responses/recipe.response';
 import { lastValueFrom } from 'rxjs';
 import { UpdateWebhookDTO } from './DTOs/update-webhook.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { WebhookResponse } from './responses/webhook.response';
-import { UserResponse } from '../user/responses/user.response';
 import { WebhookName } from './enums/webhookName.enum';
 
 @Injectable()
@@ -14,8 +12,8 @@ export class WebhookService {
     private readonly httpService: HttpService,
     private readonly prismaService: PrismaService,
   ) {}
-  async sendWebhook(
-    webhookPayload: RecipeResponse | UserResponse,
+  async sendWebhook<T>(
+    webhookPayload: T,
     webhookName: WebhookName,
   ): Promise<void> {
     const webhookFromDb = await this.fetchOneWebhookByName(webhookName);
