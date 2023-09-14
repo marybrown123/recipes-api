@@ -6,6 +6,8 @@ import { MailService } from '../../../mail/mail.service';
 import { MailServiceMock } from '../mocks/mail.service.mock';
 import { JwtService } from '@nestjs/jwt';
 import { TokenService } from '../../../token/token.service';
+import { WebhookService } from '../../../webhook/webhook.service';
+import { HttpModule } from '@nestjs/axios';
 
 const user = {
   email: 'testEmail',
@@ -21,12 +23,14 @@ describe('UserService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [HttpModule],
       providers: [
         PrismaService,
         UserService,
         MailService,
         TokenService,
         JwtService,
+        WebhookService,
       ],
     })
       .overrideProvider(MailService)

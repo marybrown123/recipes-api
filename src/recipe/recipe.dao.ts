@@ -100,4 +100,8 @@ export class RecipeDAO {
     });
     return recipesFromDb;
   }
+
+  async deleteRecipe(recipeId: number): Promise<void> {
+    await this.prismaService.recipe.delete({ where: { id: recipeId } });
+  }
 }

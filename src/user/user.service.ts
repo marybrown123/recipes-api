@@ -7,6 +7,8 @@ import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
 import { TokenService } from '../token/token.service';
+import { WebhookService } from '../webhook/webhook.service';
+import { WebhookName } from '../webhook/enums/webhookName.enum';
 
 @Injectable()
 export class UserService {
@@ -14,6 +16,7 @@ export class UserService {
     private tokenService: TokenService,
     private prisma: PrismaService,
     private mailService: MailService,
+    private webhookService: WebhookService,
   ) {}
 
   async createUser(user: CreateUserDTO): Promise<UserResponse> {
@@ -100,6 +103,13 @@ export class UserService {
       },
     });
 
-    return new UserResponse(verifiedUser);
+    const userToReturn = new UserResponse(verifiedUser);
+
+    await this.webhookService.sendWebhook<UserResponse>(
+      userToReturn,
+      WebhookName.UserVerifiedWebhook,
+    );
+
+    return userToReturn;
   }
 }

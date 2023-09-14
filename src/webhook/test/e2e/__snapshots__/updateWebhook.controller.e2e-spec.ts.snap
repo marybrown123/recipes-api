@@ -14,6 +14,8 @@ exports[`Webhook Controller - Update should throw validation error when property
 Object {
   "error": "Bad Request",
   "message": Array [
+    "retriesAmount must not be greater than 10",
+    "retriesAmount must not be less than 1",
     "retriesAmount must be a number conforming to the specified constraints",
   ],
   "statusCode": 400,
@@ -24,6 +26,7 @@ exports[`Webhook Controller - Update should throw validation error when property
 Object {
   "error": "Bad Request",
   "message": Array [
+    "url must be a URL address",
     "url must be a string",
   ],
   "statusCode": 400,
