@@ -30,7 +30,7 @@ const recipeForWebhook: RecipeResponse = {
 
 const recipeCreatedWebhookMock = {
   id: 1,
-  name: WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
+  name: WebhookName.RecipeCreatedWebhook,
   url: 'mockedUrl',
   isEnabled: true,
   retriesAmount: 5,
@@ -86,7 +86,7 @@ describe('Webhook Service - Send Webhook', () => {
 
     await webhookService.sendWebhook(
       recipeForWebhook,
-      WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
+      WebhookName.RecipeCreatedWebhook,
     );
     expect(mockFetchOneByName).toBeCalledTimes(1);
     expect(httpPost).toBeCalledTimes(1);
@@ -115,7 +115,7 @@ describe('Webhook Service - Send Webhook', () => {
     try {
       await webhookService.sendWebhook(
         recipeForWebhook,
-        WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
+        WebhookName.RecipeCreatedWebhook,
       );
     } catch (error) {
       expect(error.message).toBe('There was an error while sending request');
@@ -148,7 +148,7 @@ describe('Webhook Service - Send Webhook', () => {
     try {
       await webhookService.sendWebhook(
         recipeForWebhook,
-        WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
+        WebhookName.RecipeCreatedWebhook,
       );
     } catch (error) {
       expect(error.message).toBe('There was an error while sending request');

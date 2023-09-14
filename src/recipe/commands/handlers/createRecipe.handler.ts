@@ -34,7 +34,7 @@ export class CreateRecipeHandler
 
     await this.webhookService.sendWebhook(
       recipeToReturn,
-      WebhookName.RECIPE_CREATED_WEBHOOK_NAME,
+      WebhookName.RecipeCreatedWebhook,
     );
 
     return recipeToReturn;

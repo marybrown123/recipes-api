@@ -107,7 +107,7 @@ export class UserService {
 
     await this.webhookService.sendWebhook(
       userToReturn,
-      WebhookName.USER_VERIFIED_WEBHOOK_NAME,
+      WebhookName.UserVerifiedWebhook,
     );
 
     return userToReturn;
