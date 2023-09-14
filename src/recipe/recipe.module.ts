@@ -12,9 +12,14 @@ import { GatewayModule } from '../websocket/gateway.module';
 import { FileService } from '../file/file.service';
 import { S3Service } from '../file/s3.service';
 import { WebhookModule } from '../webhook/webhook.module';
+import { DeleteRecipeHandler } from './commands/handlers/deleteRecipe.handler';
 
 export const QueryHandlers = [FindRecipeByIdHandler, FindAllRecipesHandler];
-export const CommandHandlers = [CreateRecipeHandler, UpdateRecipeHandler];
+export const CommandHandlers = [
+  CreateRecipeHandler,
+  UpdateRecipeHandler,
+  DeleteRecipeHandler,
+];
 
 @Module({
   imports: [CqrsModule, GatewayModule, WebhookModule],

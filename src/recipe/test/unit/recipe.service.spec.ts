@@ -110,10 +110,7 @@ describe('Recipe Service', () => {
   });
 
   it('should call webhook service', async () => {
-    const webhookServiceRecipe = jest.spyOn(
-      webhookService,
-      'sendWebhookWithRecipe',
-    );
+    const webhookServiceRecipe = jest.spyOn(webhookService, 'sendWebhook');
 
     await recipeService.createRecipe(recipe, testUser.id);
 
@@ -186,6 +183,19 @@ describe('Recipe Service', () => {
     expect(result[0].preparing[0].order).toBe(1);
     expect(result[0].ingredients[0].name).toBe('flour');
     expect(result[0].ingredients[0].amount).toBe('spoon');
+  });
+
+  it('should delete recipe', async () => {
+    const commandBusExecute = jest.spyOn(commandBus, 'execute');
+
+    await recipeService.deleteRecipe(testRecipe.id);
+
+    const deletedRecipe = await prismaService.recipe.findFirst({
+      where: { id: testRecipe.id },
+    });
+
+    expect(commandBusExecute).toBeCalledTimes(2);
+    expect(deletedRecipe).toBe(null);
   });
 
   afterAll(async () => {

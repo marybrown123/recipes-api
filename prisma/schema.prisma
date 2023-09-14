@@ -65,6 +65,16 @@ model RecipeIngredients {
   @@map("recipe_ingredients")
 }
 
+model Webhook {
+  id Int @default(autoincrement()) @id
+  name String
+  url String
+  isEnabled Boolean @map("is_enabled")
+  retriesAmount Int @map("retries_amount")
+
+  @@map("webhook")
+}
+
 enum Role {
   USER
   ADMIN
