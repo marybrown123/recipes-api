@@ -1,33 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { WebhookService } from '../../webhook.service';
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Observable, of } from 'rxjs';
+import { HttpModule } from '@nestjs/axios';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UpdateWebhookDTO } from '../../DTOs/update-webhook.dto';
 import { Webhook } from '@prisma/client';
-
-const recipeForWebhook: RecipeResponse = {
-  id: 1,
-  name: 'testName',
-  description: 'testDescription',
-  fileId: 1,
-  authorId: 1,
-  preparing: [
-    {
-      step: 'testStep',
-      order: 1,
-    },
-  ],
-  ingredients: [
-    {
-      name: 'testName',
-      amount: 'testAmout',
-    },
-  ],
-  fileUrl: 'testFileUrl',
-};
 
 const webhookMock = {
   name: 'testWebhookName',
@@ -41,21 +17,8 @@ const newWebhook: UpdateWebhookDTO = {
   retriesAmount: 10,
 };
 
-const createRecipeWebhookMock = {
-  id: 1,
-  name: process.env.CREATE_RECIPE_WEBHOOK_NAME,
-  url: 'mockedUrl',
-  isEnabled: true,
-  retriesAmount: 5,
-};
-
-describe('Webhook Service', () => {
+describe('Webhook Service - Update and Find All', () => {
   let webhookService: WebhookService;
-  let httpService: HttpService;
-  let httpPost: jest.SpyInstance<
-    Observable<AxiosResponse<unknown, any>>,
-    [url: string, data?: any, config?: AxiosRequestConfig<any>]
-  >;
   let prismaService: PrismaService;
   let testWebhook: Webhook;
 
@@ -67,12 +30,10 @@ describe('Webhook Service', () => {
 
     await module.createNestApplication().init();
     webhookService = module.get<WebhookService>(WebhookService);
-    httpService = module.get<HttpService>(HttpService);
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
   beforeEach(async () => {
-    httpPost = jest.spyOn(httpService, 'post').mockImplementation(jest.fn());
     testWebhook = await prismaService.webhook.create({
       data: { ...webhookMock },
     });
@@ -82,91 +43,6 @@ describe('Webhook Service', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
     await prismaService.webhook.deleteMany();
-  });
-
-  it('should send a create recipe webhook', async () => {
-    const response: AxiosResponse<any> = {
-      data: recipeForWebhook,
-      headers: {},
-      config: {
-        url: 'http://localhost:3000/mockUrl',
-        headers: undefined,
-      },
-      status: 200,
-      statusText: 'OK',
-    };
-
-    httpPost = jest
-      .spyOn(httpService, 'post')
-      .mockImplementation(() => of(response));
-
-    const mockFetchAllWebhooks = jest
-      .spyOn(webhookService, 'fetchAllWebhooks')
-      .mockResolvedValue([createRecipeWebhookMock]);
-
-    await webhookService.createRecipeWebhook(recipeForWebhook);
-    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
-    expect(httpPost).toBeCalledTimes(1);
-  });
-
-  it('should throw an error when call fails with status 500', async () => {
-    const response: AxiosResponse<any> = {
-      data: recipeForWebhook,
-      headers: {},
-      config: {
-        url: 'http://localhost:3000/mockUrl',
-        headers: undefined,
-      },
-      status: 500,
-      statusText: 'Internal server error',
-    };
-
-    httpPost = jest
-      .spyOn(httpService, 'post')
-      .mockImplementation(() => of(response));
-
-    const mockFetchAllWebhooks = jest
-      .spyOn(webhookService, 'fetchAllWebhooks')
-      .mockResolvedValue([createRecipeWebhookMock]);
-
-    try {
-      await webhookService.createRecipeWebhook(recipeForWebhook);
-    } catch (error) {
-      expect(error.message).toBe('There was an error while sending request');
-    }
-
-    expect(httpPost).toBeCalledTimes(1);
-    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
-  });
-
-  it('should throw an error when call fails with status 400', async () => {
-    const response: AxiosResponse<any> = {
-      data: recipeForWebhook,
-      headers: {},
-      config: {
-        url: 'http://localhost:3000/mockUrl',
-        headers: undefined,
-      },
-      status: 400,
-      statusText: 'Bad request',
-    };
-
-    httpPost = jest
-      .spyOn(httpService, 'post')
-      .mockImplementation(() => of(response));
-
-    const mockFetchAllWebhooks = jest
-      .spyOn(webhookService, 'fetchAllWebhooks')
-      .mockResolvedValue([createRecipeWebhookMock]);
-
-    try {
-      await webhookService.createRecipeWebhook(recipeForWebhook);
-    } catch (error) {
-      expect(error.message).toBe('There was an error while sending request');
-    }
-
-    expect(httpPost).toBeCalledTimes(1);
-    expect(mockFetchAllWebhooks).toBeCalledTimes(1);
   });
 
   it('should update a webhook', async () => {

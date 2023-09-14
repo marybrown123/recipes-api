@@ -9,6 +9,8 @@ import { UserService } from '../../../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../../prisma/prisma.service';
 import * as request from 'supertest';
+import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookServiceMock } from '../../../webhook/test/mock/webhook.service.mock';
 
 describe('Recipe Controller - Delete', () => {
   let app: INestApplication;
@@ -29,6 +31,8 @@ describe('Recipe Controller - Delete', () => {
       .useClass(RecipeServiceMock)
       .overrideGuard(IsUserAuthorGuard)
       .useValue(fakeGuard)
+      .overrideProvider(WebhookService)
+      .useClass(WebhookServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication();
