@@ -1,8 +1,9 @@
-import { Body, Controller, Param, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -34,5 +35,17 @@ export class WebhookController {
     @Body() newWebhook: UpdateWebhookDTO,
   ): Promise<WebhookResponse> {
     return this.webhookService.updateWebhook(webhookId, newWebhook);
+  }
+
+  @Get()
+  @UseGuards(AuthGuard('jwt'), IsAdminGuard)
+  @ApiOperation({ summary: 'Fetch all webhooks' })
+  @ApiOkResponse({ type: [WebhookResponse] })
+  @ApiUnauthorizedResponse({ description: 'User not authorized' })
+  @ApiForbiddenResponse({
+    description: 'User is not an admin',
+  })
+  async fetchAllWebhooks(): Promise<WebhookResponse[]> {
+    return this.webhookService.fetchAllWebhooks();
   }
 }

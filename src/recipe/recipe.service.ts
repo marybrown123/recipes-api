@@ -10,6 +10,7 @@ import { UpdateRecipeCommand } from '../recipe/commands/impl/updateRecipe.comman
 import { FindAllRecipesQuery } from '../recipe/queries/impl/findAllRecipes.query';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { DeleteRecipeCommand } from './commands/impl/deleteRecipe.command';
 
 @Injectable()
 export class RecipeService {
@@ -52,5 +53,9 @@ export class RecipeService {
 
   async findAllRecipes(query: FindAllRecipesDTO): Promise<RecipeResponse[]> {
     return this.queryBus.execute(new FindAllRecipesQuery(query));
+  }
+
+  async deleteRecipe(recipeId: number): Promise<void> {
+    await this.commandBus.execute(new DeleteRecipeCommand(recipeId));
   }
 }

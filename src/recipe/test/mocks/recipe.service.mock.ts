@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { RecipeResponse } from '../../../recipe/responses/recipe.response';
 import { RecipeService } from '../../../recipe/recipe.service';
@@ -73,4 +74,6 @@ export class RecipeServiceMock implements Required<RecipeService> {
   async findRecipeById(_recipeId: number): Promise<RecipeResponse> {
     return this.generateRecipeResponse();
   }
+
+  async deleteRecipe(_recipeId: number): Promise<void> {}
 }

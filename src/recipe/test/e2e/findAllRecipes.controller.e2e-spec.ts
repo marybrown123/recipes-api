@@ -8,6 +8,8 @@ import { UserService } from '../../../user/user.service';
 import { Role, User } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { AppModule } from '../../../app.module';
+import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookServiceMock } from '../../../webhook/test/mock/webhook.service.mock';
 
 describe('Recipe Controller - Find All Recipes', () => {
   let app: INestApplication;
@@ -25,6 +27,8 @@ describe('Recipe Controller - Find All Recipes', () => {
     })
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)
+      .overrideProvider(WebhookService)
+      .useClass(WebhookServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication();

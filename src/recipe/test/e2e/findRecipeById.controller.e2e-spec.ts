@@ -14,6 +14,8 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { AppModule } from '../../../app.module';
 import { CacheServiceMock } from '../../../recipe/test/mocks/cashe.service.mock';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { WebhookService } from '../../../webhook/webhook.service';
+import { WebhookServiceMock } from '../../../webhook/test/mock/webhook.service.mock';
 
 describe('Recipe Controller - Find By Id', () => {
   let app: INestApplication;
@@ -34,6 +36,8 @@ describe('Recipe Controller - Find By Id', () => {
       .useClass(CacheServiceMock)
       .overrideProvider(RecipeService)
       .useClass(RecipeServiceMock)
+      .overrideProvider(WebhookService)
+      .useClass(WebhookServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication();
