@@ -71,11 +71,29 @@ model Webhook {
   url String
   isEnabled Boolean @map("is_enabled")
   retriesAmount Int @map("retries_amount")
+  events WebhookEvent[]
 
   @@map("webhook")
+}
+
+model WebhookEvent {
+  id Int @default(autoincrement()) @id
+  webhook Webhook @relation(fields: [webhookId], references: [id])
+  webhookId Int @map("webhook_id")
+  payload Json
+  status WebhookEventStatus @default(Pending)
+  retriesLeft Int @map("retries_left")
+
+  @@map("webhook_event")
 }
 
 enum Role {
   USER
   ADMIN
+}
+ 
+enum WebhookEventStatus {
+  Pending
+  Failed
+  Succed
 }
