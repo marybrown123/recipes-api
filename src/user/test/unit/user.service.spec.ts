@@ -6,8 +6,9 @@ import { MailService } from '../../../mail/mail.service';
 import { MailServiceMock } from '../mocks/mail.service.mock';
 import { JwtService } from '@nestjs/jwt';
 import { TokenService } from '../../../token/token.service';
-import { WebhookService } from '../../../webhook/webhook.service';
 import { HttpModule } from '@nestjs/axios';
+import { WebhookEventHandler } from '../../../webhook/webhook-event.handler';
+import { WebhookEventHandlerMock } from '../../../webhook/test/mock/webhook-event.handler.mock';
 
 const user = {
   email: 'testEmail',
@@ -30,11 +31,13 @@ describe('UserService', () => {
         MailService,
         TokenService,
         JwtService,
-        WebhookService,
+        WebhookEventHandler,
       ],
     })
       .overrideProvider(MailService)
       .useClass(MailServiceMock)
+      .overrideProvider(WebhookEventHandler)
+      .useClass(WebhookEventHandlerMock)
       .compile();
 
     await module.createNestApplication().init();

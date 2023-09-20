@@ -13,8 +13,8 @@ import { RecipeResponse } from 'src/recipe/responses/recipe.response';
 import { UserResponse } from 'src/user/responses/user.response';
 import { MailService } from '../../../mail/mail.service';
 import { MailServiceMock } from '../../../user/test/mocks/mail.service.mock';
-import { WebhookService } from '../../../webhook/webhook.service';
-import { WebhookServiceMock } from '../../../webhook/test/mock/webhook.service.mock';
+import { WebhookEventHandler } from '../../../webhook/webhook-event.handler';
+import { WebhookEventHandlerMock } from '../../../webhook/test/mock/webhook-event.handler.mock';
 
 const recipe = {
   name: 'Dumplings',
@@ -42,7 +42,7 @@ describe('Recipe Service', () => {
   let testFile: FileResponse;
   let fileService: FileService;
   let testRecipe: RecipeResponse;
-  let webhookService: WebhookService;
+  let webhookEventHandler: WebhookEventHandler;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -59,8 +59,8 @@ describe('Recipe Service', () => {
     })
       .overrideProvider(MailService)
       .useClass(MailServiceMock)
-      .overrideProvider(WebhookService)
-      .useClass(WebhookServiceMock)
+      .overrideProvider(WebhookEventHandler)
+      .useClass(WebhookEventHandlerMock)
       .compile();
 
     await module.createNestApplication().init();
@@ -71,7 +71,7 @@ describe('Recipe Service', () => {
     prismaService = module.get<PrismaService>(PrismaService);
     cacheService = module.get(CACHE_MANAGER);
     fileService = module.get<FileService>(FileService);
-    webhookService = module.get<WebhookService>(WebhookService);
+    webhookEventHandler = module.get<WebhookEventHandler>(WebhookEventHandler);
 
     testUser = await userService.generateAccount(
       process.env.TEST_EMAIL,
@@ -109,12 +109,15 @@ describe('Recipe Service', () => {
     expect(result.ingredients[0].amount).toBe('spoon');
   });
 
-  it('should call webhook service', async () => {
-    const webhookServiceRecipe = jest.spyOn(webhookService, 'sendWebhook');
+  it('should call webhook event handler', async () => {
+    const webhookEventHandlerRecipeCreated = jest.spyOn(
+      webhookEventHandler,
+      'createWebhookEvent',
+    );
 
     await recipeService.createRecipe(recipe, testUser.id);
 
-    expect(webhookServiceRecipe).toBeCalledTimes(1);
+    expect(webhookEventHandlerRecipeCreated).toBeCalledTimes(1);
   });
 
   it('should update a recipe', async () => {

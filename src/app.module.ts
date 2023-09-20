@@ -10,6 +10,7 @@ import { FileModule } from './file/file.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailModule } from './mail/mail.module';
 import { WebhookModule } from './webhook/webhook.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { WebhookModule } from './webhook/webhook.module';
     }),
     MailModule,
     WebhookModule,
+    ScheduleModule.forRoot(),
   ],
 })
 export class AppModule {}

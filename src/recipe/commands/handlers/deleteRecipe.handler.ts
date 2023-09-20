@@ -2,9 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { FileService } from '../../../file/file.service';
 import { DeleteRecipeCommand } from '../impl/deleteRecipe.command';
 import { RecipeDAO } from '../../recipe.dao';
-import { RecipeResponse } from '../../responses/recipe.response';
-import { WebhookService } from '../../../webhook/webhook.service';
 import { WebhookName } from '../../../webhook/enums/webhookName.enum';
+import { WebhookEventHandler } from '../../../webhook/webhook-event.handler';
 
 @CommandHandler(DeleteRecipeCommand)
 export class DeleteRecipeHandler
@@ -13,7 +12,7 @@ export class DeleteRecipeHandler
   constructor(
     private readonly recipeDAO: RecipeDAO,
     private readonly fileService: FileService,
-    private readonly webhookService: WebhookService,
+    private readonly webhookEventHandler: WebhookEventHandler,
   ) {}
   async execute(command: DeleteRecipeCommand) {
     const { recipeId } = command;
@@ -23,10 +22,9 @@ export class DeleteRecipeHandler
       this.fileService.deleteFile(recipeToDelete.fileId),
     ]);
 
-    const recipeForWebhook = new RecipeResponse(recipeToDelete);
-    await this.webhookService.sendWebhook<RecipeResponse>(
-      recipeForWebhook,
+    await this.webhookEventHandler.createWebhookEvent(
       WebhookName.RecipeDeletedWebhook,
+      recipeToDelete,
     );
   }
 }
