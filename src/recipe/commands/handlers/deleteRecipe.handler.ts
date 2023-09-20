@@ -3,7 +3,7 @@ import { FileService } from '../../../file/file.service';
 import { DeleteRecipeCommand } from '../impl/deleteRecipe.command';
 import { RecipeDAO } from '../../recipe.dao';
 import { WebhookName } from '../../../webhook/enums/webhookName.enum';
-import { WebhookEventHandler } from 'src/webhook/webhook.event-handler';
+import { WebhookEventHandler } from '../../../webhook/webhook-event.handler';
 
 @CommandHandler(DeleteRecipeCommand)
 export class DeleteRecipeHandler

@@ -3,7 +3,7 @@ import { WebhookService } from './webhook.service';
 import { HttpModule } from '@nestjs/axios';
 import { WebhookController } from './webhook.controller';
 import { PrismaService } from '../prisma/prisma.service';
-import { WebhookEventHandler } from './webhook.event-handler';
+import { WebhookEventHandler } from './webhook-event.handler';
 
 @Module({
   imports: [HttpModule],

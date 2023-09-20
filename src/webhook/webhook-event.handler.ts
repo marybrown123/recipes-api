@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { Recipe, User, WebhookEventStatus } from '@prisma/client';
 import { lastValueFrom } from 'rxjs';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { WebhookName } from 'src/webhook/enums/webhookName.enum';
-import { WebhookService } from 'src/webhook/webhook.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { WebhookName } from './enums/webhookName.enum';
+import { WebhookService } from './webhook.service';
 
 @Injectable()
 export class WebhookEventHandler {
@@ -37,7 +37,6 @@ export class WebhookEventHandler {
 
   @Interval(5000)
   async triggerWebhookEvents() {
-    console.log('witam');
     const webhookEvents = await this.prismaService.webhookEvent.findMany({
       where: { status: WebhookEventStatus.Pending },
       include: { webhook: true },
